@@ -1,4 +1,5 @@
-﻿using DMOrganizerModel.Interface.Document;
+﻿using DMOrganizerModel.Implementation.Document;
+using DMOrganizerModel.Interface.Document;
 using DMOrganizerModel.Interface.Reference;
 
 namespace DMOrganizerModel.Implementation.Reference
@@ -6,12 +7,12 @@ namespace DMOrganizerModel.Implementation.Reference
     internal class Reference : IReference
     {
         #region Data
-        protected ISection m_Target;
+        protected Section m_Target;
         public ISection Target => m_Target;
         #endregion
 
         #region Constructors
-        public Reference(ISection target)
+        public Reference(Section target)
         {
             m_Target = target;
         }
