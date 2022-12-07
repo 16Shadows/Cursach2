@@ -1,4 +1,6 @@
-﻿using DMOrganizerModel.Implementation.Document;
+﻿using System;
+
+using DMOrganizerModel.Implementation.Document;
 using DMOrganizerModel.Interface.Document;
 using DMOrganizerModel.Interface.Reference;
 
@@ -6,22 +8,22 @@ namespace DMOrganizerModel.Implementation.Reference
 {
     internal class Reference : IReference
     {
-        #region Data
-        protected Section m_Target;
+        #region Properties
+        protected SectionBase m_Target;
         public ISection Target => m_Target;
         #endregion
 
         #region Constructors
-        public Reference(Section target)
+        public Reference(SectionBase target)
         {
-            m_Target = target;
+            m_Target = target ?? throw new ArgumentNullException(nameof(target));
         }
         #endregion
 
         #region Methods
         public string EncodeAsString()
         { 
-            return "";
+            return m_Target.GetPath().ToString();
         }
         #endregion
     }

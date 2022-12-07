@@ -1,4 +1,6 @@
-﻿namespace DMOrganizerModel.Interface.NavigationTree
+﻿using DMOrganizerModel.Interface.Document;
+
+namespace DMOrganizerModel.Interface.NavigationTree
 {
     public class DocumentCreatedEventArgs : OperationResultEventArgs
     {
@@ -16,12 +18,28 @@
         public INavigationTreeCategory? CategoryInstance { get; init; } = null;
     }
 
+     public class DocumentDeletedEventArgs : OperationResultEventArgs
+    {
+        /// <summary>
+        /// If the request succeeds, contains the document's object
+        /// </summary>
+        public IDocument? DocumentInstance { get; init; } = null;
+    }
+
+    public class CategoryDeletedEventArgs : OperationResultEventArgs
+    {
+        /// <summary>
+        /// If the request succeeds, contains the document's object
+        /// </summary>
+        public INavigationTreeCategory? CategoryInstance { get; init; } = null;
+    }
+
     public interface INavigationTreeCategory : INavigationTreeNodeBase
     {
         /// <summary>
         /// Contains all children of this category, notifies on update
         /// </summary>
-        IObservableList<INavigationTreeNodeBase> Children { get; }
+        IObservableCollection<INavigationTreeNodeBase> Children { get; }
 
         /// <summary>
         /// Creates a document in this category
@@ -46,5 +64,29 @@
         /// Is called when a document has been created successfully
         /// </summary>
         event OperationResultEventHandler<INavigationTreeCategory, CategoryCreatedEventArgs> CategoryCreated;
+
+        /// <summary>
+        /// Deletes a document
+        /// </summary>
+        /// <param name="document">The document to delete</param>
+        /// <returns>True if the request has been successfully queued, false otherwise</returns>
+        bool DeleteDocument(IDocument document);
+
+        /// <summary>
+        /// Is called when a document has been created successfully
+        /// </summary>
+        event OperationResultEventHandler<INavigationTreeCategory, DocumentDeletedEventArgs> DocumentDeleted;
+
+        /// <summary>
+        /// Deletes a subcategory
+        /// </summary>
+        /// <param name="title">The subcategory to delete</param>
+        /// <returns>True if the request has been successfully queued, false otherwise</returns>
+        bool DeleteCategory(INavigationTreeCategory category);
+
+        /// <summary>
+        /// Is called when a document has been created successfully
+        /// </summary>
+        event OperationResultEventHandler<INavigationTreeCategory, DocumentDeletedEventArgs> CategoryDeleted;
     }
 }

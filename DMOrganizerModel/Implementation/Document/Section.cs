@@ -1,29 +1,39 @@
-﻿using DMOrganizerModel.Interface;
-using DMOrganizerModel.Interface.Document;
-using DMOrganizerModel.Interface.NavigationTree;
-using System;
+﻿using System;
+using System.Text;
 
 namespace DMOrganizerModel.Implementation.Document
 {
-    internal class Section : ISection
+    internal class Section : SectionBase
     {
-        public string Title => throw new NotImplementedException();
+        #region Properties
+        #endregion
 
-        public string Content => throw new NotImplementedException();
+        #region Fields
+        private readonly SectionBase m_Parent;
+        #endregion
 
-        public IObservableList<ISection> Children => throw new NotImplementedException();
+        #region Constructors
+        public Section(SectionBase parent, string title, string content) : base(title, content)
+        {
+            m_Parent = parent ?? throw new ArgumentNullException(nameof(parent));
+        }
+        #endregion
 
-        public event OperationResultEventHandler<INavigationTreeNodeBase>? Renamed;
-        public event OperationResultEventHandler<INavigationTreeNodeBase>? ContentUpdated;
+        #region Methods
+        public override StringBuilder GetPath(int len = 0)
+        {
+            return m_Parent.GetPath(len + Title.Length + 1).Append('/').Append(Title);
+        }
 
-        public bool Rename(string name)
+        public override bool Rename(string name)
         {
             throw new NotImplementedException();
         }
 
-        public bool UpdateContent(string text)
+        public override bool UpdateContent(string text)
         {
             throw new NotImplementedException();
         }
+        #endregion
     }
 }

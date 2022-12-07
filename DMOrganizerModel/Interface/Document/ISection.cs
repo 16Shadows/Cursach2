@@ -10,6 +10,16 @@ namespace DMOrganizerModel.Interface.Document
         string Title { get; }
 
         /// <summary>
+        /// The text of this section
+        /// </summary>
+        string Content { get; }
+
+        /// <summary>
+        /// Ordered children of this section
+        /// </summary>
+        IObservableList<ISection> Children { get; }
+
+        /// <summary>
         /// Renames this section
         /// </summary>
         /// <param name="name">New title of this section</param>
@@ -20,11 +30,6 @@ namespace DMOrganizerModel.Interface.Document
         /// Called when renaming has been complete
         /// </summary>
         event OperationResultEventHandler<INavigationTreeNodeBase> Renamed;
-
-        /// <summary>
-        /// The text of this section
-        /// </summary>
-        string Content { get; }
 
         /// <summary>
         /// Updates this section's content
@@ -39,8 +44,12 @@ namespace DMOrganizerModel.Interface.Document
         event OperationResultEventHandler<INavigationTreeNodeBase> ContentUpdated;
 
         /// <summary>
-        /// Ordered children of this section
+        /// Deletes a child of this section
         /// </summary>
-        IObservableList<ISection> Children { get; }
+        /// <param name="section">The child to delete</param>
+        /// <returns>True if the request has been successfully queued, false otherwise</returns>
+        bool DeleteChild(ISection section);
+
+        event OperationResultEventHandler<ISection> ChildDeleted;
     }
 }

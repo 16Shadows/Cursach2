@@ -1,9 +1,10 @@
 ﻿using DMOrganizerModel.Interface;
 using DMOrganizerModel.Interface.NavigationTree;
+using System.Text;
 
 namespace DMOrganizerModel.Implementation.NavigationTree
 {
-    internal class NavigationTreeNodeBase : INavigationTreeNodeBase
+    internal abstract class NavigationTreeNodeBase : INavigationTreeNodeBase
     {
         public string Title => throw new System.NotImplementedException();
 
@@ -21,5 +22,7 @@ namespace DMOrganizerModel.Implementation.NavigationTree
         {
             throw new System.NotImplementedException();
         }
+
+        public abstract StringBuilder GetPath(int len = 0);
     }
 }
