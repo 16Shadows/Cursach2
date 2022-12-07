@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
-
-namespace DMOrganizerModel.Interface.Document
+﻿namespace DMOrganizerModel.Interface.Document
 {
     public interface IDocument : ISection
     {
-        ICollection<string> Tags { get; }
+        /// <summary>
+        /// Tags of this document
+        /// </summary>
+        IObservableCollection<string> Tags { get; }
     }
 }

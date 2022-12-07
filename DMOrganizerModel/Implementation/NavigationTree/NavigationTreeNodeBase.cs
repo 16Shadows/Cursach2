@@ -1,15 +1,25 @@
-﻿using DMOrganizerModel.Interface.NavigationTree;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using DMOrganizerModel.Interface;
+using DMOrganizerModel.Interface.NavigationTree;
 
 namespace DMOrganizerModel.Implementation.NavigationTree
 {
     internal class NavigationTreeNodeBase : INavigationTreeNodeBase
     {
-        public string Name { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public INavigationTreeCategory Parent { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public string Title => throw new System.NotImplementedException();
+
+        public INavigationTreeCategory Parent => throw new System.NotImplementedException();
+
+        public event OperationResultEventHandler<INavigationTreeNodeBase>? Renamed;
+        public event OperationResultEventHandler<INavigationTreeNodeBase>? ParentChanged;
+
+        public bool ChangeParent(INavigationTreeCategory newParent)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public bool Rename(string name)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

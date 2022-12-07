@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.3.32929.385
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DMOrganizerModel", "DMOrganizerModel\DMOrganizerModel.csproj", "{4A091F71-0670-4BB3-A8ED-9C2A0364EF40}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DMOrganizerModel", "DMOrganizerModel\DMOrganizerModel.csproj", "{4A091F71-0670-4BB3-A8ED-9C2A0364EF40}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DMOrganizerApp", "DMOrganizerApp\DMOrganizerApp.csproj", "{1A700481-7D4D-412B-8032-5B6DFCD21F99}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DMOrganizerApp", "DMOrganizerApp\DMOrganizerApp.csproj", "{1A700481-7D4D-412B-8032-5B6DFCD21F99}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DMOrganizedModelTests", "DMOrganizedModelTests\DMOrganizedModelTests.csproj", "{645BF2EB-3ED4-4C86-8C35-04D4009DE703}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{1A700481-7D4D-412B-8032-5B6DFCD21F99}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1A700481-7D4D-412B-8032-5B6DFCD21F99}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1A700481-7D4D-412B-8032-5B6DFCD21F99}.Release|Any CPU.Build.0 = Release|Any CPU
+		{645BF2EB-3ED4-4C86-8C35-04D4009DE703}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{645BF2EB-3ED4-4C86-8C35-04D4009DE703}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{645BF2EB-3ED4-4C86-8C35-04D4009DE703}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{645BF2EB-3ED4-4C86-8C35-04D4009DE703}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
