@@ -1,4 +1,4 @@
-﻿using DMOrganizerModel.Interface.Document;
+﻿using DMOrganizerModel.Interface.Content;
 
 namespace DMOrganizerModel.Interface.NavigationTree
 {
@@ -18,6 +18,6 @@ namespace DMOrganizerModel.Interface.NavigationTree
         /// <returns>True if the request has been queued successfully, false otherwise</returns>
         bool LoadDocument();
 
-        event OperationResultEventHandler<INavigationTreeDocument, DocumentLoadedEventArgs> DocumentLoaded;
+        event OperationResultEventHandler<INavigationTreeDocument, DocumentLoadedEventArgs>? DocumentLoaded;
     }
 }

@@ -1,21 +1,41 @@
-﻿using DMOrganizerModel.Interface;
-using DMOrganizerModel.Interface.Document;
+﻿using DMOrganizerModel.Implementation.Model;
+using DMOrganizerModel.Interface;
+using DMOrganizerModel.Interface.Content;
 using DMOrganizerModel.Interface.NavigationTree;
-using System.Text;
+using System;
 
 namespace DMOrganizerModel.Implementation.NavigationTree
 {
-    internal class NavigationTreeCategory : NavigationTreeNodeBase, INavigationTreeCategory
+    internal sealed class NavigationTreeCategory : NavigationTreeRoot, INavigationTreeCategory
     {
-        public IObservableList<INavigationTreeNodeBase> Children => throw new System.NotImplementedException();
+        #region Properties
+        public string Title { get; }
 
-        IObservableCollection<INavigationTreeNodeBase> INavigationTreeCategory.Children => throw new System.NotImplementedException();
+        private INavigationTreeRootInternal? m_Parent;
+        public INavigationTreeRootInternal Parent
+        {
+            get
+            {
+                return m_Parent ?? throw new ObjectDisposedException(GetType().Name);
+            }
+        }
+        INavigationTreeRoot INavigationTreeNodeBase.Parent => Parent;
+        #endregion
 
-        public event OperationResultEventHandler<INavigationTreeCategory, DocumentCreatedEventArgs>? DocumentCreated;
-        public event OperationResultEventHandler<INavigationTreeCategory, CategoryCreatedEventArgs>? CategoryCreated;
-        public event OperationResultEventHandler<INavigationTreeCategory, DocumentDeletedEventArgs>? DocumentDeleted;
-        public event OperationResultEventHandler<INavigationTreeCategory, DocumentDeletedEventArgs>? CategoryDeleted;
+        #region Events
+        public event OperationResultEventHandler<INavigationTreeNodeBase>? Renamed;
+        public event OperationResultEventHandler<INavigationTreeNodeBase>? ParentChanged;
+        #endregion
 
+        #region Constructors
+        public NavigationTreeCategory(OrganizerModel organizer, INavigationTreeRootInternal parent, string title) : base(organizer)
+        {
+            Title = title;
+            m_Parent = parent;
+        }
+        #endregion
+
+        #region Methods
         public bool CreateCategory(string title)
         {
             throw new System.NotImplementedException();
@@ -36,10 +56,15 @@ namespace DMOrganizerModel.Implementation.NavigationTree
             throw new System.NotImplementedException();
         }
 
-        public override StringBuilder GetPath(int len = 0)
+        public bool Rename(string name)
         {
-            //Dummy, replace with actual pathbuilding
-            return new StringBuilder();
+            throw new NotImplementedException();
         }
+
+        public bool ChangeParent(INavigationTreeRoot newParent)
+        {
+            throw new NotImplementedException();
+        }
+        #endregion
     }
 }

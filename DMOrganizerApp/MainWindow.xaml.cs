@@ -1,4 +1,6 @@
-﻿using System;
+﻿using DMOrganizerModel.Interface;
+using DMOrganizerModel.Interface.Model;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;

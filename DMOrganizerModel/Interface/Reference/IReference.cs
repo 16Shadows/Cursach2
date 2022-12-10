@@ -1,4 +1,4 @@
-﻿using DMOrganizerModel.Interface.Document;
+﻿using DMOrganizerModel.Interface.Content;
 
 namespace DMOrganizerModel.Interface.Reference
 {
@@ -7,7 +7,7 @@ namespace DMOrganizerModel.Interface.Reference
         /// <summary>
         /// The entity this reference refers to
         /// </summary>
-        ISection Target { get; }
+        IItem Target { get; }
 
         /// <summary>
         /// Converts this reference to a uniquely-revertable string

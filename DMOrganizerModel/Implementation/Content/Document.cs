@@ -1,17 +1,17 @@
 ﻿using System;
-
-using DMOrganizerModel.Interface;
-using DMOrganizerModel.Interface.Document;
-
-using DMOrganizerModel.Implementation.NavigationTree;
 using System.Text;
 
-namespace DMOrganizerModel.Implementation.Document
+using DMOrganizerModel.Interface;
+using DMOrganizerModel.Interface.Content;
+using DMOrganizerModel.Implementation.NavigationTree;
+using DMOrganizerModel.Implementation.Model;
+
+namespace DMOrganizerModel.Implementation.Content
 {
     internal class Document : SectionBase, IDocument
     {
         #region Properties
-        public IObservableCollection<string> Tags => throw new NotImplementedException();
+        public IObservableCollection<string> Tags { get; }
         #endregion
 
         #region Fields
@@ -19,9 +19,18 @@ namespace DMOrganizerModel.Implementation.Document
         #endregion
 
         #region Constructors
-        public Document(NavigationTreeDocument parent, string title, string content) : base(title, content)
+        public Document(OrganizerModel organizer, NavigationTreeDocument parent, string title, string content) : base(organizer, title, content)
         {
             m_NavigationTreeInstance = parent ?? throw new ArgumentNullException(nameof(parent));
+            Tags = new ObservableList<string>();
+            Tags.CollectionChanged += Tags_CollectionChanged;
+        }
+        #endregion
+
+        #region EventHandlers
+        private void Tags_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            throw new NotImplementedException();
         }
         #endregion
 

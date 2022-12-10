@@ -10,7 +10,7 @@ namespace DMOrganizerModel.Interface.NavigationTree
         /// <summary>
         /// The parent of this node
         /// </summary>
-        INavigationTreeCategory Parent { get; }
+        INavigationTreeRoot? Parent { get; }
 
         /// <summary>
         /// Renames this node
@@ -22,18 +22,18 @@ namespace DMOrganizerModel.Interface.NavigationTree
         /// <summary>
         /// Called when renaming has been complete
         /// </summary>
-        event OperationResultEventHandler<INavigationTreeNodeBase> Renamed;
+        event OperationResultEventHandler<INavigationTreeNodeBase>? Renamed;
 
         /// <summary>
         /// Changes parent of this node
         /// </summary>
         /// <param name="newParent">New parent of this node</param>
         /// <returns>True if the request has been successfully queued, false otherwise</returns>
-        bool ChangeParent(INavigationTreeCategory newParent);
+        bool ChangeParent(INavigationTreeRoot newParent);
 
         /// <summary>
         /// Called when renaming has been complete
         /// </summary>
-        event OperationResultEventHandler<INavigationTreeNodeBase> ParentChanged;
+        event OperationResultEventHandler<INavigationTreeNodeBase>? ParentChanged;
     }
 }

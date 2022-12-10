@@ -1,4 +1,4 @@
-﻿namespace DMOrganizerModel.Interface.Document
+﻿namespace DMOrganizerModel.Interface.Content
 {
     public interface IDocument : ISection
     {

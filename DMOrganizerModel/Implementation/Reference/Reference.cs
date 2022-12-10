@@ -1,7 +1,7 @@
 ﻿using System;
 
-using DMOrganizerModel.Implementation.Document;
-using DMOrganizerModel.Interface.Document;
+using DMOrganizerModel.Implementation.Content;
+using DMOrganizerModel.Interface.Content;
 using DMOrganizerModel.Interface.Reference;
 
 namespace DMOrganizerModel.Implementation.Reference
@@ -9,12 +9,12 @@ namespace DMOrganizerModel.Implementation.Reference
     internal class Reference : IReference
     {
         #region Properties
-        protected SectionBase m_Target;
-        public ISection Target => m_Target;
+        protected ItemBase m_Target;
+        public IItem Target => m_Target;
         #endregion
 
         #region Constructors
-        public Reference(SectionBase target)
+        public Reference(ItemBase target)
         {
             m_Target = target ?? throw new ArgumentNullException(nameof(target));
         }

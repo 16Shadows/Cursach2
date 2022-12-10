@@ -1,7 +1,8 @@
-﻿using System;
+﻿using DMOrganizerModel.Implementation.Model;
+using System;
 using System.Text;
 
-namespace DMOrganizerModel.Implementation.Document
+namespace DMOrganizerModel.Implementation.Content
 {
     internal class Section : SectionBase
     {
@@ -13,7 +14,7 @@ namespace DMOrganizerModel.Implementation.Document
         #endregion
 
         #region Constructors
-        public Section(SectionBase parent, string title, string content) : base(title, content)
+        public Section(OrganizerModel organizer, SectionBase parent, string title, string content) : base(organizer, title, content)
         {
             m_Parent = parent ?? throw new ArgumentNullException(nameof(parent));
         }
@@ -22,7 +23,7 @@ namespace DMOrganizerModel.Implementation.Document
         #region Methods
         public override StringBuilder GetPath(int len = 0)
         {
-            return m_Parent.GetPath(len + Title.Length + 1).Append('/').Append(Title);
+            return m_Parent.GetPath(len + Title.Length + 1).Append('#').Append(Title);
         }
 
         public override bool Rename(string name)
