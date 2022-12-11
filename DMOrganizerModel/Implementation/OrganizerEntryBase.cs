@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Xps.Serialization;
 
 namespace DMOrganizerModel.Implementation
 {
@@ -14,7 +15,8 @@ namespace DMOrganizerModel.Implementation
         {
             get
             {
-                return m_Organizer ?? throw new ObjectDisposedException(GetType().Name);
+                CheckDisposed();
+                return m_Organizer;
             }
         }
         private object? m_SyncRoot;
@@ -22,7 +24,8 @@ namespace DMOrganizerModel.Implementation
         {
             get
             {
-                return m_SyncRoot ?? throw new ObjectDisposedException(GetType().Name);
+                CheckDisposed();
+                return m_SyncRoot;
             }
         }
 
@@ -32,8 +35,15 @@ namespace DMOrganizerModel.Implementation
             m_SyncRoot = new object();
         }
 
+        protected virtual void CheckDisposed()
+        {
+            if (m_Organizer == null || m_SyncRoot == null)
+                throw new ObjectDisposedException(GetType().Name);
+        }
+
         public virtual void Dispose()
         {
+            CheckDisposed();
             m_Organizer = null;
             m_SyncRoot = null;
         }

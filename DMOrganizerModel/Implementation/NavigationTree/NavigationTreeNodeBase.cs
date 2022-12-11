@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using System.Threading.Tasks;
 using DMOrganizerModel.Implementation.Model;
 using DMOrganizerModel.Interface;
 using DMOrganizerModel.Interface.NavigationTree;
@@ -9,16 +10,21 @@ namespace DMOrganizerModel.Implementation.NavigationTree
     internal abstract class NavigationTreeNodeBase : OrganizerEntryBase, INavigationTreeNodeBase
     {
         #region Properties
-        public string Title { get; }
-        private INavigationTreeRootInternal? m_Parent;
-        public INavigationTreeRootInternal Parent
+        public string Title { get; protected set; }
+        private NavigationTreeRoot? m_Parent;
+        public NavigationTreeRoot Parent
         {
             get
             {
                 return m_Parent ?? throw new ObjectDisposedException(GetType().Name);
             }
+            protected set
+            {
+                m_Parent = value ?? throw new ArgumentNullException(nameof(Parent));
+            }
         }
         INavigationTreeRoot INavigationTreeNodeBase.Parent => Parent;
+        public int ItemID { get; }
         #endregion
 
         #region Events
@@ -27,16 +33,17 @@ namespace DMOrganizerModel.Implementation.NavigationTree
         #endregion
 
         #region Constructors
-        public NavigationTreeNodeBase(OrganizerModel organizer, INavigationTreeRootInternal parent, string title) : base(organizer)
+        public NavigationTreeNodeBase(OrganizerModel organizer, NavigationTreeRoot parent, string title, int itemid) : base(organizer)
         {
+            ItemID = itemid;
             m_Parent = parent;
             Title = title ?? throw new ArgumentOutOfRangeException(nameof(title));
         }
         #endregion
 
         #region Methods
-        public abstract bool ChangeParent(INavigationTreeRoot newParent);
-        public abstract bool Rename(string name);
+        public abstract Task ChangeParent(INavigationTreeRoot newParent);
+        public abstract Task Rename(string name);
 
         /// <summary>
         /// Is used to efficently construct path to this instance
@@ -53,6 +60,30 @@ namespace DMOrganizerModel.Implementation.NavigationTree
         {
             base.Dispose();
             m_Parent = null;
+        }
+        protected override void CheckDisposed()
+        {
+            base.CheckDisposed();
+            if (m_Parent == null)
+                throw new ObjectDisposedException(GetType().Name);
+        }
+
+        protected void InvokeRenamed(OperationResultEventArgs.ErrorType errorType, string? errorText)
+        {
+            Renamed?.Invoke(this, new OperationResultEventArgs
+            {
+                Error = errorType,
+                ErrorText = errorText
+            });
+        }
+
+        protected void InvokeParentChanged(OperationResultEventArgs.ErrorType errorType, string? errorText)
+        {
+            Renamed?.Invoke(this, new OperationResultEventArgs
+            {
+                Error = errorType,
+                ErrorText = errorText
+            });
         }
         #endregion
     }

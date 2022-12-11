@@ -1,8 +1,9 @@
 ﻿using DMOrganizerModel.Implementation.Model;
 using DMOrganizerModel.Interface;
-using DMOrganizerModel.Interface.Content;
 using DMOrganizerModel.Interface.NavigationTree;
 using System;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace DMOrganizerModel.Implementation.NavigationTree
 {
@@ -11,8 +12,8 @@ namespace DMOrganizerModel.Implementation.NavigationTree
         #region Properties
         public string Title { get; }
 
-        private INavigationTreeRootInternal? m_Parent;
-        public INavigationTreeRootInternal Parent
+        private NavigationTreeRoot? m_Parent;
+        public NavigationTreeRoot Parent
         {
             get
             {
@@ -20,6 +21,7 @@ namespace DMOrganizerModel.Implementation.NavigationTree
             }
         }
         INavigationTreeRoot INavigationTreeNodeBase.Parent => Parent;
+        public int ItemID { get; }
         #endregion
 
         #region Events
@@ -28,42 +30,28 @@ namespace DMOrganizerModel.Implementation.NavigationTree
         #endregion
 
         #region Constructors
-        public NavigationTreeCategory(OrganizerModel organizer, INavigationTreeRootInternal parent, string title) : base(organizer)
+        public NavigationTreeCategory(OrganizerModel organizer, NavigationTreeRoot parent, string title, int itemID) : base(organizer)
         {
             Title = title;
             m_Parent = parent;
+            ItemID = itemID;
         }
         #endregion
 
         #region Methods
-        public bool CreateCategory(string title)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public bool CreateDocument(string title)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public bool DeleteCategory(INavigationTreeCategory category)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public bool DeleteDocument(IDocument document)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public bool Rename(string name)
+        public Task Rename(string name)
         {
             throw new NotImplementedException();
         }
 
-        public bool ChangeParent(INavigationTreeRoot newParent)
+        public Task ChangeParent(INavigationTreeRoot newParent)
         {
             throw new NotImplementedException();
+        }
+
+        public override StringBuilder GetPath(int len = 0)
+        {
+            return Parent.GetPath(len + Title.Length + 1).Append('/').Append(Title);
         }
         #endregion
     }

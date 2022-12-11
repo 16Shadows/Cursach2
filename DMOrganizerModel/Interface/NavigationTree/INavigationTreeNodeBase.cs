@@ -1,3 +1,5 @@
+using System.Threading.Tasks;
+
 namespace DMOrganizerModel.Interface.NavigationTree
 {
     public interface INavigationTreeNodeBase
@@ -17,7 +19,7 @@ namespace DMOrganizerModel.Interface.NavigationTree
         /// </summary>
         /// <param name="name">New title of this node</param>
         /// <returns>True if the request has been successfully queued, false otherwise</returns>
-        bool Rename(string name);
+        Task Rename(string name);
 
         /// <summary>
         /// Called when renaming has been complete
@@ -29,7 +31,7 @@ namespace DMOrganizerModel.Interface.NavigationTree
         /// </summary>
         /// <param name="newParent">New parent of this node</param>
         /// <returns>True if the request has been successfully queued, false otherwise</returns>
-        bool ChangeParent(INavigationTreeRoot newParent);
+        Task ChangeParent(INavigationTreeRoot newParent);
 
         /// <summary>
         /// Called when renaming has been complete

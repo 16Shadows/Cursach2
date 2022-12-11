@@ -7,6 +7,7 @@ namespace DMOrganizerModel.Implementation.Content
     internal class Section : SectionBase
     {
         #region Properties
+        public int OrderIndex { get; }
         #endregion
 
         #region Fields
@@ -14,9 +15,10 @@ namespace DMOrganizerModel.Implementation.Content
         #endregion
 
         #region Constructors
-        public Section(OrganizerModel organizer, SectionBase parent, string title, string content) : base(organizer, title, content)
+        public Section(OrganizerModel organizer, SectionBase parent, string title, string content, int orderIndex, int itemID) : base(organizer, title, content, itemID)
         {
             m_Parent = parent ?? throw new ArgumentNullException(nameof(parent));
+            OrderIndex = orderIndex;
         }
         #endregion
 

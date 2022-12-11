@@ -1,4 +1,5 @@
 ﻿using DMOrganizerModel.Interface.Content;
+using System.Threading.Tasks;
 
 namespace DMOrganizerModel.Interface.NavigationTree
 {
@@ -18,22 +19,6 @@ namespace DMOrganizerModel.Interface.NavigationTree
         public INavigationTreeCategory? CategoryInstance { get; init; } = null;
     }
 
-     public class DocumentDeletedEventArgs : OperationResultEventArgs
-    {
-        /// <summary>
-        /// If the request succeeds, contains the document's object
-        /// </summary>
-        public IDocument? DocumentInstance { get; init; } = null;
-    }
-
-    public class CategoryDeletedEventArgs : OperationResultEventArgs
-    {
-        /// <summary>
-        /// If the request succeeds, contains the document's object
-        /// </summary>
-        public INavigationTreeCategory? CategoryInstance { get; init; } = null;
-    }
-
     public interface INavigationTreeRoot
     {
         /// <summary>
@@ -46,7 +31,7 @@ namespace DMOrganizerModel.Interface.NavigationTree
         /// </summary>
         /// <param name="title">Title of the document</param>
         /// <returns>True if the request has been successfully queued, false otherwise</returns>
-        bool CreateDocument(string title);
+        Task CreateDocument(string title);
 
         /// <summary>
         /// Is called when a document has been created successfully
@@ -58,7 +43,7 @@ namespace DMOrganizerModel.Interface.NavigationTree
         /// </summary>
         /// <param name="title">Title of the subcategory</param>
         /// <returns>True if the request has been successfully queued, false otherwise</returns>
-        bool CreateCategory(string title);
+        Task CreateCategory(string title);
 
         /// <summary>
         /// Is called when a document has been created successfully
@@ -70,23 +55,23 @@ namespace DMOrganizerModel.Interface.NavigationTree
         /// </summary>
         /// <param name="document">The document to delete</param>
         /// <returns>True if the request has been successfully queued, false otherwise</returns>
-        bool DeleteDocument(IDocument document);
+        Task DeleteDocument(INavigationTreeDocument document);
 
         /// <summary>
         /// Is called when a document has been created successfully
         /// </summary>
-        event OperationResultEventHandler<INavigationTreeRoot, DocumentDeletedEventArgs>? DocumentDeleted;
+        event OperationResultEventHandler<INavigationTreeRoot>? DocumentDeleted;
 
         /// <summary>
         /// Deletes a subcategory
         /// </summary>
         /// <param name="title">The subcategory to delete</param>
         /// <returns>True if the request has been successfully queued, false otherwise</returns>
-        bool DeleteCategory(INavigationTreeCategory category);
+        Task DeleteCategory(INavigationTreeCategory category);
 
         /// <summary>
         /// Is called when a document has been created successfully
         /// </summary>
-        event OperationResultEventHandler<INavigationTreeRoot, DocumentDeletedEventArgs>? CategoryDeleted;
+        event OperationResultEventHandler<INavigationTreeRoot>? CategoryDeleted;
     }
 }

@@ -11,6 +11,7 @@ namespace DMOrganizerModel.Implementation.Content
     {
         #region Properties
         public string Title { get; protected set; }
+        public int ItemID { get; }
         #endregion
 
         #region Events
@@ -18,9 +19,10 @@ namespace DMOrganizerModel.Implementation.Content
         #endregion
 
         #region Constructors
-        public ItemBase(OrganizerModel organizer, string title) : base(organizer)
+        public ItemBase(OrganizerModel organizer, string title, int itemID) : base(organizer)
         {
             Title = title ?? throw new ArgumentNullException(nameof(title));
+            ItemID = itemID;
         }
         #endregion
 

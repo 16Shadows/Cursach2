@@ -1,4 +1,5 @@
-﻿using DMOrganizerModel.Interface.Content;
+﻿using System.Threading.Tasks;
+using DMOrganizerModel.Interface.Content;
 
 namespace DMOrganizerModel.Interface.NavigationTree
 {
@@ -16,7 +17,7 @@ namespace DMOrganizerModel.Interface.NavigationTree
         /// Loads the document this node refers to
         /// </summary>
         /// <returns>True if the request has been queued successfully, false otherwise</returns>
-        bool LoadDocument();
+        Task LoadDocument();
 
         event OperationResultEventHandler<INavigationTreeDocument, DocumentLoadedEventArgs>? DocumentLoaded;
     }
