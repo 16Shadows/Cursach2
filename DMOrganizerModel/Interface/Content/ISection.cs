@@ -1,8 +1,25 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using DMOrganizerModel.Interface.NavigationTree;
 
 namespace DMOrganizerModel.Interface.Content
 {
+    public class SectionCreatedEventArgs : OperationResultEventArgs
+    {
+        public string? Title { get; init; }
+        public ISection? SectionInstance { get; init; }
+    }
+
+    public class SectionDeletedEventArgs : OperationResultEventArgs
+    {
+        public SectionDeletedEventArgs(string title)
+        {
+            Title = title ?? throw new ArgumentNullException(nameof(title));
+        }
+
+        public string Title { get; }
+    }
+
     public interface ISection : IItem
     {
         /// <summary>
@@ -24,7 +41,7 @@ namespace DMOrganizerModel.Interface.Content
         /// <summary>
         /// Called when renaming has been complete
         /// </summary>
-        event OperationResultEventHandler<INavigationTreeNodeBase>? ContentUpdated;
+        event OperationResultEventHandler<ISection>? ContentUpdated;
 
         /// <summary>
         /// Creates a subsection
@@ -35,12 +52,17 @@ namespace DMOrganizerModel.Interface.Content
         /// <summary>
         /// Called when a section has been created
         /// </summary>
-        event OperationResultEventHandler<INavigationTreeNodeBase>? SectionCreated;
+        event OperationResultEventHandler<ISection, SectionCreatedEventArgs>? SectionCreated;
 
         /// <summary>
         /// Deletes a subsection
         /// </summary>
         /// <param name="section">The section to delete</param>
         Task DeleteSection(ISection section);
+
+        /// <summary>
+        /// Called when a section has been created
+        /// </summary>
+        event OperationResultEventHandler<ISection, SectionDeletedEventArgs>? SectionDeleted;
     }
 }

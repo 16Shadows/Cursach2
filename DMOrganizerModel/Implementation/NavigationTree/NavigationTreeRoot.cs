@@ -31,8 +31,8 @@ namespace DMOrganizerModel.Implementation.NavigationTree
         #region Events
         public event OperationResultEventHandler<INavigationTreeRoot, DocumentCreatedEventArgs>? DocumentCreated;
         public event OperationResultEventHandler<INavigationTreeRoot, CategoryCreatedEventArgs>? CategoryCreated;
-        public event OperationResultEventHandler<INavigationTreeRoot>? DocumentDeleted;
-        public event OperationResultEventHandler<INavigationTreeRoot>? CategoryDeleted;
+        public event OperationResultEventHandler<INavigationTreeRoot, DocumentDeletedEventArgs>? DocumentDeleted;
+        public event OperationResultEventHandler<INavigationTreeRoot, CategoryDeletedEventArgs>? CategoryDeleted;
         #endregion
 
         #region Constructors
@@ -83,29 +83,30 @@ namespace DMOrganizerModel.Implementation.NavigationTree
                     {
                         if (!StorageModel.IsValidTitle(title))
                         {
-                            InvokeCategoryCreated(OperationResultEventArgs.ErrorType.InvalidArgument, null, "Invalid title.");
+                            InvokeCategoryCreated(OperationResultEventArgs.ErrorType.InvalidArgument, null, title, "Invalid title.");
                             return;
                         }
 
                         NavigationTreeCategory category = Organizer.CreateCategory(this, title);
                         AddCategory(category);
-                        InvokeCategoryCreated(OperationResultEventArgs.ErrorType.None, category, null);
+                        InvokeCategoryCreated(OperationResultEventArgs.ErrorType.None, category, null, null);
                     }
                     catch (Exception e)
                     {
-                        InvokeCategoryCreated(OperationResultEventArgs.ErrorType.InternalError, null, e.Message);    
+                        InvokeCategoryCreated(OperationResultEventArgs.ErrorType.InternalError, null, title, e.Message);    
                     }
                 }
             });
         }
 
-        protected void InvokeCategoryCreated(OperationResultEventArgs.ErrorType errorType, INavigationTreeCategory? categoryInstance, string? errorText )
+        protected void InvokeCategoryCreated(OperationResultEventArgs.ErrorType errorType, INavigationTreeCategory? categoryInstance, string? title, string? errorText )
         {
             CategoryCreated?.Invoke(this, new CategoryCreatedEventArgs
             {
                 CategoryInstance = categoryInstance,
                 Error = errorType,
-                ErrorText = errorText
+                ErrorText = errorText,
+                Title = title
             });
         }
 
@@ -123,29 +124,30 @@ namespace DMOrganizerModel.Implementation.NavigationTree
                     {
                         if (!StorageModel.IsValidTitle(title))
                         {
-                            InvokeDocumentCreated(OperationResultEventArgs.ErrorType.InvalidArgument, null, "Invalid title.");
+                            InvokeDocumentCreated(OperationResultEventArgs.ErrorType.InvalidArgument, null, title, "Invalid title.");
                             return;
                         }
 
                         NavigationTreeDocument doc = Organizer.CreateDocument(this, title);
                         AddItem(doc);
-                        InvokeDocumentCreated(OperationResultEventArgs.ErrorType.None, doc, null);
+                        InvokeDocumentCreated(OperationResultEventArgs.ErrorType.None, doc, null, null);
                     }
                     catch (Exception e)
                     {
-                        InvokeDocumentCreated(OperationResultEventArgs.ErrorType.InternalError, null, e.Message);    
+                        InvokeDocumentCreated(OperationResultEventArgs.ErrorType.InternalError, null, title, e.Message);    
                     }
                 }
             });
         }
 
-        protected void InvokeDocumentCreated(OperationResultEventArgs.ErrorType errorType, INavigationTreeDocument? documentInstance, string? errorText )
+        protected void InvokeDocumentCreated(OperationResultEventArgs.ErrorType errorType, INavigationTreeDocument? documentInstance, string? title, string? errorText )
         {
             DocumentCreated?.Invoke(this, new DocumentCreatedEventArgs
             {
                 DocumentInstance = documentInstance,
                 Error = errorType,
-                ErrorText = errorText
+                ErrorText = errorText,
+                Title = title
             });
         }
 
@@ -165,25 +167,26 @@ namespace DMOrganizerModel.Implementation.NavigationTree
             {
                 lock (SyncRoot)
                 {
+                    string title = categoryInstance.Title;
                     try
                     {
                         Organizer.DeleteCategory(categoryInstance);
                         m_Categories.Remove(categoryInstance.Title);
                         m_Children.Remove(categoryInstance);
                         categoryInstance.Dispose();
-                        InvokeCategoryDeleted(OperationResultEventArgs.ErrorType.None, null);
+                        InvokeCategoryDeleted(title, OperationResultEventArgs.ErrorType.None, null);
                     }
                     catch (Exception e)
                     {
-                        InvokeCategoryDeleted(OperationResultEventArgs.ErrorType.InternalError, e.Message);
+                        InvokeCategoryDeleted(title, OperationResultEventArgs.ErrorType.InternalError, e.Message);
                     }
                 }
             });
         }
 
-        protected void InvokeCategoryDeleted(OperationResultEventArgs.ErrorType errorType, string? errorText )
+        protected void InvokeCategoryDeleted(string title, OperationResultEventArgs.ErrorType errorType, string? errorText )
         {
-            CategoryDeleted?.Invoke(this, new OperationResultEventArgs
+            CategoryDeleted?.Invoke(this, new CategoryDeletedEventArgs(title)
             {
                 Error = errorType,
                 ErrorText = errorText
@@ -203,12 +206,27 @@ namespace DMOrganizerModel.Implementation.NavigationTree
 
             return Task.Run(() =>
             {
-
+                lock (SyncRoot)
+                {
+                    string title = documentInstance.Title;
+                    try
+                    {
+                        Organizer.DeleteDocument(documentInstance);
+                        m_Categories.Remove(documentInstance.Title);
+                        m_Children.Remove(documentInstance);
+                        documentInstance.Dispose();
+                        InvokeDocumentDeleted(title, OperationResultEventArgs.ErrorType.None, null);
+                    }
+                    catch (Exception e)
+                    {
+                        InvokeDocumentDeleted(title, OperationResultEventArgs.ErrorType.InternalError, e.Message);
+                    }
+                }
             });
         }
-        protected void InvokeDocumentDeleted(OperationResultEventArgs.ErrorType errorType, string? errorText )
+        protected void InvokeDocumentDeleted(string title, OperationResultEventArgs.ErrorType errorType, string? errorText )
         {
-            DocumentDeleted?.Invoke(this, new OperationResultEventArgs
+            DocumentDeleted?.Invoke(this, new DocumentDeletedEventArgs(title)
             {
                 Error = errorType,
                 ErrorText = errorText

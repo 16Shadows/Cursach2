@@ -1,5 +1,6 @@
 ﻿using DMOrganizerModel.Interface.Content;
 using System.Threading.Tasks;
+using System;
 
 namespace DMOrganizerModel.Interface.NavigationTree
 {
@@ -9,6 +10,7 @@ namespace DMOrganizerModel.Interface.NavigationTree
         /// If the request succeeds, contains the document's object
         /// </summary>
         public INavigationTreeDocument? DocumentInstance { get; init; } = null;
+        public string? Title { get; init; } = null;
     }
 
     public class CategoryCreatedEventArgs : OperationResultEventArgs
@@ -16,7 +18,27 @@ namespace DMOrganizerModel.Interface.NavigationTree
         /// <summary>
         /// If the request succeeds, contains the document's object
         /// </summary>
+        /// 
         public INavigationTreeCategory? CategoryInstance { get; init; } = null;
+        public string? Title { get; init; } = null;
+    }
+
+    public class DocumentDeletedEventArgs : OperationResultEventArgs
+    {
+        public DocumentDeletedEventArgs(string title) : base()
+        {
+            Title = title ?? throw new ArgumentNullException(nameof(title));
+        }
+        public string Title { get; }
+    }
+
+    public class CategoryDeletedEventArgs : OperationResultEventArgs
+    {
+        public CategoryDeletedEventArgs(string title) : base()
+        {
+            Title = title ?? throw new ArgumentNullException(nameof(title));
+        }
+        public string Title { get; }
     }
 
     public interface INavigationTreeRoot
@@ -60,7 +82,7 @@ namespace DMOrganizerModel.Interface.NavigationTree
         /// <summary>
         /// Is called when a document has been created successfully
         /// </summary>
-        event OperationResultEventHandler<INavigationTreeRoot>? DocumentDeleted;
+        event OperationResultEventHandler<INavigationTreeRoot, DocumentDeletedEventArgs>? DocumentDeleted;
 
         /// <summary>
         /// Deletes a subcategory
@@ -72,6 +94,6 @@ namespace DMOrganizerModel.Interface.NavigationTree
         /// <summary>
         /// Is called when a document has been created successfully
         /// </summary>
-        event OperationResultEventHandler<INavigationTreeRoot>? CategoryDeleted;
+        event OperationResultEventHandler<INavigationTreeRoot, CategoryDeletedEventArgs>? CategoryDeleted;
     }
 }

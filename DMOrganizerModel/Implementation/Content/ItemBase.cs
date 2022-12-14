@@ -2,8 +2,10 @@
 using DMOrganizerModel.Interface;
 using DMOrganizerModel.Interface.Content;
 using DMOrganizerModel.Interface.NavigationTree;
+using DMOrganizerModel.Implementation.NavigationTree;
 using System;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace DMOrganizerModel.Implementation.Content
 {
@@ -15,7 +17,7 @@ namespace DMOrganizerModel.Implementation.Content
         #endregion
 
         #region Events
-        public event OperationResultEventHandler<INavigationTreeNodeBase>? Renamed;
+        public event OperationResultEventHandler<IItem>? Renamed;
         #endregion
 
         #region Constructors
@@ -23,6 +25,19 @@ namespace DMOrganizerModel.Implementation.Content
         {
             Title = title ?? throw new ArgumentNullException(nameof(title));
             ItemID = itemID;
+        }
+        #endregion
+
+        #region Interface
+        public abstract Task Rename(string name);
+
+        protected void InvokeRenamed(OperationResultEventArgs.ErrorType errorType, string? errorText)
+        {
+            Renamed?.Invoke(this, new OperationResultEventArgs
+            {
+                Error = errorType,
+                ErrorText = errorText
+            });
         }
         #endregion
 
@@ -34,7 +49,6 @@ namespace DMOrganizerModel.Implementation.Content
         /// <param name="len">The number of characters required by previous steps of the algorithm to construct full path</param>
         /// <returns></returns>
         public abstract StringBuilder GetPath(int len = 0);
-        public abstract bool Rename(string name);
         #endregion
     }
 }

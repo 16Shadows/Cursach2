@@ -19,11 +19,11 @@ namespace DMOrganizerModel.Interface.Content
         /// </summary>
         /// <param name="name">New title of this section</param>
         /// <returns>True if the request has been successfully queued, false otherwise</returns>
-        bool Rename(string name);
+        Task Rename(string name);
 
         /// <summary>
         /// Called when renaming has been complete
         /// </summary>
-        event OperationResultEventHandler<INavigationTreeNodeBase>? Renamed;
+        event OperationResultEventHandler<IItem>? Renamed;
     }
 }

@@ -41,20 +41,9 @@ namespace DMOrganizerModel.Implementation.NavigationTree
         }
         #endregion
 
-        #region Methods
+        #region Interface
         public abstract Task ChangeParent(INavigationTreeRoot newParent);
         public abstract Task Rename(string name);
-
-        /// <summary>
-        /// Is used to efficently construct path to this instance
-        /// Specific implementation depends on the object (Section or Document)
-        /// </summary>
-        /// <param name="len">The number of characters required by previous steps of the algorithm to construct full path</param>
-        /// <returns></returns>
-        public virtual StringBuilder GetPath(int len = 0)
-        {
-            return Parent.GetPath(len + Title.Length + 1).Append('$').Append(Title);
-        }
 
         public override void Dispose()
         {
@@ -79,11 +68,24 @@ namespace DMOrganizerModel.Implementation.NavigationTree
 
         protected void InvokeParentChanged(OperationResultEventArgs.ErrorType errorType, string? errorText)
         {
-            Renamed?.Invoke(this, new OperationResultEventArgs
+            ParentChanged?.Invoke(this, new OperationResultEventArgs
             {
                 Error = errorType,
                 ErrorText = errorText
             });
+        }
+        #endregion
+
+        #region Methods
+        /// <summary>
+        /// Is used to efficently construct path to this instance
+        /// Specific implementation depends on the object (Section or Document)
+        /// </summary>
+        /// <param name="len">The number of characters required by previous steps of the algorithm to construct full path</param>
+        /// <returns></returns>
+        public virtual StringBuilder GetPath(int len = 0)
+        {
+            return Parent.GetPath(len + Title.Length + 1).Append('$').Append(Title);
         }
         #endregion
     }

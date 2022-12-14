@@ -18,11 +18,7 @@ namespace DMOrganizerModel.Implementation.NavigationTree
         public NavigationTreeDocument(OrganizerModel organizer, NavigationTreeRoot parent, string title, int itemid) : base(organizer, parent, title, itemid) {}
         #endregion
 
-        public Document GetDocument()
-        {
-            return Organizer.LoadDocument(this);
-        }
-
+        #region Interface
         public override Task ChangeParent(INavigationTreeRoot newParent)
         {
             CheckDisposed();
@@ -122,7 +118,7 @@ namespace DMOrganizerModel.Implementation.NavigationTree
                     {
                         if (Parent.GetItem(name) != null)
                         {
-                            InvokeRenamed(OperationResultEventArgs.ErrorType.InvalidArgument, $"An item with the same title is already present.");
+                            InvokeRenamed(OperationResultEventArgs.ErrorType.DuplicateTitle, "An item with the same title is already present.");
                             return;
                         }
                         Title = name;
@@ -137,5 +133,13 @@ namespace DMOrganizerModel.Implementation.NavigationTree
                 }
             });
         }
+        #endregion
+
+        #region Methods
+        public Document GetDocument()
+        {
+            return Organizer.LoadDocument(this);
+        }
+        #endregion
     }
 }

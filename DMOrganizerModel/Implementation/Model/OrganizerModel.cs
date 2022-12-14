@@ -10,6 +10,7 @@ using DMOrganizerModel.Interface.Reference;
 using DMOrganizerModel.Interface.NavigationTree;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace DMOrganizerModel.Implementation.Model
 {
@@ -362,6 +363,7 @@ namespace DMOrganizerModel.Implementation.Model
         {
             CheckDisposed();
 
+            m_navigationTreeRoot?.Dispose();
             m_navigationTreeRoot = null;
             m_Connection.Close();
             m_Connection = null;
@@ -599,15 +601,6 @@ namespace DMOrganizerModel.Implementation.Model
                     {
                         using (var command = m_Connection.CreateCommand())
                         {
-                            command.CommandText = $"SELECT id FROM Category WHERE ID={newID.Value}";
-                            using (var reader = command.ExecuteReader())
-                            {
-                                if (!reader.Read())
-                                    throw new ArgumentException("Invalid parent id", nameof(newID));
-                            }
-                        }
-                        using (var command = m_Connection.CreateCommand())
-                        {
                             command.CommandText = $"UPDATE Document SET CategoryID = {newID.Value} WHERE ID={doc.ItemID}";
                             if (command.ExecuteNonQuery() == 0)
                                 throw new ArgumentException("Invalid document id", nameof(doc));
@@ -644,7 +637,7 @@ namespace DMOrganizerModel.Implementation.Model
                     using (var command = m_Connection.CreateCommand())
                     {
                         command.CommandText = $"UPDATE Section Set Title=$title WHERE ID={doc.ItemID}";
-                        command.Parameters.AddWithValue("title", title);
+                        command.Parameters.AddWithValue("$title", title);
                         if (command.ExecuteNonQuery() == 0)
                             throw new ArgumentException("Invalid document ID", nameof(doc));
                     }
@@ -652,6 +645,32 @@ namespace DMOrganizerModel.Implementation.Model
                 catch (Exception e)
                 {
                     throw new Exception("Document title change failed to due underlying exception", e);
+                }
+            }
+        }
+
+        public void ChangeSectionTitle(Section section, string title)
+        {
+            CheckDisposed();
+
+            if (!StorageModel.IsValidTitle(title))
+                throw new ArgumentException("Invalid title", nameof(title));
+
+            lock (m_SyncRoot)
+            {
+                try
+                {
+                    using (var command = m_Connection.CreateCommand())
+                    {
+                        command.CommandText = $"UPDATE Section Set Title=$title WHERE ID={section.ItemID}";
+                        command.Parameters.AddWithValue("$title", title);
+                        if (command.ExecuteNonQuery() == 0)
+                            throw new ArgumentException("Invalid section ID", nameof(section));
+                    }
+                }
+                catch (Exception e)
+                {
+                    throw new Exception("Section title change failed due to an underlying exception", e);
                 }
             }
         }
@@ -678,11 +697,11 @@ namespace DMOrganizerModel.Implementation.Model
                     using (var command = m_Connection.CreateCommand())
                     {
                         if (parent is NavigationTreeCategory parentCategory)
-                            command.CommandText = $"INSERT INTO Category (Title, Parent) VALUES ($title, {parentCategory.ItemID}); SELECT last_insert_rowid();";
+                            command.CommandText = $"BEGIN TRANSACTION;INSERT INTO Category (Title, Parent) VALUES ($title, {parentCategory.ItemID}); SELECT last_insert_rowid();COMMIT;";
                         else
-                            command.CommandText = $"INSERT INTO Category (Title) VALUES ($title); SELECT last_insert_rowid();";
+                            command.CommandText = $"BEGIN TRANSACTION;INSERT INTO Category (Title) VALUES ($title); SELECT last_insert_rowid();COMMIT;";
 
-                        command.Parameters.AddWithValue("title", title);
+                        command.Parameters.AddWithValue("$title", title);
 
                         using (var reader = command.ExecuteReader())
                         {
@@ -725,11 +744,11 @@ namespace DMOrganizerModel.Implementation.Model
                     using (var command = m_Connection.CreateCommand())
                     {
                         if (parent is NavigationTreeCategory parentCategory)
-                            command.CommandText = $"INSERT INTO Section (Title) VALUES ($title); INSERT INTO Document (CategoryID, SectionID) VALUES ({parentCategory.ItemID}, last_insert_rowid()); SELECT SectionID FROM Document WHERE ROWID=last_insert_rowid();";
+                            command.CommandText = $"BEGIN TRANSACTION;INSERT INTO Section (Title) VALUES ($title); INSERT INTO Document (CategoryID, SectionID) VALUES ({parentCategory.ItemID}, last_insert_rowid()); SELECT SectionID FROM Document WHERE ROWID=last_insert_rowid();COMMIT;";
                         else
-                            command.CommandText = $"INSERT INTO Section (Title) VALUES ($title); INSERT INTO Document (SectionID) VALUES (last_insert_rowid()); SELECT SectionID FROM Document WHERE ROWID=last_insert_rowid();";
+                            command.CommandText = $"BEGIN TRANSACTION;INSERT INTO Section (Title) VALUES ($title); INSERT INTO Document (SectionID) VALUES (last_insert_rowid()); SELECT SectionID FROM Document WHERE ROWID=last_insert_rowid();COMMIT;";
 
-                        command.Parameters.AddWithValue("title", title);
+                        command.Parameters.AddWithValue("$title", title);
 
                         using (var reader = command.ExecuteReader())
                         {
@@ -795,6 +814,219 @@ namespace DMOrganizerModel.Implementation.Model
             catch (Exception e)
             {
                 throw new Exception("Category deletion failed to due underlying exception", e);
+            }
+        }
+
+        public void ChangeCategoryParent(NavigationTreeCategory cat, int? newID)
+        {
+            CheckDisposed();
+
+            lock (m_SyncRoot)
+            {
+                try
+                {
+                    if (newID.HasValue)
+                    {
+                        using (var command = m_Connection.CreateCommand())
+                        {
+                            command.CommandText = $"UPDATE Category SET Parent = {newID.Value} WHERE ID={cat.ItemID}";
+                            if (command.ExecuteNonQuery() == 0)
+                                throw new ArgumentException("Invalid category id", nameof(cat));
+                        }
+                    }
+                    else
+                    {
+                        using (var command = m_Connection.CreateCommand())
+                        {
+                            command.CommandText = $"UPDATE Category SET CategoryID = NULL WHERE ID={cat.ItemID}";
+                            if (command.ExecuteNonQuery() == 0)
+                                throw new ArgumentException("Invalid category id", nameof(cat));
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    throw new Exception("Category parent change failed to due underlying exception", e);
+                }
+            }
+        }
+
+        public void ChangeCategoryTitle(NavigationTreeCategory cat, string title)
+        {
+            CheckDisposed();
+
+            if (!StorageModel.IsValidTitle(title))
+                throw new ArgumentException("Invalid title", nameof(title));
+
+            lock (m_SyncRoot)
+            {
+                try
+                {
+                    using (var command = m_Connection.CreateCommand())
+                    {
+                        command.CommandText = $"UPDATE Category Set Title=$title WHERE ID={cat.ItemID}";
+                        command.Parameters.AddWithValue("$title", title);
+                        if (command.ExecuteNonQuery() == 0)
+                            throw new ArgumentException("Invalid category ID", nameof(cat));
+                    }
+                }
+                catch (Exception e)
+                {
+                    throw new Exception("Category title change failed due to an underlying exception", e);
+                }
+            }
+        }
+
+        public void UpdateSectionContent(SectionBase section, string newContent)
+        {
+            CheckDisposed();
+
+            lock (m_SyncRoot)
+            {
+                try
+                {
+                    using (var command = m_Connection.CreateCommand())
+                    {
+                        command.CommandText = $"UPDATE Section Set Content=$content WHERE ID={section.ItemID}";
+                        command.Parameters.AddWithValue("$content", newContent);
+                        if (command.ExecuteNonQuery() == 0)
+                            throw new ArgumentException("Invalid section ID", nameof(section));
+                    }
+                }
+                catch (Exception e)
+                {
+                    throw new Exception("Section content change failed due to an underlying exception", e);
+                }
+            }
+        }
+
+        public Section CreateSection(SectionBase parent, string title)
+        {
+            if (parent == null)
+                throw new ArgumentNullException(nameof(parent));
+            else if (title == null)
+                throw new ArgumentNullException(nameof(title));
+            else if (!StorageModel.IsValidTitle(title))
+                throw new ArgumentException("Invalid title", nameof(title));
+
+            lock (m_SyncRoot)
+            {
+                try
+                {
+                    using (var command = m_Connection.CreateCommand())
+                    {
+                        command.CommandText = $"BEGIN TRANSACTION;INSERT INTO Section (Title, Parent, OrderIndex) VALUES ($title, {parent.ItemID}, MAX(SELECT OrderIndex FROM Section WHERE Parent={parent.ItemID})+1);SELECT ID, OrderIndex FROM Section WHERE ID=last_insert_rowid();COMMIT;";
+
+                        using (var reader = command.ExecuteReader())
+                        {
+                            if (reader.Read())
+                                return new Section(this, parent, title, "", reader.GetInt32(1), reader.GetInt32(0));
+                            else
+                                throw new Exception("Insert failed");
+                        }
+                    }
+                    
+                }
+                catch(Exception e)
+                {
+                    throw new Exception("Section creation failed due to an underlying exception", e);
+                }
+            }
+        }
+        
+        public void DeleteSection(Section section)
+        {
+            if (section == null)
+                throw new ArgumentNullException(nameof(section));
+
+            lock (m_SyncRoot)
+            {
+                try
+                {
+                    using (var command = m_Connection.CreateCommand())
+                    {
+                        command.CommandText = $"DELETE FROM Section WHERE ID={section.ItemID}";
+                        if (command.ExecuteNonQuery() == 0)
+                            throw new ArgumentException("Invalid section id", nameof(section));
+                    }
+                }
+                catch (Exception e)
+                {
+                    throw new Exception("Section deletion failed due to an underlying exception", e);
+                }
+            }    
+        }
+
+        public void AddDocumentTag(Document document, string tag)
+        {
+            if (document == null)
+                throw new ArgumentNullException(nameof(document));
+            else if (tag == null)
+                throw new ArgumentNullException(nameof(tag));
+
+            lock (m_SyncRoot)
+            {
+                try
+                {
+                    int tagID = -1;
+                    using (var command = m_Connection.CreateCommand())
+                    {
+                        command.CommandText = "SELECT ID FROM Tag WHERE Text=$tag";
+                        command.Parameters.AddWithValue("$tag", tag);
+                        using (var reader = command.ExecuteReader())
+                        {
+                            if (reader.Read())
+                                tagID = reader.GetInt32(0);
+                        }
+                    }
+                    using (var command = m_Connection.CreateCommand())
+                    {
+                        if (tagID == -1)
+                        {
+                            command.CommandText = $"BEGIN TRANSACTION;INSERT INTO Tag (Text) VALUES ($tag);INSERT INTO DocumentsTags (DocumentID, TagID) VALUES ({document.ItemID}, last_insert_rowid());COMMIT;";
+                            command.Parameters.AddWithValue("$tag", tag);
+                        }
+                        else
+                        {
+                            command.CommandText = $"INSERT INTO DocumentsTags (DocumentID, TagID) VALUES ({document.ItemID}, {tagID});";
+                        }
+                        
+                        if (command.ExecuteNonQuery() == 0)
+                            throw new ArgumentException("Invalid document ID", nameof(document));
+                    }
+                }
+                catch (Exception e)
+                {
+                    throw new Exception("Adding document tag failed due to an underlying exception", e);
+                }
+            }    
+        }
+
+        public void RemoveDocumentTag(Document document, string tag)
+        {
+            if (document == null)
+                throw new ArgumentNullException(nameof(document));
+            else if (tag == null)
+                throw new ArgumentNullException(nameof(tag));
+            else if (!document.Tags.Contains(tag))
+                throw new ArgumentException("This tag is not present on this document", nameof(tag));
+
+            lock (m_SyncRoot)
+            {
+                try
+                {
+                    using (var command = m_Connection.CreateCommand())
+                    {
+                        command.CommandText = $"DELETE FROM DocumentsTags WHERE DocumentID={document.ItemID} AND TagID IN (SELECT ID FROM Tag WHERE Text=$tag)";
+                        command.Parameters.AddWithValue("$tag", tag);
+                        if (command.ExecuteNonQuery() == 0)
+                            throw new ArgumentException("Invalid document id", nameof(document));
+                    }
+                }
+                catch (Exception e)
+                {
+                    throw new Exception("Tag removal failed due to an underlying exception", e);
+                }
             }
         }
         #endregion
