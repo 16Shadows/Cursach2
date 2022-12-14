@@ -117,6 +117,38 @@ namespace DMOrganizerModel.Implementation.Model
                     BEGIN
 	                    DELETE FROM Tag WHERE ID=OLD.TagID;
                     END;
+                    CREATE TRIGGER IF NOT EXISTS document_create_title_duplication_guard BEFORE INSERT ON Document
+                    WHEN EXISTS (
+	                    SELECT *
+	                    FROM (Document INNER JOIN Section ON Document.SectionID=Section.ID)
+	                    WHERE Document.CategoryID=NEW.CategoryID AND Section.Title IN
+		                    (SELECT Title FROM Section WHERE Section.ID=NEW.SectionID)
+                    )
+                    BEGIN
+	                    SELECT RAISE(ABORT, 'Duplicate title in category');
+                    END;
+
+                    CREATE TRIGGER IF NOT EXISTS document_move_title_duplication_guard BEFORE UPDATE ON Document
+                    WHEN EXISTS (
+	                    SELECT *
+	                    FROM (Document INNER JOIN Section ON Document.SectionID=Section.ID)
+	                    WHERE Document.CategoryID=NEW.CategoryID AND Section.Title IN
+		                    (SELECT Title FROM Section WHERE Section.ID=NEW.SectionID)
+                    )
+                    BEGIN
+	                    SELECT RAISE(ABORT, 'Duplicate title in category');
+                    END;
+
+                    CREATE TRIGGER IF NOT EXISTS document_rename_title_duplication_guard BEFORE UPDATE ON Section
+                    WHEN NEW.Parent IS NULL AND EXISTS (
+	                    SELECT *
+	                    FROM (Document INNER JOIN Section ON Document.SectionID=Section.ID)
+	                    WHERE NEW.Title=Section.Title AND Document.CategoryID IN
+		                    (SELECT CategoryID FROM Document WHERE Document.SectionID=NEW.ID)
+                    )
+                    BEGIN
+	                    SELECT RAISE(ABORT, 'Duplicate title in category');
+                    END;
                     COMMIT;";
 
                     command.ExecuteNonQuery();

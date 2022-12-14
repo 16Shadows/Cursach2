@@ -6,7 +6,6 @@ using DMOrganizerModel.Interface.Content;
 using DMOrganizerModel.Implementation.NavigationTree;
 using DMOrganizerModel.Implementation.Model;
 using System.Threading.Tasks;
-using System.Data.OracleClient;
 
 namespace DMOrganizerModel.Implementation.Content
 {
