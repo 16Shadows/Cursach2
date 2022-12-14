@@ -1,6 +1,4 @@
-﻿using DMOrganizerModel.Interface;
-using DMOrganizerModel.Interface.Model;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,20 +13,16 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-using DMOrganizerApp.ViewModels;
-
-namespace DMOrganizerApp
+namespace DMOrganizerApp.Views
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for OrganizerView.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class OrganizerView : UserControl
     {
-        public MainWindow()
+        public OrganizerView()
         {
             InitializeComponent();
-
-            DataContext = new ViewModelHost(new OrganizerViewModel());
         }
     }
 }
