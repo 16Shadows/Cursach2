@@ -1,8 +1,9 @@
+using System.ComponentModel;
 using System.Threading.Tasks;
 
 namespace DMOrganizerModel.Interface.NavigationTree
 {
-    public interface INavigationTreeNodeBase
+    public interface INavigationTreeNodeBase : INotifyPropertyChanged
     {
         /// <summary>
         /// The name of this node
@@ -12,7 +13,7 @@ namespace DMOrganizerModel.Interface.NavigationTree
         /// <summary>
         /// The parent of this node
         /// </summary>
-        INavigationTreeRoot? Parent { get; }
+        INavigationTreeRoot Parent { get; }
 
         /// <summary>
         /// Renames this node

@@ -79,10 +79,10 @@ namespace DMOrganizerModel.Implementation.Model
             if (title == null)
                 throw new ArgumentNullException(nameof(title));
 
-            if (title[0] == ' ' || title[title.Length - 1] == ' ')
+            if (title.Length < 1 || title[0] == ' ' || title[title.Length - 1] == ' ')
                 return false;
 
-            return title.Length > 0 && title.IndexOfAny(ForbiddenNameSymbols) != -1;
+            return title.Length > 0 && title.IndexOfAny(ForbiddenNameSymbols) == -1;
         }
 
         public static string SanitizeTitle(string title)

@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Threading;
 using DMOrganizerModel.Implementation.Model;
 using DMOrganizerModel.Interface;
 using DMOrganizerModel.Interface.Content;
@@ -75,26 +78,38 @@ namespace DMOrganizerModel.Implementation.NavigationTree
             if (title == null)
                 throw new ArgumentNullException(nameof(title));
 
+            Dispatcher dispatch = Dispatcher.CurrentDispatcher;
+
             return Task.Run(() =>
             {
-                lock (SyncRoot)
+                try
                 {
-                    try
+                    if (!StorageModel.IsValidTitle(title))
                     {
-                        if (!StorageModel.IsValidTitle(title))
+                        dispatch.BeginInvoke(() => InvokeCategoryCreated(OperationResultEventArgs.ErrorType.InvalidArgument, null, title, "Invalid title."));
+                        return;
+                    }
+                        
+                    NavigationTreeCategory category;
+                    lock (SyncRoot)
+                    {
+                        if (m_Categories.ContainsKey(title))
                         {
-                            InvokeCategoryCreated(OperationResultEventArgs.ErrorType.InvalidArgument, null, title, "Invalid title.");
+                            dispatch.BeginInvoke(() => InvokeCategoryCreated(OperationResultEventArgs.ErrorType.DuplicateTitle, null, title, "Duplicate title."));
                             return;
                         }
 
-                        NavigationTreeCategory category = Organizer.CreateCategory(this, title);
+                        category = Organizer.CreateCategory(this, title);
+                    }
+                    dispatch.BeginInvoke(() =>
+                    {
                         AddCategory(category);
                         InvokeCategoryCreated(OperationResultEventArgs.ErrorType.None, category, null, null);
-                    }
-                    catch (Exception e)
-                    {
-                        InvokeCategoryCreated(OperationResultEventArgs.ErrorType.InternalError, null, title, e.Message);    
-                    }
+                    });
+                }
+                catch (Exception e)
+                {
+                    dispatch.BeginInvoke(() => InvokeCategoryCreated(OperationResultEventArgs.ErrorType.InternalError, null, title, e.ToString()));
                 }
             });
         }
@@ -116,26 +131,38 @@ namespace DMOrganizerModel.Implementation.NavigationTree
             if (title == null)
                 throw new ArgumentNullException(nameof(title));
 
+            Dispatcher dispatch = Dispatcher.CurrentDispatcher;
+
             return Task.Run(() =>
             {
-                lock (SyncRoot)
+                try
                 {
-                    try
+                    if (!StorageModel.IsValidTitle(title))
                     {
-                        if (!StorageModel.IsValidTitle(title))
+                        dispatch.BeginInvoke(() => InvokeDocumentCreated(OperationResultEventArgs.ErrorType.InvalidArgument, null, title, "Invalid title."));
+                        return;
+                    }
+                        
+                    NavigationTreeDocument doc;
+                    lock (SyncRoot)
+                    {
+                        if (m_Items.ContainsKey(title))
                         {
-                            InvokeDocumentCreated(OperationResultEventArgs.ErrorType.InvalidArgument, null, title, "Invalid title.");
+                            dispatch.BeginInvoke(() => InvokeDocumentCreated(OperationResultEventArgs.ErrorType.DuplicateTitle, null, title, "Duplicate title."));
                             return;
                         }
-
-                        NavigationTreeDocument doc = Organizer.CreateDocument(this, title);
+                        doc = Organizer.CreateDocument(this, title);
+                    }
+                         
+                    dispatch.BeginInvoke(() =>
+                    {
                         AddItem(doc);
                         InvokeDocumentCreated(OperationResultEventArgs.ErrorType.None, doc, null, null);
-                    }
-                    catch (Exception e)
-                    {
-                        InvokeDocumentCreated(OperationResultEventArgs.ErrorType.InternalError, null, title, e.Message);    
-                    }
+                    });
+                }
+                catch (Exception e)
+                {
+                    dispatch.BeginInvoke(() => InvokeDocumentCreated(OperationResultEventArgs.ErrorType.InternalError, null, title, e.ToString()));
                 }
             });
         }
@@ -162,24 +189,28 @@ namespace DMOrganizerModel.Implementation.NavigationTree
             if (category is not NavigationTreeCategory categoryInstance)
                 throw new ArgumentException("Incompatiable instance", nameof(category));
 
+            Dispatcher dispatch = Dispatcher.CurrentDispatcher;
 
             return Task.Run(() =>
             {
-                lock (SyncRoot)
+                string title = categoryInstance.Title;
+                try
                 {
-                    string title = categoryInstance.Title;
-                    try
-                    {
-                        Organizer.DeleteCategory(categoryInstance);
+                    lock (SyncRoot)
                         m_Categories.Remove(categoryInstance.Title);
-                        m_Children.Remove(categoryInstance);
+                    Organizer.DeleteCategory(categoryInstance);
+                    categoryInstance.PropertyChanged -= OnChildPropertyChanged;
+                    dispatch.BeginInvoke(() =>
+                    {
+                        lock (SyncRoot)
+                            m_Children.Remove(categoryInstance);
                         categoryInstance.Dispose();
                         InvokeCategoryDeleted(title, OperationResultEventArgs.ErrorType.None, null);
-                    }
-                    catch (Exception e)
-                    {
-                        InvokeCategoryDeleted(title, OperationResultEventArgs.ErrorType.InternalError, e.Message);
-                    }
+                    });
+                }
+                catch (Exception e)
+                {
+                    dispatch.BeginInvoke(() => InvokeCategoryDeleted(title, OperationResultEventArgs.ErrorType.InternalError, e.ToString()));
                 }
             });
         }
@@ -204,23 +235,28 @@ namespace DMOrganizerModel.Implementation.NavigationTree
             if (document is not NavigationTreeDocument documentInstance)
                 throw new ArgumentException("Incompatiable instance", nameof(document));
 
+            Dispatcher dispatch = Dispatcher.CurrentDispatcher;
+
             return Task.Run(() =>
             {
-                lock (SyncRoot)
+                string title = documentInstance.Title;
+                try
                 {
-                    string title = documentInstance.Title;
-                    try
-                    {
-                        Organizer.DeleteDocument(documentInstance);
+                    lock (SyncRoot)
                         m_Categories.Remove(documentInstance.Title);
-                        m_Children.Remove(documentInstance);
-                        documentInstance.Dispose();
-                        InvokeDocumentDeleted(title, OperationResultEventArgs.ErrorType.None, null);
-                    }
-                    catch (Exception e)
+                    Organizer.DeleteDocument(documentInstance);
+                    documentInstance.PropertyChanged += OnChildPropertyChanged;
+                    dispatch.BeginInvoke(() =>
                     {
-                        InvokeDocumentDeleted(title, OperationResultEventArgs.ErrorType.InternalError, e.Message);
-                    }
+                        lock (SyncRoot)
+                            m_Children.Remove(documentInstance);
+                        documentInstance.Dispose();
+                        InvokeCategoryDeleted(title, OperationResultEventArgs.ErrorType.None, null);
+                    });
+                }
+                catch (Exception e)
+                {
+                    dispatch.BeginInvoke(() => InvokeCategoryDeleted(title, OperationResultEventArgs.ErrorType.InternalError, e.ToString()));
                 }
             });
         }
@@ -232,8 +268,6 @@ namespace DMOrganizerModel.Implementation.NavigationTree
                 ErrorText = errorText
             });
         }
-
-
         #endregion
 
         #region Methods
@@ -243,9 +277,11 @@ namespace DMOrganizerModel.Implementation.NavigationTree
             CheckDisposed();
             lock (SyncRoot)
             {
-                if (!m_Categories.ContainsKey(category.Title))
-                    m_Categories.Add(category.Title, category);
-            
+                if (m_Categories.ContainsKey(category.Title))
+                    throw new ArgumentException("Duplicate category title", nameof(category));
+
+                category.PropertyChanged += OnChildPropertyChanged;
+                m_Categories.Add(category.Title, category);
                 m_Children.Add(category);
             }
         }
@@ -255,11 +291,11 @@ namespace DMOrganizerModel.Implementation.NavigationTree
             CheckDisposed();
             lock (SyncRoot)
             {
-                if (!m_Items.ContainsKey(item.Title))
-                    m_Items.Add(item.Title, item);
-                else
-                    throw new ArgumentException($"Duplicate title: {item.Title}", nameof(item));
+                if (m_Items.ContainsKey(item.Title))
+                    throw new ArgumentException("Duplicate category title", nameof(item));
 
+                item.PropertyChanged += OnChildPropertyChanged;
+                m_Items.Add(item.Title, item);
                 m_Children.Add(item);
             }    
         }
@@ -283,6 +319,29 @@ namespace DMOrganizerModel.Implementation.NavigationTree
         public virtual StringBuilder GetPath(int len = 0)
         {
             return new StringBuilder(len);
+        }
+        #endregion
+
+        #region EventHandlers
+        protected void OnChildPropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName != "Title")
+                return;
+
+            if (sender is NavigationTreeCategory category)
+            {
+                string key = m_Categories.FirstOrDefault(kvp => kvp.Value == category).Key;
+                if (key != null)
+                    m_Categories.Remove(key);
+                m_Categories.Add(category.Title, category);
+            }
+            else if (sender is NavigationTreeNodeBase item)
+            {
+                string key = m_Items.FirstOrDefault(kvp => kvp.Value == item).Key;
+                if (key != null)
+                    m_Items.Remove(key);
+                m_Items.Add(item.Title, item);
+            }
         }
         #endregion
     }

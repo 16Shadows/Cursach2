@@ -4,13 +4,23 @@ using DMOrganizerModel.Interface.NavigationTree;
 using System;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Threading;
 
 namespace DMOrganizerModel.Implementation.NavigationTree
 {
     internal sealed class NavigationTreeCategory : NavigationTreeRoot, INavigationTreeCategory
     {
         #region Properties
-        public string Title { get; private set; }
+        private string m_Title;
+        public string Title
+        {
+            get => m_Title;
+            private set
+            {
+                m_Title = value ?? throw new ArgumentNullException(nameof(Title));
+                InvokePropertyChanged(nameof(Title));
+            }
+        }
 
         private NavigationTreeRoot? m_Parent;
         public NavigationTreeRoot Parent
@@ -22,6 +32,7 @@ namespace DMOrganizerModel.Implementation.NavigationTree
             private set
             {
                 m_Parent = value ?? throw new ArgumentNullException(nameof(Parent));
+                InvokePropertyChanged(nameof(Parent));
             }
         }
         INavigationTreeRoot INavigationTreeNodeBase.Parent => Parent;
@@ -36,7 +47,7 @@ namespace DMOrganizerModel.Implementation.NavigationTree
         #region Constructors
         public NavigationTreeCategory(OrganizerModel organizer, NavigationTreeRoot parent, string title, int itemID) : base(organizer)
         {
-            Title = title;
+            m_Title = title;
             m_Parent = parent;
             ItemID = itemID;
         }
@@ -49,33 +60,45 @@ namespace DMOrganizerModel.Implementation.NavigationTree
             if (name == null)
                 throw new ArgumentNullException(nameof(name));
 
+            Dispatcher dispatcher = Dispatcher.CurrentDispatcher;
+
             return Task.Run(() =>
             {
                 if (!StorageModel.IsValidTitle(name))
                 {
-                    InvokeRenamed(OperationResultEventArgs.ErrorType.InvalidArgument, $"The following title is not valid: {name}");
+                    dispatcher.BeginInvoke(() => InvokeRenamed(OperationResultEventArgs.ErrorType.InvalidArgument, $"The following title is not valid: {name}"));
                     return;
-                }
-
-                lock (SyncRoot)
-                {
-                    string oldTitle = Title;
-                    try
+                }   
+                
+                string oldTitle = null;
+                try
+                {        
+                    lock (SyncRoot)
                     {
                         if (Parent.GetItem(name) != null)
                         {
-                            InvokeRenamed(OperationResultEventArgs.ErrorType.InvalidArgument, $"A category with the same title is already present.");
+                            dispatcher.BeginInvoke(() => InvokeRenamed(OperationResultEventArgs.ErrorType.DuplicateTitle, "A category with the same title is already present."));
                             return;
                         }
-                        Title = name;
-                        Organizer.ChangeCategoryTitle(this, name);
-                        InvokeRenamed(OperationResultEventArgs.ErrorType.None, null);
+                        oldTitle = Title;
                     }
-                    catch (Exception e)
+                    Organizer.ChangeCategoryTitle(this, name);
+                    dispatcher.BeginInvoke(() =>
                     {
-                        Title = oldTitle;
-                        InvokeRenamed(OperationResultEventArgs.ErrorType.InternalError, e.Message);
-                    }
+                        lock (SyncRoot)
+                            Title = name;
+                        InvokeRenamed(OperationResultEventArgs.ErrorType.None, null);
+                    });
+                }
+                catch (Exception e)
+                {
+                    dispatcher.BeginInvoke(() =>
+                    {
+                        lock (SyncRoot)
+                            if (oldTitle != null && oldTitle != Title)
+                                Title = oldTitle;
+                        InvokeRenamed(OperationResultEventArgs.ErrorType.InternalError, e.ToString());
+                    });
                 }
             });
         }
@@ -85,47 +108,43 @@ namespace DMOrganizerModel.Implementation.NavigationTree
             CheckDisposed();
             if (newParent == null)
                 throw new ArgumentNullException(nameof(newParent));
+            
+            if (newParent is not NavigationTreeRoot root)
+                throw new ArgumentException("Incompatiable instance", nameof(newParent));
+
+            Dispatcher dispatcher = Dispatcher.CurrentDispatcher;
 
             return Task.Run(() =>
             {
-                lock (SyncRoot)
+                NavigationTreeRoot oldParent = null;
+                try
                 {
-                    NavigationTreeRoot oldParent = Parent;
-                    try
+                    lock (SyncRoot)
                     {
-                        if (newParent is NavigationTreeCategory category)
+                        oldParent = Parent;
+                        if (root.GetItem(Title) != null)
                         {
-                            if (category.GetCategory(Title) != null)
-                            {
-                                InvokeParentChanged(OperationResultEventArgs.ErrorType.DuplicateTitle, $"Category {category.Title} already has a category named {Title}");
-                                return;
-                            }
-
-                            Parent = category;
-                            Organizer.ChangeCategoryParent(this, category.ItemID);
-                        }
-                        else if (newParent is NavigationTreeRoot root)
-                        {
-                            if (root.GetCategory(Title) != null)
-                            {
-                                InvokeParentChanged(OperationResultEventArgs.ErrorType.DuplicateTitle, $"The root already has a category named {Title}");
-                                return;
-                            }
-                            Parent = root;
-                            Organizer.ChangeCategoryParent(this, null);
-                        }
-                        else
-                        {
-                            InvokeParentChanged(OperationResultEventArgs.ErrorType.InvalidArgument, "Invalid parent type.");
+                            dispatcher.BeginInvoke(() => InvokeParentChanged(OperationResultEventArgs.ErrorType.DuplicateTitle, $"The parent already has an item named {Title}"));
                             return;
                         }
-                        InvokeParentChanged(OperationResultEventArgs.ErrorType.None, null);
                     }
-                    catch (Exception e)
+                    Organizer.ChangeCategoryParent(this, root as NavigationTreeCategory);
+                    dispatcher.BeginInvoke(() =>
                     {
-                        Parent = oldParent;
-                        InvokeParentChanged(OperationResultEventArgs.ErrorType.InternalError, e.Message);
-                    }
+                        lock (SyncRoot)
+                            Parent = root;
+                        InvokeParentChanged(OperationResultEventArgs.ErrorType.None, null);
+                    });
+                }
+                catch (Exception e)
+                {
+                    dispatcher.BeginInvoke(() =>
+                    {
+                        lock (SyncRoot)
+                            if (oldParent != null && oldParent != Parent)
+                                Parent = oldParent;
+                        InvokeParentChanged(OperationResultEventArgs.ErrorType.InternalError, e.ToString());
+                    });
                 }
             });
         }

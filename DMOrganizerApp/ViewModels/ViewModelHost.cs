@@ -1,13 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DMOrganizerApp.ViewModels
 {
-    internal class ViewModelHost : INotifyPropertyChanged
+    internal class ViewModelHost : BaseViewModel
     {
         #region Properties
         private BaseViewModel m_ActiveViewModel;
@@ -23,19 +18,10 @@ namespace DMOrganizerApp.ViewModels
         }
         #endregion
 
-        #region Events
-        public event PropertyChangedEventHandler? PropertyChanged;
-
-        protected void InvokePropertyChanged(string name)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-        }
-        #endregion
-
         #region Constructors
         public ViewModelHost(BaseViewModel startingViewModel)
         {
-            m_ActiveViewModel = startingViewModel ?? throw new ArgumentNullException(nameof(startingViewModel));
+            m_ActiveViewModel = startingViewModel;
         }
         #endregion
     }

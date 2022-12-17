@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Text;
 using System.Threading.Tasks;
 using DMOrganizerModel.Implementation.Model;
@@ -10,7 +11,16 @@ namespace DMOrganizerModel.Implementation.NavigationTree
     internal abstract class NavigationTreeNodeBase : OrganizerEntryBase, INavigationTreeNodeBase
     {
         #region Properties
-        public string Title { get; protected set; }
+        private string m_Title;
+        public string Title
+        {
+            get => m_Title;
+            protected set
+            {
+                m_Title = value ?? throw new ArgumentNullException(nameof(Title));
+                InvokePropertyChanged(nameof(Title));
+            }
+        }
         private NavigationTreeRoot? m_Parent;
         public NavigationTreeRoot Parent
         {
@@ -21,6 +31,7 @@ namespace DMOrganizerModel.Implementation.NavigationTree
             protected set
             {
                 m_Parent = value ?? throw new ArgumentNullException(nameof(Parent));
+                InvokePropertyChanged(nameof(Parent));
             }
         }
         INavigationTreeRoot INavigationTreeNodeBase.Parent => Parent;
@@ -30,6 +41,24 @@ namespace DMOrganizerModel.Implementation.NavigationTree
         #region Events
         public event OperationResultEventHandler<INavigationTreeNodeBase>? Renamed;
         public event OperationResultEventHandler<INavigationTreeNodeBase>? ParentChanged;
+        
+        protected void InvokeRenamed(OperationResultEventArgs.ErrorType errorType, string? errorText)
+        {
+            Renamed?.Invoke(this, new OperationResultEventArgs
+            {
+                Error = errorType,
+                ErrorText = errorText
+            });
+        }
+
+        protected void InvokeParentChanged(OperationResultEventArgs.ErrorType errorType, string? errorText)
+        {
+            ParentChanged?.Invoke(this, new OperationResultEventArgs
+            {
+                Error = errorType,
+                ErrorText = errorText
+            });
+        }
         #endregion
 
         #region Constructors
@@ -37,7 +66,7 @@ namespace DMOrganizerModel.Implementation.NavigationTree
         {
             ItemID = itemid;
             m_Parent = parent;
-            Title = title ?? throw new ArgumentOutOfRangeException(nameof(title));
+            m_Title = title ?? throw new ArgumentOutOfRangeException(nameof(title));
         }
         #endregion
 
@@ -55,24 +84,6 @@ namespace DMOrganizerModel.Implementation.NavigationTree
             base.CheckDisposed();
             if (m_Parent == null)
                 throw new ObjectDisposedException(GetType().Name);
-        }
-
-        protected void InvokeRenamed(OperationResultEventArgs.ErrorType errorType, string? errorText)
-        {
-            Renamed?.Invoke(this, new OperationResultEventArgs
-            {
-                Error = errorType,
-                ErrorText = errorText
-            });
-        }
-
-        protected void InvokeParentChanged(OperationResultEventArgs.ErrorType errorType, string? errorText)
-        {
-            ParentChanged?.Invoke(this, new OperationResultEventArgs
-            {
-                Error = errorType,
-                ErrorText = errorText
-            });
         }
         #endregion
 

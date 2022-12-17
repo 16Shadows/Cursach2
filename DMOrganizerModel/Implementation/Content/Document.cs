@@ -6,13 +6,28 @@ using DMOrganizerModel.Interface.Content;
 using DMOrganizerModel.Implementation.NavigationTree;
 using DMOrganizerModel.Implementation.Model;
 using System.Threading.Tasks;
+using System.ComponentModel;
+using System.Windows.Threading;
 
 namespace DMOrganizerModel.Implementation.Content
 {
     internal sealed class Document : SectionBase, IDocument
     {
         #region Properties
-        public ObservableList<string> Tags { get; }
+        private ObservableList<string>? m_Tags;
+        public ObservableList<string> Tags
+        {
+            get
+            {
+                CheckDisposed();
+                return m_Tags;
+            }
+            private set
+            {
+                CheckDisposed();
+                m_Tags = value ?? throw new ArgumentNullException(nameof(Tags));
+            }
+        }
         IObservableReadOnlyCollection<string> IDocument.Tags => Tags;
 
         private NavigationTreeDocument? m_NavigationEntry;
@@ -35,8 +50,8 @@ namespace DMOrganizerModel.Implementation.Content
         public Document(OrganizerModel organizer, NavigationTreeDocument treeNode, string title, string content, int itemID) : base(organizer, title, content, itemID)
         {
             m_NavigationEntry = treeNode ?? throw new ArgumentNullException(nameof(treeNode));
-            Tags = new ObservableList<string>();
-            m_NavigationEntry.Renamed += NavigationEntry_Renamed;
+            m_Tags = new ObservableList<string>();
+            m_NavigationEntry.PropertyChanged += NavigationEntry_PropertyChanged;
         }
         #endregion
 
@@ -49,20 +64,23 @@ namespace DMOrganizerModel.Implementation.Content
             else if (Tags.Contains(tag))
                 throw new ArgumentException("Duplicate tag", nameof(tag));
 
+            Dispatcher dispatcher = Dispatcher.CurrentDispatcher;
+
             return Task.Run(() =>
             {
-                lock (SyncRoot)
+                try
                 {
-                    try
+                    Organizer.AddDocumentTag(this, tag);
+                    dispatcher.BeginInvoke(() =>
                     {
-                        Organizer.AddDocumentTag(this, tag);
-                        Tags.Add(tag);
+                        lock (SyncRoot)
+                            Tags.Add(tag);
                         InvokeTagAdded(tag, OperationResultEventArgs.ErrorType.None, null);
-                    }
-                    catch (Exception e)
-                    {
-                        InvokeTagAdded(tag, OperationResultEventArgs.ErrorType.InternalError, e.Message);
-                    }
+                    });
+                }
+                catch (Exception e)
+                {
+                    dispatcher.BeginInvoke(() =>InvokeTagAdded(tag, OperationResultEventArgs.ErrorType.InternalError, e.ToString()));
                 }
             });
         }
@@ -83,20 +101,23 @@ namespace DMOrganizerModel.Implementation.Content
             else if (!Tags.Contains(tag))
                 throw new ArgumentException("Tag not present", nameof(tag));
 
+            Dispatcher dispatcher = Dispatcher.CurrentDispatcher;
+
             return Task.Run(() =>
             {
-                lock (SyncRoot)
+                try
                 {
-                    try
+                    Organizer.RemoveDocumentTag(this, tag);
+                    dispatcher.BeginInvoke(() =>
                     {
-                        Organizer.RemoveDocumentTag(this, tag);
-                        Tags.Remove(tag);
+                        lock (SyncRoot)
+                            Tags.Remove(tag);
                         InvokeTagRemoved(tag, OperationResultEventArgs.ErrorType.None, null);
-                    }
-                    catch (Exception e)
-                    {
-                        InvokeTagRemoved(tag, OperationResultEventArgs.ErrorType.InternalError, e.Message);
-                    }
+                    });
+                }
+                catch (Exception e)
+                {
+                    dispatcher.BeginInvoke(() => InvokeTagRemoved(tag, OperationResultEventArgs.ErrorType.InternalError, e.ToString()));
                 }
             });
         }
@@ -112,7 +133,65 @@ namespace DMOrganizerModel.Implementation.Content
 
         public override Task Rename(string name)
         {
-            return NavigationEntry.Rename(name);
+            CheckDisposed();
+            if (name == null)
+                throw new ArgumentNullException(nameof(name));
+
+            Dispatcher dispatcher = Dispatcher.CurrentDispatcher;
+
+            return Task.Run(() =>
+            {
+                if (!StorageModel.IsValidTitle(name))
+                {
+                    dispatcher.BeginInvoke(() => InvokeRenamed(OperationResultEventArgs.ErrorType.InvalidArgument, $"The following title is not valid: {name}"));
+                    return;
+                }   
+                
+                string oldTitle = null;
+                try
+                {        
+                    lock (SyncRoot)
+                    {
+                        if (NavigationEntry.Parent.GetItem(name) != null)
+                        {
+                            dispatcher.BeginInvoke(() => InvokeRenamed(OperationResultEventArgs.ErrorType.DuplicateTitle, "An item with the same title is already present."));
+                            return;
+                        }
+                        oldTitle = Title;
+                    }
+                    Organizer.ChangeDocumentTitle(NavigationEntry, name);
+                    dispatcher.BeginInvoke(() =>
+                    {
+                        lock (SyncRoot)
+                            Title = name;
+                        InvokeRenamed(OperationResultEventArgs.ErrorType.None, null);
+                    });
+                }
+                catch (Exception e)
+                {
+                    dispatcher.BeginInvoke(() =>
+                    {
+                        lock (SyncRoot)
+                            if (oldTitle != null && oldTitle != Title)
+                                Title = oldTitle;
+                        InvokeRenamed(OperationResultEventArgs.ErrorType.InternalError, e.ToString());
+                    });
+                }
+            });
+        }
+
+        public override void Dispose()
+        {
+            base.Dispose();
+            m_NavigationEntry = null;
+            m_Tags = null;
+        }
+
+        protected override void CheckDisposed()
+        {
+            base.CheckDisposed();
+            if (m_NavigationEntry == null || m_Tags == null)
+                throw new ObjectDisposedException(nameof(Document));
         }
         #endregion
 
@@ -124,12 +203,13 @@ namespace DMOrganizerModel.Implementation.Content
         #endregion
 
         #region EventHandlers
-        private void NavigationEntry_Renamed(Interface.NavigationTree.INavigationTreeNodeBase sender, OperationResultEventArgs e)
+        private void NavigationEntry_PropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
-            if (e.Error == OperationResultEventArgs.ErrorType.None)
-                Title = sender.Title;
-            
-            InvokeRenamed(e.Error, e.ErrorText);
+            lock (SyncRoot)
+            {
+                if (sender == NavigationEntry && e.PropertyName == nameof(Title))
+                    Title = NavigationEntry.Title;
+            }
         }
         #endregion
     }

@@ -1,13 +1,9 @@
-﻿using DMOrganizerModel.Interface.NavigationTree;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.ComponentModel;
 using System.Threading.Tasks;
 
 namespace DMOrganizerModel.Interface.Content
 {
-    public interface IItem
+    public interface IItem : INotifyPropertyChanged
     {
         /// <summary>
         /// The title of this section

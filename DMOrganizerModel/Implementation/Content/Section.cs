@@ -66,7 +66,7 @@ namespace DMOrganizerModel.Implementation.Content
                     catch (Exception e)
                     {
                         Title = oldTitle;
-                        InvokeRenamed(OperationResultEventArgs.ErrorType.InternalError, e.Message);
+                        InvokeRenamed(OperationResultEventArgs.ErrorType.InternalError, e.ToString());
                     }
                 }
             });

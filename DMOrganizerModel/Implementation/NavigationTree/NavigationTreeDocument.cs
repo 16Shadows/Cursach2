@@ -5,11 +5,18 @@ using DMOrganizerModel.Interface.NavigationTree;
 using System.Threading.Tasks;
 using System;
 using DMOrganizerModel.Interface.Content;
+using System.Windows.Threading;
+using System.Text.Json.Serialization;
+using System.Windows.Media.Animation;
 
 namespace DMOrganizerModel.Implementation.NavigationTree
 {
     internal sealed class NavigationTreeDocument : NavigationTreeNodeBase, INavigationTreeDocument
     {
+        #region Properties
+        private Document? m_DocumentInstance;
+        #endregion
+
         #region Events
         public event OperationResultEventHandler<INavigationTreeDocument, DocumentLoadedEventArgs>? DocumentLoaded;
         #endregion
@@ -24,47 +31,43 @@ namespace DMOrganizerModel.Implementation.NavigationTree
             CheckDisposed();
             if (newParent == null)
                 throw new ArgumentNullException(nameof(newParent));
+            
+            if (newParent is not NavigationTreeRoot root)
+                throw new ArgumentException("Incompatiable instance", nameof(newParent));
+
+            Dispatcher dispatcher = Dispatcher.CurrentDispatcher;
 
             return Task.Run(() =>
             {
-                lock (SyncRoot)
+                NavigationTreeRoot oldParent = null;
+                try
                 {
-                    NavigationTreeRoot oldParent = Parent;
-                    try
+                    lock (SyncRoot)
                     {
-                        if (newParent is NavigationTreeCategory category)
+                        oldParent = Parent;
+                        if (root.GetItem(Title) != null)
                         {
-                            if (category.GetItem(Title) != null)
-                            {
-                                InvokeParentChanged(OperationResultEventArgs.ErrorType.DuplicateTitle, $"Category {category.Title} already has an item named {Title}");
-                                return;
-                            }
-
-                            Parent = category;
-                            Organizer.ChangeDocumentParent(this, category.ItemID);
-                        }
-                        else if (newParent is NavigationTreeRoot root)
-                        {
-                            if (root.GetItem(Title) != null)
-                            {
-                                InvokeParentChanged(OperationResultEventArgs.ErrorType.DuplicateTitle, $"The root already has an item named {Title}");
-                                return;
-                            }
-                            Parent = root;
-                            Organizer.ChangeDocumentParent(this, null);
-                        }
-                        else
-                        {
-                            InvokeParentChanged(OperationResultEventArgs.ErrorType.InvalidArgument, "Invalid parent type.");
+                            dispatcher.BeginInvoke(() => InvokeParentChanged(OperationResultEventArgs.ErrorType.DuplicateTitle, $"The parent already has an item named {Title}"));
                             return;
                         }
-                        InvokeParentChanged(OperationResultEventArgs.ErrorType.None, null);
                     }
-                    catch (Exception e)
+                    Organizer.ChangeDocumentParent(this, root as NavigationTreeCategory);
+                    dispatcher.BeginInvoke(() =>
                     {
-                        Parent = oldParent;
-                        InvokeParentChanged(OperationResultEventArgs.ErrorType.InternalError, e.Message);
-                    }
+                        lock (SyncRoot)
+                            Parent = root;
+                        InvokeParentChanged(OperationResultEventArgs.ErrorType.None, null);
+                    });
+                }
+                catch (Exception e)
+                {
+                    dispatcher.BeginInvoke(() =>
+                    {
+                        lock (SyncRoot)
+                            if (oldParent != null && oldParent != Parent)
+                                Parent = oldParent;
+                        InvokeParentChanged(OperationResultEventArgs.ErrorType.InternalError, e.ToString());
+                    });
                 }
             });
         }
@@ -72,17 +75,27 @@ namespace DMOrganizerModel.Implementation.NavigationTree
         public Task LoadDocument()
         {
             CheckDisposed();
+
+            Dispatcher dispatcher = Dispatcher.CurrentDispatcher;
+
             return Task.Run(() =>
             {
                 Document? doc = null;
                 try
                 {
-                    doc = GetDocument();
-                    InvokeDocumentLoaded(OperationResultEventArgs.ErrorType.None, doc, null);
+                    lock (SyncRoot)
+                    {
+                        if (m_DocumentInstance == null)
+                            doc = m_DocumentInstance = GetDocument();
+                        else
+                            doc = m_DocumentInstance;
+                    }
+                    dispatcher.BeginInvoke(() => InvokeDocumentLoaded(OperationResultEventArgs.ErrorType.None, doc, null));
                 }
                 catch (Exception e)
                 {
-                    InvokeDocumentLoaded(OperationResultEventArgs.ErrorType.InvalidArgument, doc, e.Message);
+                    doc?.Dispose();
+                    dispatcher.BeginInvoke(() => InvokeDocumentLoaded(OperationResultEventArgs.ErrorType.InvalidArgument, doc, e.ToString()));
                 }
             });
         }
@@ -103,33 +116,45 @@ namespace DMOrganizerModel.Implementation.NavigationTree
             if (name == null)
                 throw new ArgumentNullException(nameof(name));
 
+            Dispatcher dispatcher = Dispatcher.CurrentDispatcher;
+
             return Task.Run(() =>
             {
                 if (!StorageModel.IsValidTitle(name))
                 {
-                    InvokeRenamed(OperationResultEventArgs.ErrorType.InvalidArgument, $"The following title is not valid: {name}");
+                    dispatcher.BeginInvoke(() => InvokeRenamed(OperationResultEventArgs.ErrorType.InvalidArgument, $"The following title is not valid: {name}"));
                     return;
-                }
-
-                lock (SyncRoot)
-                {
-                    string oldTitle = Title;
-                    try
+                }   
+                
+                string oldTitle = null;
+                try
+                {        
+                    lock (SyncRoot)
                     {
                         if (Parent.GetItem(name) != null)
                         {
-                            InvokeRenamed(OperationResultEventArgs.ErrorType.DuplicateTitle, "An item with the same title is already present.");
+                            dispatcher.BeginInvoke(() => InvokeRenamed(OperationResultEventArgs.ErrorType.DuplicateTitle, "An item with the same title is already present."));
                             return;
                         }
-                        Title = name;
-                        Organizer.ChangeDocumentTitle(this, name);
-                        InvokeRenamed(OperationResultEventArgs.ErrorType.None, null);
+                        oldTitle = Title;
                     }
-                    catch (Exception e)
+                    Organizer.ChangeDocumentTitle(this, name);
+                    dispatcher.BeginInvoke(() =>
                     {
-                        Title = oldTitle;
-                        InvokeRenamed(OperationResultEventArgs.ErrorType.InternalError, e.Message);
-                    }
+                        lock (SyncRoot)
+                            Title = name;
+                        InvokeRenamed(OperationResultEventArgs.ErrorType.None, null);
+                    });
+                }
+                catch (Exception e)
+                {
+                    dispatcher.BeginInvoke(() =>
+                    {
+                        lock (SyncRoot)
+                            if (oldTitle != null && oldTitle != Title)
+                                Title = oldTitle;
+                        InvokeRenamed(OperationResultEventArgs.ErrorType.InternalError, e.ToString());
+                    });
                 }
             });
         }
@@ -138,7 +163,21 @@ namespace DMOrganizerModel.Implementation.NavigationTree
         #region Methods
         public Document GetDocument()
         {
-            return Organizer.LoadDocument(this);
+            Document doc = Organizer.LoadDocument(this);
+            doc.PropertyChanged += Doc_PropertyChanged;
+            return doc;
+        }
+
+        #endregion
+
+        #region EventHandlers
+        private void Doc_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            lock (SyncRoot)
+            {
+                if (sender == m_DocumentInstance && e.PropertyName == nameof(Title))
+                    Title = m_DocumentInstance.Title;
+            }
         }
         #endregion
     }

@@ -17,10 +17,19 @@ namespace DMOrganizerModel.Implementation.Content
     internal abstract class SectionBase : ItemBase, ISection
     {
         #region Properties
-        public string Content { get; protected set; }
+        private string m_Content;
+        public string Content
+        {
+            get => m_Content;
+            protected set
+            {
+                m_Content = value ?? throw new ArgumentNullException(nameof(Content));
+                InvokePropertyChanged(nameof(Content));
+            }
+        }
 
         private ObservableList<ISection>? m_Children;
-        protected ObservableList<ISection> Children
+        public ObservableList<ISection> Children
         {
             get
             {
@@ -51,7 +60,7 @@ namespace DMOrganizerModel.Implementation.Content
         #region Constructors
         public SectionBase(OrganizerModel organizer, string title, string content, int itemID) : base(organizer, title, itemID)
         {
-            Content = content ?? throw new ArgumentNullException(nameof(title));
+            m_Content = content ?? throw new ArgumentNullException(nameof(title));
             m_Children = new ObservableList<ISection>();
             m_Sections = new Dictionary<string, Section>();
         }
@@ -95,7 +104,7 @@ namespace DMOrganizerModel.Implementation.Content
                     catch (Exception e)
                     {
                         Content = oldContent;
-                        InvokeContentUpdated(OperationResultEventArgs.ErrorType.InternalError, e.Message);
+                        InvokeContentUpdated(OperationResultEventArgs.ErrorType.InternalError, e.ToString());
                     }
                 }
             }); 
@@ -136,7 +145,7 @@ namespace DMOrganizerModel.Implementation.Content
                     catch (Exception e)
                     {
                         sec?.Dispose();
-                        InvokeSectionCreated(OperationResultEventArgs.ErrorType.InternalError, e.Message, title, null);
+                        InvokeSectionCreated(OperationResultEventArgs.ErrorType.InternalError, e.ToString(), title, null);
                     }
                 }
             });
@@ -175,7 +184,7 @@ namespace DMOrganizerModel.Implementation.Content
                     }
                     catch (Exception e)
                     {
-                        InvokeSectionDeleted(section.Title, OperationResultEventArgs.ErrorType.InternalError, e.Message);
+                        InvokeSectionDeleted(section.Title, OperationResultEventArgs.ErrorType.InternalError, e.ToString());
                     }
                 }
             });

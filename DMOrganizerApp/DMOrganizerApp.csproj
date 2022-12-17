@@ -8,6 +8,22 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\CollapsedCategoryIcon.png" />
+    <None Remove="Resources\DocumentIcon.png" />
+    <None Remove="Resources\ExpandedCategoryIcon.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\.editorconfig" Link=".editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\CollapsedCategoryIcon.png" />
+    <Resource Include="Resources\DocumentIcon.png" />
+    <Resource Include="Resources\ExpandedCategoryIcon.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="System.Data.SQLite" Version="1.0.117" />
   </ItemGroup>
 

@@ -4,9 +4,122 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:DMOrganizerApp.Views"
+             xmlns:navTree="clr-namespace:DMOrganizerModel.Interface.NavigationTree;assembly=DMOrganizerModel"
+             xmlns:core="clr-namespace:System;assembly=mscorlib"
+             xmlns:viewModels="clr-namespace:DMOrganizerApp.ViewModels"
+             xmlns:views="clr-namespace:DMOrganizerApp.Views"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
-    <Grid Background="Blue">
-        <TextBlock FontSize="50" TextAlignment="Center" VerticalAlignment="Center">Organizer</TextBlock>
+             d:DesignHeight="450" d:DesignWidth="800" Loaded="UserControl_Loaded" MinWidth="403">
+    <UserControl.Resources>
+        <core:Double x:Key="FontSize">20</core:Double>
+        <core:Double x:Key="NavTreeIconHeight">40</core:Double>
+        <core:Double x:Key="IconHeight">40</core:Double>
+    </UserControl.Resources>
+    <Grid Background="{Binding ApplicationBackground, Source={StaticResource ActiveColorScheme}}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" MinWidth="200"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="3*" MinWidth="200" />
+        </Grid.ColumnDefinitions>
+        <TreeView x:Name="NavigationTree" ItemContainerStyle="{StaticResource TreeViewWideItemStyle}" ItemsSource="{Binding NavigationTreeRoot.Children}" Margin="10" Background="{Binding ElementBackground, Source={StaticResource ActiveColorScheme}}">
+            <TreeView.Resources>
+                <HierarchicalDataTemplate x:Key="CategoryTemplate" DataType="{x:Type navTree:INavigationTreeCategory}" ItemsSource="{Binding Children}">
+                    <StackPanel Orientation="Horizontal">
+                        <Image Height="{StaticResource NavTreeIconHeight}" VerticalAlignment="Center" HorizontalAlignment="Right">
+                            <Image.Style>
+                                <Style TargetType="Image">
+                                    <Setter Property="Source" Value="{StaticResource CollapsedCategoryIcon}"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsExpanded, RelativeSource={RelativeSource AncestorType=TreeViewItem}, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                                            <Setter Property="Source" Value="{StaticResource ExpandedCategoryIcon}" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Image.Style>
+                        </Image>
+                        <TextBlock VerticalAlignment="Center" Foreground="{Binding OrdinaryText, Source={StaticResource ActiveColorScheme}}" HorizontalAlignment="Right" FontSize="{StaticResource FontSize}" Text="{Binding Title}"/>
+                        <StackPanel.ContextMenu>
+                            <ContextMenu Opened="CategoryContextMenu_Opened">
+                                <MenuItem Header="Create" Foreground="{Binding OrdinaryText, Source={StaticResource ActiveColorScheme}}">
+                                    <MenuItem Header="Category" Foreground="{Binding OrdinaryText, Source={StaticResource ActiveColorScheme}}" Click="CategoryCreateCategory_Click">
+                                        <MenuItem.Icon>
+                                            <Image Height="{StaticResource IconHeight}" Source="{StaticResource CollapsedCategoryIcon}"/>
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+                                    <MenuItem Header="Document" Foreground="{Binding OrdinaryText, Source={StaticResource ActiveColorScheme}}" Click="CategoryCreateDocument_Click">
+                                        <MenuItem.Icon>
+                                            <Image Height="{StaticResource IconHeight}" Source="{StaticResource DocumentIcon}"/>
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+                                </MenuItem>
+                                <MenuItem Header="Rename" Foreground="{Binding OrdinaryText, Source={StaticResource ActiveColorScheme}}" Click="CategoryRename_Click"/>
+                                <MenuItem Header="Delete" Foreground="{Binding OrdinaryText, Source={StaticResource ActiveColorScheme}}" Click="CategoryDelete_Click"/>
+                            </ContextMenu>
+                        </StackPanel.ContextMenu>
+                    </StackPanel>
+                </HierarchicalDataTemplate>
+                <DataTemplate x:Key="DocumentTemplate" DataType="{x:Type navTree:INavigationTreeDocument}">
+                    <StackPanel Orientation="Horizontal">
+                        <Image Height="{StaticResource NavTreeIconHeight}" VerticalAlignment="Center" HorizontalAlignment="Right" Source="{StaticResource DocumentIcon}" />
+                        <TextBlock Foreground="{Binding OrdinaryText, Source={StaticResource ActiveColorScheme}}" VerticalAlignment="Center" HorizontalAlignment="Right" FontSize="{StaticResource FontSize}" Text="{Binding Title}"/>
+                        <StackPanel.ContextMenu>
+                            <ContextMenu Opened="DocumentContextMenu_Opened">
+                                <MenuItem Header="Open" Foreground="{Binding OrdinaryText, Source={StaticResource ActiveColorScheme}}" Click="DocumentOpen_Click"/>
+                                <MenuItem Header="Rename" Foreground="{Binding OrdinaryText, Source={StaticResource ActiveColorScheme}}" Click="DocumentRename_Click"/>
+                                <MenuItem Header="Delete" Foreground="{Binding OrdinaryText, Source={StaticResource ActiveColorScheme}}" Click="DocumentDelete_Click"/>
+                            </ContextMenu>
+                        </StackPanel.ContextMenu>
+                    </StackPanel>
+                </DataTemplate>
+                <DataTemplate x:Key="FallbackTemplate">
+                    <TextBlock Foreground="{Binding OrdinaryText, Source={StaticResource ActiveColorScheme}}" Text="{Binding RelativeSource={RelativeSource Self}}" />
+                </DataTemplate>
+            </TreeView.Resources>
+            <TreeView.Style>
+                <Style TargetType="TreeView">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding NavigationTreeRoot}" Value="{x:Null}">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </TreeView.Style>
+            <TreeView.ContextMenu>
+                <ContextMenu Opened="NavigationTreeContextMenu_Opened">
+                    <MenuItem Header="Create" Foreground="{Binding OrdinaryText, Source={StaticResource ActiveColorScheme}}">
+                        <MenuItem Header="Category" Foreground="{Binding OrdinaryText, Source={StaticResource ActiveColorScheme}}" Click="NavTreeCreateCategory_Click">
+                            <MenuItem.Icon>
+                                <Image Height="{StaticResource IconHeight}" Source="{StaticResource CollapsedCategoryIcon}"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="Document" Foreground="{Binding OrdinaryText, Source={StaticResource ActiveColorScheme}}" Click="NavTreeCreateDocument_Click">
+                            <MenuItem.Icon>
+                                <Image Height="{StaticResource IconHeight}" Source="{StaticResource DocumentIcon}"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                    </MenuItem>
+                </ContextMenu>
+            </TreeView.ContextMenu>
+        </TreeView>
+        <TextBlock Foreground="{Binding OrdinaryText, Source={StaticResource ActiveColorScheme}}" Text="Loading" TextAlignment="Center" VerticalAlignment="Center" FontSize="25">
+            <TextBlock.Style>
+                <Style TargetType="TextBlock">
+                    <Setter Property="Visibility" Value="Collapsed" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding NavigationTreeRoot}" Value="{x:Null}">
+                            <Setter Property="Visibility" Value="Visible" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBlock.Style>
+        </TextBlock>
+        <GridSplitter Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Stretch" Background="Black" ShowsPreview="True" Width="3"/>
+        <ContentControl Grid.Column="2" Margin="10" Background="Transparent" Content="{Binding ActiveViewModel}">
+            <ContentControl.Resources>
+                <DataTemplate DataType="{x:Type viewModels:DocumentViewModel}">
+                    <views:DocumentView/>
+                </DataTemplate>
+            </ContentControl.Resources>
+        </ContentControl>
     </Grid>
 </UserControl>

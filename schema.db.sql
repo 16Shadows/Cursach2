@@ -8,16 +8,16 @@ CREATE TABLE IF NOT EXISTS "Category" (
 	"ID"	INTEGER NOT NULL UNIQUE,
 	"Title"	TEXT NOT NULL DEFAULT 'Category' CHECK(length("Title") > 0) COLLATE NOCASE,
 	"Parent"	INTEGER DEFAULT NULL CHECK("Parent" != "ID"),
+	PRIMARY KEY("ID" AUTOINCREMENT),
 	UNIQUE("Parent","Title"),
-	FOREIGN KEY("Parent") REFERENCES "Category"("ID") ON DELETE CASCADE ON UPDATE CASCADE,
-	PRIMARY KEY("ID" AUTOINCREMENT)
+	FOREIGN KEY("Parent") REFERENCES "Category"("ID") ON DELETE CASCADE ON UPDATE CASCADE
 );
 CREATE TABLE IF NOT EXISTS "Document" (
 	"CategoryID"	INTEGER,
 	"SectionID"	INTEGER NOT NULL UNIQUE,
-	FOREIGN KEY("SectionID") REFERENCES "Section"("ID") ON UPDATE CASCADE ON DELETE CASCADE,
+	PRIMARY KEY("SectionID"),
 	FOREIGN KEY("CategoryID") REFERENCES "Category"("ID") ON UPDATE CASCADE ON DELETE CASCADE,
-	PRIMARY KEY("SectionID")
+	FOREIGN KEY("SectionID") REFERENCES "Section"("ID") ON UPDATE CASCADE ON DELETE CASCADE
 );
 CREATE TABLE IF NOT EXISTS "Section" (
 	"ID"	INTEGER NOT NULL UNIQUE,
@@ -25,18 +25,18 @@ CREATE TABLE IF NOT EXISTS "Section" (
 	"Content"	TEXT NOT NULL DEFAULT '',
 	"Parent"	INTEGER CHECK("ID" != "Parent"),
 	"OrderIndex"	INTEGER NOT NULL DEFAULT 0,
-	UNIQUE("Parent","Title"),
+	PRIMARY KEY("ID" AUTOINCREMENT),
 	UNIQUE("Parent","OrderIndex"),
-	FOREIGN KEY("Parent") REFERENCES "Section"("ID") ON UPDATE CASCADE ON DELETE CASCADE,
-	PRIMARY KEY("ID" AUTOINCREMENT)
+	UNIQUE("Parent","Title"),
+	FOREIGN KEY("Parent") REFERENCES "Section"("ID") ON UPDATE CASCADE ON DELETE CASCADE
 );
 CREATE TABLE IF NOT EXISTS "DocumentsTags" (
 	"DocumentID"	INTEGER NOT NULL,
 	"TagID"	INTEGER NOT NULL,
+	PRIMARY KEY("DocumentID","TagID"),
 	UNIQUE("DocumentID","TagID"),
-	FOREIGN KEY("TagID") REFERENCES "Tag"("ID") ON DELETE CASCADE ON UPDATE CASCADE,
 	FOREIGN KEY("DocumentID") REFERENCES "Document"("SectionID") ON DELETE CASCADE ON UPDATE CASCADE,
-	PRIMARY KEY("DocumentID","TagID")
+	FOREIGN KEY("TagID") REFERENCES "Tag"("ID") ON DELETE CASCADE ON UPDATE CASCADE
 );
 CREATE TRIGGER propagate_document_deletion AFTER DELETE ON Document
 BEGIN
@@ -46,5 +46,35 @@ CREATE TRIGGER tags_cleaner AFTER DELETE ON DocumentsTags
 WHEN NOT EXISTS (SELECT * FROM DocumentsTags WHERE TagID=OLD.TagID)
 BEGIN
 	DELETE FROM Tag WHERE ID=OLD.TagID;
+END;
+CREATE TRIGGER document_create_title_duplication_guard BEFORE INSERT ON Document
+WHEN EXISTS (
+	SELECT *
+	FROM (Document INNER JOIN Section ON Document.SectionID=Section.ID)
+	WHERE Document.CategoryID=NEW.CategoryID AND Section.Title IN
+		(SELECT Title FROM Section WHERE Section.ID=NEW.SectionID)
+)
+BEGIN
+	SELECT RAISE(ABORT, 'Duplicate title in category');
+END;
+CREATE TRIGGER document_move_title_duplication_guard BEFORE UPDATE ON Document
+WHEN EXISTS (
+	SELECT *
+	FROM (Document INNER JOIN Section ON Document.SectionID=Section.ID)
+	WHERE Document.CategoryID=NEW.CategoryID AND Section.Title IN
+		(SELECT Title FROM Section WHERE Section.ID=NEW.SectionID)
+)
+BEGIN
+	SELECT RAISE(ABORT, 'Duplicate title in category');
+END;
+CREATE TRIGGER document_rename_title_duplication_guard BEFORE UPDATE ON Section
+WHEN NEW.Parent IS NULL AND EXISTS (
+	SELECT *
+	FROM (Document INNER JOIN Section ON Document.SectionID=Section.ID)
+	WHERE NEW.Title=Section.Title AND Document.CategoryID IN
+		(SELECT CategoryID FROM Document WHERE Document.SectionID=NEW.ID)
+)
+BEGIN
+	SELECT RAISE(ABORT, 'Duplicate title in category');
 END;
 COMMIT;

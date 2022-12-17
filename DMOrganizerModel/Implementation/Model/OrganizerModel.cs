@@ -11,6 +11,7 @@ using DMOrganizerModel.Interface.NavigationTree;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Windows.Media.Animation;
 
 namespace DMOrganizerModel.Implementation.Model
 {
@@ -20,7 +21,7 @@ namespace DMOrganizerModel.Implementation.Model
         {
             public override int Compare(string param1, string param2)
             {
-                return string.Compare(param1, param2);
+                return string.Compare(param1, param2, true);
             }
         }
 
@@ -144,10 +145,21 @@ namespace DMOrganizerModel.Implementation.Model
 	                    SELECT *
 	                    FROM (Document INNER JOIN Section ON Document.SectionID=Section.ID)
 	                    WHERE NEW.Title=Section.Title AND Document.CategoryID IN
-		                    (SELECT CategoryID FROM Document WHERE Document.SectionID=NEW.ID)
+		                    (SELECT CategoryID FROM Document WHERE Document.SectionID=NEW.ID AND Document.SectionID<>NEW.ID)
                     )
                     BEGIN
 	                    SELECT RAISE(ABORT, 'Duplicate title in category');
+                    END;
+                    CREATE TRIGGER IF NOT EXISTS category_insert_root_title_duplication_guard BEFORE INSERT ON Category
+                    WHEN NEW.Parent IS NULL AND EXISTS (SELECT * FROM Category WHERE Parent IS NULL AND Title=NEW.Title)
+                    BEGIN
+	                    SELECT RAISE(ABORT, 'Duplicate title');
+                    END;
+
+                    CREATE TRIGGER IF NOT EXISTS category_update_root_title_duplication_guard BEFORE UPDATE ON Category
+                    WHEN NEW.Parent IS NULL AND EXISTS (SELECT * FROM Category WHERE Parent IS NULL AND Title=NEW.Title AND ID<>NEW.ID)
+                    BEGIN
+	                    SELECT RAISE(ABORT, 'Duplicate title');
                     END;
                     COMMIT;";
 
@@ -279,7 +291,7 @@ namespace DMOrganizerModel.Implementation.Model
                     }
                     catch(Exception e)
                     {
-                        InvokeReferenceDecodedEvent(reference, null, OperationResultEventArgs.ErrorType.InternalError, e.Message);
+                        InvokeReferenceDecodedEvent(reference, null, OperationResultEventArgs.ErrorType.InternalError, e.ToString());
                     }
                 }
             });
@@ -364,13 +376,12 @@ namespace DMOrganizerModel.Implementation.Model
                 {
                     lock (m_SyncRoot)
                     {
-                        if (NavigationTree != null)
-                            InvokeNavigationTreeReceived(OperationResultEventArgs.ErrorType.InternalError, NavigationTree ?? LoadNavigationTree(), null);
+                        InvokeNavigationTreeReceived(OperationResultEventArgs.ErrorType.None, NavigationTree ?? LoadNavigationTree(), null);
                     }
                 }
                 catch (Exception e)
                 {
-                    InvokeNavigationTreeReceived(OperationResultEventArgs.ErrorType.InternalError, null, e.Message);
+                    InvokeNavigationTreeReceived(OperationResultEventArgs.ErrorType.InternalError, null, e.ToString());
                 }
             });
         }
@@ -379,7 +390,7 @@ namespace DMOrganizerModel.Implementation.Model
         {
             NavigationTreeReceived?.Invoke(this, new NavigationTreeReceivedEventArgs()
             {
-                Error = OperationResultEventArgs.ErrorType.InternalError,
+                Error = errorType,
                 ErrorText = message,
                 NavigationTree = root
             });
@@ -486,7 +497,7 @@ namespace DMOrganizerModel.Implementation.Model
                     //Load file at root
                     using (var command = m_Connection.CreateCommand())
                     {
-                        command.CommandText = $"SELECT ID FROM Document WHERE Document.CategoryID={id}";
+                        command.CommandText = $"SELECT SectionID FROM Document WHERE Document.CategoryID={id}";
                         using (var reader = command.ExecuteReader())
                         {
                             while (reader.Read())
@@ -498,7 +509,7 @@ namespace DMOrganizerModel.Implementation.Model
             catch (Exception e)
             {
                 category?.Dispose();
-                throw new Exception("Navigation tree loading failed due to underlying exception", e);
+                throw new Exception("Category node loading failed due to underlying exception", e);
             }
 
             return category;
@@ -565,7 +576,7 @@ namespace DMOrganizerModel.Implementation.Model
                     }
                     using (var command = m_Connection.CreateCommand())
                     {
-                        command.CommandText = $"SELECT ID FROM Section WHERE Parent={treeNode.ItemID}";
+                        command.CommandText = $"SELECT ID FROM Section WHERE Parent={treeNode.ItemID} ORDER BY OrderIndex";
                         using (var reader = command.ExecuteReader())
                         {
                             while (reader.Read())
@@ -604,7 +615,7 @@ namespace DMOrganizerModel.Implementation.Model
                     }
                     using (var command = m_Connection.CreateCommand())
                     {
-                        command.CommandText = $"SELECT ID FROM Section WHERE Parent={id}";
+                        command.CommandText = $"SELECT ID FROM Section WHERE Parent={id} ORDER BY OrderIndex";
                         using (var reader = command.ExecuteReader())
                         {
                             while (reader.Read())
@@ -621,7 +632,7 @@ namespace DMOrganizerModel.Implementation.Model
             }
         }
 
-        public void ChangeDocumentParent(NavigationTreeDocument doc, int? newID)
+        public void ChangeDocumentParent(NavigationTreeDocument doc, NavigationTreeRoot newParent)
         {
             CheckDisposed();
 
@@ -629,11 +640,11 @@ namespace DMOrganizerModel.Implementation.Model
             {
                 try
                 {
-                    if (newID.HasValue)
+                    if (newParent is NavigationTreeCategory category)
                     {
                         using (var command = m_Connection.CreateCommand())
                         {
-                            command.CommandText = $"UPDATE Document SET CategoryID = {newID.Value} WHERE ID={doc.ItemID}";
+                            command.CommandText = $"UPDATE Document SET CategoryID = {category.ItemID} WHERE ID={doc.ItemID}";
                             if (command.ExecuteNonQuery() == 0)
                                 throw new ArgumentException("Invalid document id", nameof(doc));
                         }
@@ -642,7 +653,7 @@ namespace DMOrganizerModel.Implementation.Model
                     {
                         using (var command = m_Connection.CreateCommand())
                         {
-                            command.CommandText = $"UPDATE Document SET CategoryID = NULL WHERE ID={doc.ItemID}";
+                            command.CommandText = $"UPDATE Document SET CategoryID=NULL WHERE ID={doc.ItemID}";
                             if (command.ExecuteNonQuery() == 0)
                                 throw new ArgumentException("Invalid document id", nameof(doc));
                         }
@@ -849,7 +860,7 @@ namespace DMOrganizerModel.Implementation.Model
             }
         }
 
-        public void ChangeCategoryParent(NavigationTreeCategory cat, int? newID)
+        public void ChangeCategoryParent(NavigationTreeCategory cat, NavigationTreeRoot newParent)
         {
             CheckDisposed();
 
@@ -857,11 +868,11 @@ namespace DMOrganizerModel.Implementation.Model
             {
                 try
                 {
-                    if (newID.HasValue)
+                    if (newParent is NavigationTreeCategory category)
                     {
                         using (var command = m_Connection.CreateCommand())
                         {
-                            command.CommandText = $"UPDATE Category SET Parent = {newID.Value} WHERE ID={cat.ItemID}";
+                            command.CommandText = $"UPDATE Category SET Parent = {category.ItemID} WHERE ID={cat.ItemID}";
                             if (command.ExecuteNonQuery() == 0)
                                 throw new ArgumentException("Invalid category id", nameof(cat));
                         }
@@ -896,7 +907,7 @@ namespace DMOrganizerModel.Implementation.Model
                 {
                     using (var command = m_Connection.CreateCommand())
                     {
-                        command.CommandText = $"UPDATE Category Set Title=$title WHERE ID={cat.ItemID}";
+                        command.CommandText = $"UPDATE Category SET Title=$title WHERE ID={cat.ItemID}";
                         command.Parameters.AddWithValue("$title", title);
                         if (command.ExecuteNonQuery() == 0)
                             throw new ArgumentException("Invalid category ID", nameof(cat));

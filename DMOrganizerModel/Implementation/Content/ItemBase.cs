@@ -12,7 +12,16 @@ namespace DMOrganizerModel.Implementation.Content
     internal abstract class ItemBase : OrganizerEntryBase, IItem
     {
         #region Properties
-        public string Title { get; protected set; }
+        private string m_Title;
+        public string Title
+        {
+            get => m_Title;
+            protected set
+            {
+                m_Title = value ?? throw new ArgumentNullException(nameof(Title));
+                InvokePropertyChanged(nameof(Title));
+            }
+        }
         public int ItemID { get; }
         #endregion
 
@@ -23,7 +32,7 @@ namespace DMOrganizerModel.Implementation.Content
         #region Constructors
         public ItemBase(OrganizerModel organizer, string title, int itemID) : base(organizer)
         {
-            Title = title ?? throw new ArgumentNullException(nameof(title));
+            m_Title = title ?? throw new ArgumentNullException(nameof(title));
             ItemID = itemID;
         }
         #endregion

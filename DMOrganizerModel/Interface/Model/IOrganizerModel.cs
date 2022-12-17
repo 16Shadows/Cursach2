@@ -58,7 +58,6 @@ namespace DMOrganizerModel.Interface.Model
         /// <summary>
         /// Get the root of this model's navigation tree (which is a dummy node)
         /// </summary>
-        /// <returns>True if the request has been successfully queued, false otherwise</returns>
         Task GetNavigationTree();
         /// <summary>
         /// Is called when the navigation tree has been received

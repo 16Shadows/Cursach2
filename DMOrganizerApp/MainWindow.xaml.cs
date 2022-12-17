@@ -16,6 +16,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 using DMOrganizerApp.ViewModels;
+using DMOrganizerModel.Implementation.Model;
 
 namespace DMOrganizerApp
 {
@@ -24,11 +25,20 @@ namespace DMOrganizerApp
     /// </summary>
     public partial class MainWindow : Window
     {
+        protected IOrganizerModel m_Organizer;
+
         public MainWindow()
         {
             InitializeComponent();
 
-            DataContext = new ViewModelHost(new OrganizerViewModel());
+            m_Organizer = StorageModel.LoadOrganizer("test.dmo");
+
+            DataContext = new ViewModelHost(new OrganizerViewModel(m_Organizer));
+        }
+
+        ~MainWindow()
+        {
+            StorageModel.UnloadOrganizer(m_Organizer);
         }
     }
 }
