@@ -27,6 +27,8 @@ namespace DMOrganizerApp.Views
             get => m_InputText;
             set
             {
+                if (m_InputText == value)
+                    return;
                 m_InputText = value ?? "";
                 InvokePropertyChanged(nameof(InputText));
             }
@@ -38,6 +40,8 @@ namespace DMOrganizerApp.Views
             get => m_InputPrompt;
             set
             {
+                if (m_InputPrompt == value)
+                    return;
                 m_InputPrompt = value ?? "Input:";
                 InvokePropertyChanged(nameof(InputPrompt));
             }
@@ -50,8 +54,12 @@ namespace DMOrganizerApp.Views
             get => m_AllowMultiline;
             init
             {
+                if (m_AllowMultiline == value)
+                    return;
                 m_AllowMultiline = value;
                 TextBoxWrapping = value ? TextWrapping.Wrap : TextWrapping.NoWrap;
+                InvokePropertyChanged(nameof(AllowMultiline));
+                InvokePropertyChanged(nameof(TextBoxWrapping));
             }
         }
 
@@ -73,6 +81,8 @@ namespace DMOrganizerApp.Views
             m_InputText = "";
             m_InputPrompt = inputPrompt ?? "Input:";
             m_InputValidator = inputValidator ?? ((string x) => true);
+            if (Owner == null)
+                Owner = Application.Current.MainWindow;
 
             InitializeComponent();
         }

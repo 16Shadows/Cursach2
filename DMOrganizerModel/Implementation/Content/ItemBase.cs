@@ -15,9 +15,16 @@ namespace DMOrganizerModel.Implementation.Content
         private string m_Title;
         public string Title
         {
-            get => m_Title;
+            get
+            {
+                CheckDisposed();
+                return m_Title;
+            }
             protected set
             {
+                CheckDisposed();
+                if (m_Title == value)
+                    return;
                 m_Title = value ?? throw new ArgumentNullException(nameof(Title));
                 InvokePropertyChanged(nameof(Title));
             }
@@ -47,6 +54,19 @@ namespace DMOrganizerModel.Implementation.Content
                 Error = errorType,
                 ErrorText = errorText
             });
+        }
+
+        public override void Dispose()
+        {
+            base.Dispose();
+            m_Title = null;
+        }
+
+        protected override void CheckDisposed()
+        {
+            base.CheckDisposed();
+            if (m_Title == null)
+                throw new ObjectDisposedException(GetType().Name);
         }
         #endregion
 

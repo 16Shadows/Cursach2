@@ -70,10 +70,7 @@ namespace DMOrganizerApp.Views
 
         private void NavTreeCreateCategory_Click(object sender, RoutedEventArgs e)
         {
-            InputDialogView inputDialog = new InputDialogView("New category name:", StorageModel.IsValidTitle)
-            {
-                Owner = Application.Current.MainWindow
-            };
+            InputDialogView inputDialog = new InputDialogView("New category name:", StorageModel.IsValidTitle);
             if (inputDialog.ShowDialog() == true)
             {
                 OrganizerViewModel viewModel = (OrganizerViewModel)DataContext;
@@ -83,10 +80,7 @@ namespace DMOrganizerApp.Views
 
         private void NavTreeCreateDocument_Click(object sender, RoutedEventArgs e)
         {
-            InputDialogView inputDialog = new InputDialogView("New category name:", StorageModel.IsValidTitle)
-            {
-                Owner = Application.Current.MainWindow
-            };
+            InputDialogView inputDialog = new InputDialogView("New category name:", StorageModel.IsValidTitle);
             if (inputDialog.ShowDialog() == true)
             {
                 OrganizerViewModel viewModel = (OrganizerViewModel)DataContext;
@@ -99,10 +93,7 @@ namespace DMOrganizerApp.Views
             MenuItem menuItem = (MenuItem)sender;
             ContextMenu menu = menuItem?.GetParent<ContextMenu>();
             INavigationTreeCategory category = (INavigationTreeCategory)menu.PlacementTarget?.GetVisualParent<TreeViewItem>()?.DataContext;
-            InputDialogView inputDialog = new InputDialogView("New category name:", StorageModel.IsValidTitle)
-            {
-                Owner = Application.Current.MainWindow
-            };
+            InputDialogView inputDialog = new InputDialogView("New category name:", StorageModel.IsValidTitle);
             if (inputDialog.ShowDialog() == true)
             {
                 OrganizerViewModel viewModel = (OrganizerViewModel)DataContext;
@@ -115,10 +106,7 @@ namespace DMOrganizerApp.Views
             MenuItem menuItem = (MenuItem)sender;
             ContextMenu menu = menuItem?.GetParent<ContextMenu>();
             INavigationTreeCategory category = (INavigationTreeCategory)menu.PlacementTarget?.GetVisualParent<TreeViewItem>()?.DataContext;
-            InputDialogView inputDialog = new InputDialogView("New document name:", StorageModel.IsValidTitle)
-            {
-                Owner = Application.Current.MainWindow
-            };
+            InputDialogView inputDialog = new InputDialogView("New document name:", StorageModel.IsValidTitle);
             if (inputDialog.ShowDialog() == true)
             {
                 OrganizerViewModel viewModel = (OrganizerViewModel)DataContext;
@@ -142,7 +130,6 @@ namespace DMOrganizerApp.Views
             INavigationTreeCategory category = (INavigationTreeCategory)menu.PlacementTarget?.GetVisualParent<TreeViewItem>()?.DataContext;
             InputDialogView inputDialog = new InputDialogView("New category name:", StorageModel.IsValidTitle)
             {
-                Owner = Application.Current.MainWindow,
                 InputText = category.Title
             };
             if (inputDialog.ShowDialog() == true)
@@ -159,7 +146,6 @@ namespace DMOrganizerApp.Views
             INavigationTreeDocument document = (INavigationTreeDocument)menu.PlacementTarget?.GetVisualParent<TreeViewItem>()?.DataContext;
             InputDialogView inputDialog = new InputDialogView("New category name:", StorageModel.IsValidTitle)
             {
-                Owner = Application.Current.MainWindow,
                 InputText = document.Title
             };
             if (inputDialog.ShowDialog() == true)

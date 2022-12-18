@@ -10,21 +10,11 @@ namespace DMOrganizerModel.Implementation.Content
     {
         #region Properties
         public int OrderIndex { get; }
-        private readonly SectionBase m_Parent;
-        public SectionBase Parent
-        {
-            get
-            {
-                CheckDisposed();
-                return m_Parent;
-            }
-        }
         #endregion
 
         #region Constructors
-        public Section(OrganizerModel organizer, SectionBase parent, string title, string content, int orderIndex, int itemID) : base(organizer, title, content, itemID)
+        public Section(OrganizerModel organizer, SectionBase parent, string title, string content, int orderIndex, int itemID) : base(organizer, parent, title, content, itemID)
         {
-            m_Parent = parent ?? throw new ArgumentNullException(nameof(parent));
             OrderIndex = orderIndex;
         }
         #endregion
@@ -32,7 +22,8 @@ namespace DMOrganizerModel.Implementation.Content
         #region Methods
         public override StringBuilder GetPath(int len = 0)
         {
-            return m_Parent.GetPath(len + Title.Length + 1).Append('#').Append(Title);
+            CheckDisposed();
+            return Parent.GetPath(len + Title.Length + 1).Append('#').Append(Title);
         }
 
         public override Task Rename(string name)
@@ -56,7 +47,7 @@ namespace DMOrganizerModel.Implementation.Content
                     {
                         if (Parent.GetSection(name) != null)
                         {
-                            InvokeRenamed(OperationResultEventArgs.ErrorType.DuplicateTitle, "A section with the same title is already present.");
+                            InvokeRenamed(OperationResultEventArgs.ErrorType.DuplicateValue, "A section with the same title is already present.");
                             return;
                         }
                         Title = name;

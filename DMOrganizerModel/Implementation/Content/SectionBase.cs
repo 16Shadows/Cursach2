@@ -6,8 +6,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media.Animation;
+using System.Windows.Threading;
 using Windows.ApplicationModel.UserActivities;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace DMOrganizerModel.Implementation.Content
 {
@@ -20,13 +21,39 @@ namespace DMOrganizerModel.Implementation.Content
         private string m_Content;
         public string Content
         {
-            get => m_Content;
+            get
+            {
+                CheckDisposed();
+                return m_Content;
+            }
             protected set
             {
+                CheckDisposed();
+                if (m_Content == value)
+                    return;
                 m_Content = value ?? throw new ArgumentNullException(nameof(Content));
                 InvokePropertyChanged(nameof(Content));
             }
         }
+
+        private SectionBase? m_Parent;
+        public SectionBase? Parent
+        {
+            get
+            {
+                CheckDisposed();
+                return m_Parent;
+            }
+            protected set
+            {
+                CheckDisposed();
+                if (m_Parent == value)
+                    return;
+                m_Parent = value;
+                InvokePropertyChanged(nameof(Parent));
+            }
+        }
+        ISection ISection.Parent => Parent;
 
         private ObservableList<ISection>? m_Children;
         public ObservableList<ISection> Children
@@ -58,11 +85,12 @@ namespace DMOrganizerModel.Implementation.Content
         #endregion
 
         #region Constructors
-        public SectionBase(OrganizerModel organizer, string title, string content, int itemID) : base(organizer, title, itemID)
+        public SectionBase(OrganizerModel organizer, SectionBase? parent, string title, string content, int itemID) : base(organizer, title, itemID)
         {
             m_Content = content ?? throw new ArgumentNullException(nameof(title));
             m_Children = new ObservableList<ISection>();
-            m_Sections = new Dictionary<string, Section>();
+            m_Sections = new Dictionary<string, Section>(new NoCaseStringComparer());
+            m_Parent = parent;
         }
         #endregion
 
@@ -83,6 +111,8 @@ namespace DMOrganizerModel.Implementation.Content
                 sec.Value.Dispose();
 
             m_Sections = null;
+            m_Content = null;
+            m_Parent = null;
         }
 
         public Task UpdateContent(string text)
@@ -91,21 +121,28 @@ namespace DMOrganizerModel.Implementation.Content
             if (text == null)
                 throw new ArgumentNullException(nameof(text));
 
+            Dispatcher dispatcher = Dispatcher.CurrentDispatcher;
+
             return Task.Run(() =>
             {
-                lock (SyncRoot)
+                string oldContent = null;
+                try
                 {
-                    string oldContent = Content;
-                    try
+                    lock (SyncRoot)
+                        oldContent = Content;
+                    Organizer.UpdateSectionContent(this, text);
+                    dispatcher.BeginInvoke(() =>
                     {
-                        Content = text;
-                        Organizer.UpdateSectionContent(this, text);
-                    }
-                    catch (Exception e)
-                    {
+                        lock (SyncRoot)
+                            Content = text;
+                        InvokeContentUpdated(OperationResultEventArgs.ErrorType.None, null);
+                    });
+                }
+                catch (Exception e)
+                {
+                    if (oldContent != null && oldContent != Content)
                         Content = oldContent;
-                        InvokeContentUpdated(OperationResultEventArgs.ErrorType.InternalError, e.ToString());
-                    }
+                    dispatcher.BeginInvoke(() => InvokeContentUpdated(OperationResultEventArgs.ErrorType.InternalError, e.ToString()));
                 }
             }); 
         }
@@ -125,28 +162,33 @@ namespace DMOrganizerModel.Implementation.Content
             if (title == null)
                 throw new ArgumentNullException(nameof(title));
 
+            Dispatcher dispatcher = Dispatcher.CurrentDispatcher;
+
             return Task.Run(() =>
             {
                 if (!StorageModel.IsValidTitle(title))
                 {
-                    InvokeSectionCreated(OperationResultEventArgs.ErrorType.InvalidArgument, "Invalid title", title, null);
+                    dispatcher.BeginInvoke(() => InvokeSectionCreated(OperationResultEventArgs.ErrorType.InvalidArgument, "Invalid title", title, null));
                     return;
                 }
-                lock (SyncRoot)
+                Section? sec = null;
+                try
                 {
-                    Section? sec = null;
-                    try
-                    {
-                        sec = Organizer.CreateSection(this, title);
+                    sec = Organizer.CreateSection(this, title);
+                    lock (SyncRoot)
                         Sections.Add(title, sec);
-                        Children.Add(sec);
-                        InvokeSectionCreated(OperationResultEventArgs.ErrorType.None, null, null, sec);
-                    }
-                    catch (Exception e)
+                    
+                    dispatcher.BeginInvoke(() =>
                     {
-                        sec?.Dispose();
-                        InvokeSectionCreated(OperationResultEventArgs.ErrorType.InternalError, e.ToString(), title, null);
-                    }
+                        lock (SyncRoot)
+                            Children.Add(sec);
+                        InvokeSectionCreated(OperationResultEventArgs.ErrorType.None, null, null, sec);
+                    });
+                }
+                catch (Exception e)
+                {
+                    sec?.Dispose();
+                    dispatcher.BeginInvoke(() => InvokeSectionCreated(OperationResultEventArgs.ErrorType.InternalError, e.ToString(), title, null));
                 }
             });
         }
@@ -171,21 +213,25 @@ namespace DMOrganizerModel.Implementation.Content
             if (section is not Section sectionInstance)
                 throw new ArgumentException("Incompatiable instance", nameof(section));
 
+            Dispatcher dispatcher = Dispatcher.CurrentDispatcher;
+
             return Task.Run(() =>
             {
-                lock (SyncRoot)
+                try
                 {
-                    try
-                    {
+                    Organizer.DeleteSection(sectionInstance);
+                    lock (SyncRoot)
                         Sections.Remove(sectionInstance.Title);
-                        Organizer.DeleteSection(sectionInstance);
-                        Children.Remove(section);
-                        sectionInstance.Dispose();
-                    }
-                    catch (Exception e)
+                    dispatcher.BeginInvoke(() =>
                     {
-                        InvokeSectionDeleted(section.Title, OperationResultEventArgs.ErrorType.InternalError, e.ToString());
-                    }
+                        lock (SyncRoot)
+                            Children.Remove(section);
+                        sectionInstance.Dispose();
+                    });
+                }
+                catch (Exception e)
+                {
+                    dispatcher.BeginInvoke(() => InvokeSectionDeleted(section.Title, OperationResultEventArgs.ErrorType.InternalError, e.ToString()));
                 }
             });
         }

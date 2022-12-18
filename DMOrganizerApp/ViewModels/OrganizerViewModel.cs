@@ -179,7 +179,7 @@ namespace DMOrganizerApp.ViewModels
         {
             if (e.Error == DMOrganizerModel.Interface.OperationResultEventArgs.ErrorType.None)
                 MessageBox.Show("Renamed!");
-            else if (e.Error == DMOrganizerModel.Interface.OperationResultEventArgs.ErrorType.DuplicateTitle)
+            else if (e.Error == DMOrganizerModel.Interface.OperationResultEventArgs.ErrorType.DuplicateValue)
                 MessageBox.Show("Duplicate title!");
             else
                 MessageBox.Show(e.ErrorText);
@@ -214,7 +214,7 @@ namespace DMOrganizerApp.ViewModels
                 e.DocumentInstance.ParentChanged += NavTreeItem_ParentChanged;
                 e.DocumentInstance.Renamed += NavTreeItem_Renamed;
             }
-            else if (e.Error == DMOrganizerModel.Interface.OperationResultEventArgs.ErrorType.DuplicateTitle)
+            else if (e.Error == DMOrganizerModel.Interface.OperationResultEventArgs.ErrorType.DuplicateValue)
                 MessageBox.Show("Duplicate title: " + e.Title);
             else
                 MessageBox.Show(e.ErrorText);
@@ -238,7 +238,7 @@ namespace DMOrganizerApp.ViewModels
                 MessageBox.Show("Created!");
                 RecursiveSubscribe(e.CategoryInstance);
             }
-            else if (e.Error == DMOrganizerModel.Interface.OperationResultEventArgs.ErrorType.DuplicateTitle)
+            else if (e.Error == DMOrganizerModel.Interface.OperationResultEventArgs.ErrorType.DuplicateValue)
                 MessageBox.Show("Duplicate title: " + e.Title);
             else
                 MessageBox.Show(e.ErrorText);

@@ -17,6 +17,9 @@ namespace DMOrganizerModel.Implementation.NavigationTree
             get => m_Title;
             private set
             {
+                CheckDisposed();
+                if (m_Title == value)
+                    return;
                 m_Title = value ?? throw new ArgumentNullException(nameof(Title));
                 InvokePropertyChanged(nameof(Title));
             }
@@ -31,6 +34,9 @@ namespace DMOrganizerModel.Implementation.NavigationTree
             }
             private set
             {
+                CheckDisposed();
+                if (m_Parent == value)
+                    return;
                 m_Parent = value ?? throw new ArgumentNullException(nameof(Parent));
                 InvokePropertyChanged(nameof(Parent));
             }
@@ -77,7 +83,7 @@ namespace DMOrganizerModel.Implementation.NavigationTree
                     {
                         if (Parent.GetItem(name) != null)
                         {
-                            dispatcher.BeginInvoke(() => InvokeRenamed(OperationResultEventArgs.ErrorType.DuplicateTitle, "A category with the same title is already present."));
+                            dispatcher.BeginInvoke(() => InvokeRenamed(OperationResultEventArgs.ErrorType.DuplicateValue, "A category with the same title is already present."));
                             return;
                         }
                         oldTitle = Title;
@@ -124,7 +130,7 @@ namespace DMOrganizerModel.Implementation.NavigationTree
                         oldParent = Parent;
                         if (root.GetItem(Title) != null)
                         {
-                            dispatcher.BeginInvoke(() => InvokeParentChanged(OperationResultEventArgs.ErrorType.DuplicateTitle, $"The parent already has an item named {Title}"));
+                            dispatcher.BeginInvoke(() => InvokeParentChanged(OperationResultEventArgs.ErrorType.DuplicateValue, $"The parent already has an item named {Title}"));
                             return;
                         }
                     }

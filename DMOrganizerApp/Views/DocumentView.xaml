@@ -34,23 +34,26 @@
                        Grid.Column="2"
                        VerticalAlignment="Center"
                        Margin="2"/>
-                <Button Content="Edit" Grid.Column="3" />
+                <Button Content="Edit" Grid.Column="3" Click="EditTitle_Click"/>
                 <Border BorderThickness="1,1,1,1" BorderBrush="Black" Grid.ColumnSpan="4" />
                 <FlowDocumentScrollViewer Document="{Binding Content, Converter={StaticResource StringToDocument}}"
                                       Grid.Row="1"
                                       Grid.Column="1"
                                       Grid.ColumnSpan="2"
                                       VerticalScrollBarVisibility="Auto"/>
-                <Button Content="Edit" Grid.Column="3" Grid.Row="1" VerticalAlignment="Top"/>
-                <Rectangle Grid.Row="3" Fill="Black"/>
-                <ItemsControl Grid.Column="1" Grid.Row="2" ItemsSource="{Binding Children}" ItemTemplate="{DynamicResource DocumentSectionTemplate}" />
+                <StackPanel Orientation="Vertical" Grid.Column="3" Grid.Row="1" >
+                    <Button Content="Edit" VerticalAlignment="Top" Click="EditContent_Click"/>
+                    <Button Content="Remove" VerticalAlignment="Top" Click="RemoveSection_Click"/>
+                </StackPanel>
+                <Rectangle Grid.Row="2" Width="5" Fill="Black"/>
+                <ItemsControl Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="3" ItemsSource="{Binding Children}" ItemTemplate="{DynamicResource DocumentSectionTemplate}" />
                 <Border BorderThickness="1" Grid.Row="1" Grid.RowSpan="2" Grid.ColumnSpan="4" BorderBrush="Black"/>
-                <Button Grid.Row="3" Grid.ColumnSpan="4" Content="Add section"/>
+                <Button Grid.Row="3" Grid.ColumnSpan="4" Content="Add section" Click="AddSection_Click"/>
             </Grid>
         </HierarchicalDataTemplate>
     </UserControl.Resources>
     <ScrollViewer VerticalScrollBarVisibility="Auto">
-        <Grid Margin="2">
+        <Grid Margin="2" DataContext="{Binding Document}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
@@ -69,15 +72,15 @@
                        Margin="2"
                        Text="Name:"
                        Foreground="{Binding OrdinaryText, Source={StaticResource ActiveColorScheme}}" />
-            <TextBlock Text="{Binding Document.Title}"
+            <TextBlock Text="{Binding Title}"
                        Foreground="{Binding OrdinaryText, Source={StaticResource ActiveColorScheme}}"
                        Grid.Column="2"
                        VerticalAlignment="Center"
                        Margin="2"/>
-            <Button Content="Edit" Grid.Column="3" />
+            <Button Content="Edit" Grid.Column="3" Click="EditTitle_Click" />
             <Border BorderThickness="1,1,1,1" BorderBrush="Black" Grid.ColumnSpan="4" />
             <TextBlock Margin="2" Text="Tags:" Foreground="{Binding OrdinaryText, Source={StaticResource ActiveColorScheme}}" Grid.Row="1" Grid.Column="1"/>
-            <ItemsControl Margin="2" Padding="5" Grid.Row="1" Grid.Column="2" ItemsSource="{Binding Document.Tags}">
+            <ItemsControl Margin="2" Padding="5" Grid.Row="1" Grid.Column="2" ItemsSource="{Binding Tags}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <WrapPanel HorizontalAlignment="Left" Orientation="Horizontal" />
@@ -85,29 +88,29 @@
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <Border BorderBrush="Black" BorderThickness="1" CornerRadius="4">
+                        <Border BorderBrush="Black" BorderThickness="1" CornerRadius="4" Margin="2">
                             <TextBlock Text="{Binding}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="2"/>
                             <Border.ContextMenu>
                                 <ContextMenu>
-                                    <MenuItem Header="Remove" />
+                                    <MenuItem Header="Remove" Click="RemoveTag_Click"/>
                                 </ContextMenu>
                             </Border.ContextMenu>
                         </Border>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
-            <Button Content="Add" Grid.Column="3" Grid.Row="1" VerticalAlignment="Top"/>
+            <Button Content="Add" Grid.Column="3" Grid.Row="1" VerticalAlignment="Top" Click="AddTag_Click"/>
             <Border BorderThickness="1,0,1,0" BorderBrush="Black" Grid.Row="1" Grid.ColumnSpan="4" />
-            <FlowDocumentScrollViewer Document="{Binding Document.Content, Converter={StaticResource StringToDocument}}"
+            <FlowDocumentScrollViewer Document="{Binding Content, Converter={StaticResource StringToDocument}}"
                                       Grid.Row="2"
                                       Grid.Column="1"
                                       Grid.ColumnSpan="2"
                                       VerticalScrollBarVisibility="Auto"/>
-            <Button Content="Edit" Grid.Column="3" Grid.Row="2" VerticalAlignment="Top"/>
+            <Button Content="Edit" Grid.Column="3" Grid.Row="2" VerticalAlignment="Top" Click="EditContent_Click"/>
             <Rectangle Grid.Row="3" Width="5" Fill="Black"/>
-            <ItemsControl Grid.Column="1" Grid.ColumnSpan="3"  Grid.Row="3" ItemsSource="{Binding Document.Children}" ItemTemplate="{DynamicResource DocumentSectionTemplate}" />
+            <ItemsControl Grid.Column="1" Grid.ColumnSpan="3"  Grid.Row="3" ItemsSource="{Binding Children}" ItemTemplate="{DynamicResource DocumentSectionTemplate}" />
             <Border BorderThickness="1" Grid.Row="2" Grid.RowSpan="2" Grid.ColumnSpan="4" BorderBrush="Black"/>
-            <Button Grid.Row="4" Grid.ColumnSpan="4" Content="Add section"/>
+            <Button Grid.Row="4" Grid.ColumnSpan="4" Content="Add section" Click="AddSection_Click"/>
         </Grid>
     </ScrollViewer>
 </UserControl>

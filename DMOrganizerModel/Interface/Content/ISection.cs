@@ -27,6 +27,8 @@ namespace DMOrganizerModel.Interface.Content
         /// </summary>
         string Content { get; }
 
+        ISection? Parent { get; }
+
         /// <summary>
         /// Ordered children of this section
         /// </summary>

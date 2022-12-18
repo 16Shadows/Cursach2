@@ -8,6 +8,7 @@ using DMOrganizerModel.Implementation.Model;
 using System.Threading.Tasks;
 using System.ComponentModel;
 using System.Windows.Threading;
+using System.Linq;
 
 namespace DMOrganizerModel.Implementation.Content
 {
@@ -47,7 +48,7 @@ namespace DMOrganizerModel.Implementation.Content
         #endregion
 
         #region Constructors
-        public Document(OrganizerModel organizer, NavigationTreeDocument treeNode, string title, string content, int itemID) : base(organizer, title, content, itemID)
+        public Document(OrganizerModel organizer, NavigationTreeDocument treeNode, string title, string content, int itemID) : base(organizer, null, title, content, itemID)
         {
             m_NavigationEntry = treeNode ?? throw new ArgumentNullException(nameof(treeNode));
             m_Tags = new ObservableList<string>();
@@ -61,8 +62,6 @@ namespace DMOrganizerModel.Implementation.Content
             CheckDisposed();
             if (tag == null)
                 throw new ArgumentNullException(nameof(tag));
-            else if (Tags.Contains(tag))
-                throw new ArgumentException("Duplicate tag", nameof(tag));
 
             Dispatcher dispatcher = Dispatcher.CurrentDispatcher;
 
@@ -70,6 +69,14 @@ namespace DMOrganizerModel.Implementation.Content
             {
                 try
                 {
+                    lock (SyncRoot)
+                    {
+                        if (Tags.Count(x => string.Compare(x, tag, true) == 0) > 0)
+                        {
+                            dispatcher.BeginInvoke(() => InvokeTagAdded(tag, OperationResultEventArgs.ErrorType.DuplicateValue, "Duplicate tag"));
+                            return;
+                        }
+                    }
                     Organizer.AddDocumentTag(this, tag);
                     dispatcher.BeginInvoke(() =>
                     {
@@ -80,7 +87,7 @@ namespace DMOrganizerModel.Implementation.Content
                 }
                 catch (Exception e)
                 {
-                    dispatcher.BeginInvoke(() =>InvokeTagAdded(tag, OperationResultEventArgs.ErrorType.InternalError, e.ToString()));
+                    dispatcher.BeginInvoke(() => InvokeTagAdded(tag, OperationResultEventArgs.ErrorType.InternalError, e.ToString()));
                 }
             });
         }
@@ -98,8 +105,6 @@ namespace DMOrganizerModel.Implementation.Content
         {
             if (tag == null)
                 throw new ArgumentNullException(nameof(tag));
-            else if (!Tags.Contains(tag))
-                throw new ArgumentException("Tag not present", nameof(tag));
 
             Dispatcher dispatcher = Dispatcher.CurrentDispatcher;
 
@@ -107,6 +112,14 @@ namespace DMOrganizerModel.Implementation.Content
             {
                 try
                 {
+                    lock (SyncRoot)
+                    {
+                        if (!Tags.Contains(tag))
+                        {
+                            dispatcher.BeginInvoke(() => InvokeTagAdded(tag, OperationResultEventArgs.ErrorType.InvalidArgument, "Tag not present"));
+                            return;
+                        }
+                    }
                     Organizer.RemoveDocumentTag(this, tag);
                     dispatcher.BeginInvoke(() =>
                     {
@@ -154,7 +167,7 @@ namespace DMOrganizerModel.Implementation.Content
                     {
                         if (NavigationEntry.Parent.GetItem(name) != null)
                         {
-                            dispatcher.BeginInvoke(() => InvokeRenamed(OperationResultEventArgs.ErrorType.DuplicateTitle, "An item with the same title is already present."));
+                            dispatcher.BeginInvoke(() => InvokeRenamed(OperationResultEventArgs.ErrorType.DuplicateValue, "An item with the same title is already present."));
                             return;
                         }
                         oldTitle = Title;

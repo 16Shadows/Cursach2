@@ -9,8 +9,9 @@
         WindowStartupLocation="CenterOwner"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
         SizeToContent="WidthAndHeight"
+        ResizeMode="NoResize"
         Loaded="Window_Loaded">
-    <StackPanel Orientation="Vertical" Background="{Binding ApplicationBackground, Source={StaticResource ActiveColorScheme}}" VerticalAlignment="Center" HorizontalAlignment="Center">
+    <StackPanel Orientation="Vertical" Background="{Binding ApplicationBackground, Source={StaticResource ActiveColorScheme}}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
         <TextBlock Text="{Binding InputPrompt, Mode=OneWay}" Foreground="{Binding OrdinaryText, Source={StaticResource ActiveColorScheme}}"/>
         <TextBox x:Name="InputBox"
                  Text="{Binding InputText}"

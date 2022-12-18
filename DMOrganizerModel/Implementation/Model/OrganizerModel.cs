@@ -431,7 +431,7 @@ namespace DMOrganizerModel.Implementation.Model
                     //Load categories at root
                     using (var command = m_Connection.CreateCommand())
                     {
-                        command.CommandText = $"SELECT ID FROM Category WHERE Parent IS NULL";
+                        command.CommandText = "SELECT ID FROM Category WHERE Parent IS NULL;";
                         using (var reader = command.ExecuteReader())
                         {
                             while (reader.Read())
@@ -442,7 +442,7 @@ namespace DMOrganizerModel.Implementation.Model
                     //Load documents at root
                     using (var command = m_Connection.CreateCommand())
                     {
-                        command.CommandText = $"SELECT SectionID FROM Document WHERE CategoryID IS NULL";
+                        command.CommandText = "SELECT SectionID FROM Document WHERE CategoryID IS NULL;";
                         using (var reader = command.ExecuteReader())
                         {
                             while (reader.Read())
@@ -473,7 +473,7 @@ namespace DMOrganizerModel.Implementation.Model
                     //Load category data
                     using (var command = m_Connection.CreateCommand())
                     {
-                        command.CommandText = $"SELECT Title FROM Category WHERE ID={id}";
+                        command.CommandText = $"SELECT Title FROM Category WHERE ID={id};";
                         using (var reader = command.ExecuteReader())
                         {
                             if (reader.Read())
@@ -486,7 +486,7 @@ namespace DMOrganizerModel.Implementation.Model
                     //Load categories at root
                     using (var command = m_Connection.CreateCommand())
                     {
-                        command.CommandText = $"SELECT ID FROM Category WHERE Parent={id}";
+                        command.CommandText = $"SELECT ID FROM Category WHERE Parent={id};";
                         using (var reader = command.ExecuteReader())
                         {
                             while (reader.Read())
@@ -497,7 +497,7 @@ namespace DMOrganizerModel.Implementation.Model
                     //Load file at root
                     using (var command = m_Connection.CreateCommand())
                     {
-                        command.CommandText = $"SELECT SectionID FROM Document WHERE Document.CategoryID={id}";
+                        command.CommandText = $"SELECT SectionID FROM Document WHERE Document.CategoryID={id};";
                         using (var reader = command.ExecuteReader())
                         {
                             while (reader.Read())
@@ -526,7 +526,7 @@ namespace DMOrganizerModel.Implementation.Model
                 {
                     using (var command = m_Connection.CreateCommand())
                     {
-                        command.CommandText = $"SELECT Title FROM Section WHERE ID={id}";
+                        command.CommandText = $"SELECT Title FROM Section WHERE ID={id};";
                         using (var reader = command.ExecuteReader())
                         {
                             if (reader.Read())
@@ -556,7 +556,7 @@ namespace DMOrganizerModel.Implementation.Model
                 {
                     using (var command = m_Connection.CreateCommand())
                     {
-                        command.CommandText = $"SELECT Title, Content FROM Section WHERE ID={treeNode.ItemID}";
+                        command.CommandText = $"SELECT Title, Content FROM Section WHERE ID={treeNode.ItemID};";
                         using (var reader = command.ExecuteReader())
                         {
                             if (!reader.Read())
@@ -567,7 +567,7 @@ namespace DMOrganizerModel.Implementation.Model
                     }
                     using (var command = m_Connection.CreateCommand())
                     {
-                        command.CommandText = $"SELECT Tag.Text FROM (Tag INNER JOIN DocumentsTags ON Tag.ID = DocumentsTags.TagID) WHERE DocumentsTags.DocumentID={treeNode.ItemID}";
+                        command.CommandText = $"SELECT Tag.Text FROM (Tag INNER JOIN DocumentsTags ON Tag.ID = DocumentsTags.TagID) WHERE DocumentsTags.DocumentID={treeNode.ItemID};";
                         using (var reader = command.ExecuteReader())
                         {
                             while (reader.Read())
@@ -576,7 +576,7 @@ namespace DMOrganizerModel.Implementation.Model
                     }
                     using (var command = m_Connection.CreateCommand())
                     {
-                        command.CommandText = $"SELECT ID FROM Section WHERE Parent={treeNode.ItemID} ORDER BY OrderIndex";
+                        command.CommandText = $"SELECT ID FROM Section WHERE Parent={treeNode.ItemID} ORDER BY OrderIndex;";
                         using (var reader = command.ExecuteReader())
                         {
                             while (reader.Read())
@@ -604,7 +604,7 @@ namespace DMOrganizerModel.Implementation.Model
                 {
                     using (var command = m_Connection.CreateCommand())
                     {
-                        command.CommandText = $"SELECT Title, Content, OrderIndex FROM Section WHERE ID={id}";
+                        command.CommandText = $"SELECT Title, Content, OrderIndex FROM Section WHERE ID={id};";
                         using (var reader = command.ExecuteReader())
                         {
                             if (!reader.Read())
@@ -615,7 +615,7 @@ namespace DMOrganizerModel.Implementation.Model
                     }
                     using (var command = m_Connection.CreateCommand())
                     {
-                        command.CommandText = $"SELECT ID FROM Section WHERE Parent={id} ORDER BY OrderIndex";
+                        command.CommandText = $"SELECT ID FROM Section WHERE Parent={id} ORDER BY OrderIndex;";
                         using (var reader = command.ExecuteReader())
                         {
                             while (reader.Read())
@@ -644,7 +644,7 @@ namespace DMOrganizerModel.Implementation.Model
                     {
                         using (var command = m_Connection.CreateCommand())
                         {
-                            command.CommandText = $"UPDATE Document SET CategoryID = {category.ItemID} WHERE ID={doc.ItemID}";
+                            command.CommandText = $"UPDATE Document SET CategoryID = {category.ItemID} WHERE ID={doc.ItemID};";
                             if (command.ExecuteNonQuery() == 0)
                                 throw new ArgumentException("Invalid document id", nameof(doc));
                         }
@@ -653,7 +653,7 @@ namespace DMOrganizerModel.Implementation.Model
                     {
                         using (var command = m_Connection.CreateCommand())
                         {
-                            command.CommandText = $"UPDATE Document SET CategoryID=NULL WHERE ID={doc.ItemID}";
+                            command.CommandText = $"UPDATE Document SET CategoryID=NULL WHERE ID={doc.ItemID};";
                             if (command.ExecuteNonQuery() == 0)
                                 throw new ArgumentException("Invalid document id", nameof(doc));
                         }
@@ -679,7 +679,7 @@ namespace DMOrganizerModel.Implementation.Model
                 {
                     using (var command = m_Connection.CreateCommand())
                     {
-                        command.CommandText = $"UPDATE Section Set Title=$title WHERE ID={doc.ItemID}";
+                        command.CommandText = $"UPDATE Section Set Title=$title WHERE ID={doc.ItemID};";
                         command.Parameters.AddWithValue("$title", title);
                         if (command.ExecuteNonQuery() == 0)
                             throw new ArgumentException("Invalid document ID", nameof(doc));
@@ -705,7 +705,7 @@ namespace DMOrganizerModel.Implementation.Model
                 {
                     using (var command = m_Connection.CreateCommand())
                     {
-                        command.CommandText = $"UPDATE Section Set Title=$title WHERE ID={section.ItemID}";
+                        command.CommandText = $"UPDATE Section Set Title=$title WHERE ID={section.ItemID};";
                         command.Parameters.AddWithValue("$title", title);
                         if (command.ExecuteNonQuery() == 0)
                             throw new ArgumentException("Invalid section ID", nameof(section));
@@ -742,7 +742,7 @@ namespace DMOrganizerModel.Implementation.Model
                         if (parent is NavigationTreeCategory parentCategory)
                             command.CommandText = $"BEGIN TRANSACTION;INSERT INTO Category (Title, Parent) VALUES ($title, {parentCategory.ItemID}); SELECT last_insert_rowid();COMMIT;";
                         else
-                            command.CommandText = $"BEGIN TRANSACTION;INSERT INTO Category (Title) VALUES ($title); SELECT last_insert_rowid();COMMIT;";
+                            command.CommandText = "BEGIN TRANSACTION;INSERT INTO Category (Title) VALUES ($title); SELECT last_insert_rowid();COMMIT;";
 
                         command.Parameters.AddWithValue("$title", title);
 
@@ -789,7 +789,7 @@ namespace DMOrganizerModel.Implementation.Model
                         if (parent is NavigationTreeCategory parentCategory)
                             command.CommandText = $"BEGIN TRANSACTION;INSERT INTO Section (Title) VALUES ($title); INSERT INTO Document (CategoryID, SectionID) VALUES ({parentCategory.ItemID}, last_insert_rowid()); SELECT SectionID FROM Document WHERE ROWID=last_insert_rowid();COMMIT;";
                         else
-                            command.CommandText = $"BEGIN TRANSACTION;INSERT INTO Section (Title) VALUES ($title); INSERT INTO Document (SectionID) VALUES (last_insert_rowid()); SELECT SectionID FROM Document WHERE ROWID=last_insert_rowid();COMMIT;";
+                            command.CommandText = "BEGIN TRANSACTION;INSERT INTO Section (Title) VALUES ($title); INSERT INTO Document (SectionID) VALUES (last_insert_rowid()); SELECT SectionID FROM Document WHERE ROWID=last_insert_rowid();COMMIT;";
 
                         command.Parameters.AddWithValue("$title", title);
 
@@ -824,7 +824,7 @@ namespace DMOrganizerModel.Implementation.Model
                 {
                     using (var command = m_Connection.CreateCommand())
                     {
-                        command.CommandText = $"DELETE FROM Document WHERE SectionID={document.ItemID}";
+                        command.CommandText = $"DELETE FROM Document WHERE SectionID={document.ItemID};";
                         if (command.ExecuteNonQuery() == 0)
                             throw new ArgumentException("Invalid document id", nameof(document));
                     }
@@ -848,7 +848,7 @@ namespace DMOrganizerModel.Implementation.Model
                 {
                     using (var command = m_Connection.CreateCommand())
                     {
-                        command.CommandText = $"DELETE FROM Category WHERE ID={category.ItemID}";
+                        command.CommandText = $"DELETE FROM Category WHERE ID={category.ItemID};";
                         if (command.ExecuteNonQuery() == 0)
                             throw new ArgumentException("Invalid category id", nameof(category));
                     }
@@ -872,7 +872,7 @@ namespace DMOrganizerModel.Implementation.Model
                     {
                         using (var command = m_Connection.CreateCommand())
                         {
-                            command.CommandText = $"UPDATE Category SET Parent = {category.ItemID} WHERE ID={cat.ItemID}";
+                            command.CommandText = $"UPDATE Category SET Parent = {category.ItemID} WHERE ID={cat.ItemID};";
                             if (command.ExecuteNonQuery() == 0)
                                 throw new ArgumentException("Invalid category id", nameof(cat));
                         }
@@ -881,7 +881,7 @@ namespace DMOrganizerModel.Implementation.Model
                     {
                         using (var command = m_Connection.CreateCommand())
                         {
-                            command.CommandText = $"UPDATE Category SET CategoryID = NULL WHERE ID={cat.ItemID}";
+                            command.CommandText = $"UPDATE Category SET CategoryID = NULL WHERE ID={cat.ItemID};";
                             if (command.ExecuteNonQuery() == 0)
                                 throw new ArgumentException("Invalid category id", nameof(cat));
                         }
@@ -907,7 +907,7 @@ namespace DMOrganizerModel.Implementation.Model
                 {
                     using (var command = m_Connection.CreateCommand())
                     {
-                        command.CommandText = $"UPDATE Category SET Title=$title WHERE ID={cat.ItemID}";
+                        command.CommandText = $"UPDATE Category SET Title=$title WHERE ID={cat.ItemID};";
                         command.Parameters.AddWithValue("$title", title);
                         if (command.ExecuteNonQuery() == 0)
                             throw new ArgumentException("Invalid category ID", nameof(cat));
@@ -930,7 +930,7 @@ namespace DMOrganizerModel.Implementation.Model
                 {
                     using (var command = m_Connection.CreateCommand())
                     {
-                        command.CommandText = $"UPDATE Section Set Content=$content WHERE ID={section.ItemID}";
+                        command.CommandText = $"UPDATE Section Set Content=$content WHERE ID={section.ItemID};";
                         command.Parameters.AddWithValue("$content", newContent);
                         if (command.ExecuteNonQuery() == 0)
                             throw new ArgumentException("Invalid section ID", nameof(section));
@@ -958,7 +958,8 @@ namespace DMOrganizerModel.Implementation.Model
                 {
                     using (var command = m_Connection.CreateCommand())
                     {
-                        command.CommandText = $"BEGIN TRANSACTION;INSERT INTO Section (Title, Parent, OrderIndex) VALUES ($title, {parent.ItemID}, MAX(SELECT OrderIndex FROM Section WHERE Parent={parent.ItemID})+1);SELECT ID, OrderIndex FROM Section WHERE ID=last_insert_rowid();COMMIT;";
+                        command.CommandText = $"BEGIN TRANSACTION;INSERT INTO Section (Title, Parent, OrderIndex) VALUES ($title, {parent.ItemID}, (SELECT IFNULL(MAX(OrderIndex)+1, 0) FROM Section WHERE Parent={parent.ItemID}));SELECT ID, OrderIndex FROM Section WHERE ID=last_insert_rowid();COMMIT;";
+                        command.Parameters.AddWithValue("$title", title);
 
                         using (var reader = command.ExecuteReader())
                         {
@@ -988,7 +989,7 @@ namespace DMOrganizerModel.Implementation.Model
                 {
                     using (var command = m_Connection.CreateCommand())
                     {
-                        command.CommandText = $"DELETE FROM Section WHERE ID={section.ItemID}";
+                        command.CommandText = $"DELETE FROM Section WHERE ID={section.ItemID};";
                         if (command.ExecuteNonQuery() == 0)
                             throw new ArgumentException("Invalid section id", nameof(section));
                     }
@@ -1014,7 +1015,7 @@ namespace DMOrganizerModel.Implementation.Model
                     int tagID = -1;
                     using (var command = m_Connection.CreateCommand())
                     {
-                        command.CommandText = "SELECT ID FROM Tag WHERE Text=$tag";
+                        command.CommandText = "SELECT ID FROM Tag WHERE Text=$tag;";
                         command.Parameters.AddWithValue("$tag", tag);
                         using (var reader = command.ExecuteReader())
                         {
@@ -1060,7 +1061,7 @@ namespace DMOrganizerModel.Implementation.Model
                 {
                     using (var command = m_Connection.CreateCommand())
                     {
-                        command.CommandText = $"DELETE FROM DocumentsTags WHERE DocumentID={document.ItemID} AND TagID IN (SELECT ID FROM Tag WHERE Text=$tag)";
+                        command.CommandText = $"DELETE FROM DocumentsTags WHERE DocumentID={document.ItemID} AND TagID IN (SELECT ID FROM Tag WHERE Text=$tag);";
                         command.Parameters.AddWithValue("$tag", tag);
                         if (command.ExecuteNonQuery() == 0)
                             throw new ArgumentException("Invalid document id", nameof(document));

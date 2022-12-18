@@ -19,7 +19,7 @@
             /// INavigationTreeCategory.CreateDocument: A document with the same title is already present in the category
             /// 
             /// </summary>
-            DuplicateTitle,
+            DuplicateValue,
             /// <summary>
             /// 
             /// </summary>

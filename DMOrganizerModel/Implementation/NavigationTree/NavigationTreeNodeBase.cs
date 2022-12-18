@@ -17,6 +17,9 @@ namespace DMOrganizerModel.Implementation.NavigationTree
             get => m_Title;
             protected set
             {
+                CheckDisposed();
+                if (m_Title == value)
+                    return;
                 m_Title = value ?? throw new ArgumentNullException(nameof(Title));
                 InvokePropertyChanged(nameof(Title));
             }
@@ -30,6 +33,9 @@ namespace DMOrganizerModel.Implementation.NavigationTree
             }
             protected set
             {
+                CheckDisposed();
+                if (m_Parent == value)
+                    return;
                 m_Parent = value ?? throw new ArgumentNullException(nameof(Parent));
                 InvokePropertyChanged(nameof(Parent));
             }

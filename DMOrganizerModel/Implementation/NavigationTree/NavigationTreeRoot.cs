@@ -95,7 +95,7 @@ namespace DMOrganizerModel.Implementation.NavigationTree
                     {
                         if (m_Categories.ContainsKey(title))
                         {
-                            dispatch.BeginInvoke(() => InvokeCategoryCreated(OperationResultEventArgs.ErrorType.DuplicateTitle, null, title, "Duplicate title."));
+                            dispatch.BeginInvoke(() => InvokeCategoryCreated(OperationResultEventArgs.ErrorType.DuplicateValue, null, title, "Duplicate title."));
                             return;
                         }
 
@@ -148,7 +148,7 @@ namespace DMOrganizerModel.Implementation.NavigationTree
                     {
                         if (m_Items.ContainsKey(title))
                         {
-                            dispatch.BeginInvoke(() => InvokeDocumentCreated(OperationResultEventArgs.ErrorType.DuplicateTitle, null, title, "Duplicate title."));
+                            dispatch.BeginInvoke(() => InvokeDocumentCreated(OperationResultEventArgs.ErrorType.DuplicateValue, null, title, "Duplicate title."));
                             return;
                         }
                         doc = Organizer.CreateDocument(this, title);
