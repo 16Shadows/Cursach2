@@ -63,33 +63,36 @@ namespace DMOrganizerModel.Interface.Items
     public interface IContainerItem<ContentType> : IItem where ContentType : IItem
     {
         /// <summary>
-        /// Is invoked when a request to this item's current content is complete.
+        /// Is invoked when a request for this item's current content is complete.
         /// </summary>
-        public event TypedEventHandler<IContainerItem<ContentType>, ContainerItemCurrentContentEventArgs<ContentType>> ContainerItemCurrentContent;
+        event TypedEventHandler<IContainerItem<ContentType>, ContainerItemCurrentContentEventArgs<ContentType>> ContainerItemCurrentContent;
         
         /// <summary>
         /// Is invoked when an item is added to or removed from this item.
         /// </summary>
-        public event TypedEventHandler<IContainerItem<ContentType>, ContainerItemContentChangedEventArgs<ContentType>> ContainerItemContentChanged;
+        event TypedEventHandler<IContainerItem<ContentType>, ContainerItemContentChangedEventArgs<ContentType>> ContainerItemContentChanged;
 
 
         /// <summary>
         /// Requests item's current content.
         /// </summary>
-        public void RequestContainerItemCurrentContent();
+        /// <exception cref="InvalidOperationException">Can be thrown if the items has already been deleted</exception>
+        void RequestContainerItemCurrentContent();
         
         /// <summary>
         /// Adds an item to this IContainerItem.
         /// </summary>
         /// <param name="item">The item to add</param>
         /// <exception cref="ArgumentException">Can be throw if the IContainerItem already has the item</exception>
-        public void AddContainerItemItem(ContentType item);
+        /// <exception cref="InvalidOperationException">Can be thrown if the IContainerItem has already been deleted</exception>
+        void AddContainerItemItem(ContentType item);
 
         /// <summary>
         /// Removes and item from this IContainerItem.
         /// </summary>
         /// <param name="item">The item to remove</param>
         /// <exception cref="ArgumentException">Can be throw if the IContainerItem doesn't have the item</exception>
-        public void RemoveContainerItemItem(ContentType item);
+        /// <exception cref="InvalidOperationException">Can be thrown if the IContainerItem has already been deleted</exception>
+        void RemoveContainerItemItem(ContentType item);
     }
 }

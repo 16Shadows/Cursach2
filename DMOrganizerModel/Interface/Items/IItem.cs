@@ -26,17 +26,25 @@ namespace DMOrganizerModel.Interface.Items
         /// <summary>
         /// Is invoked when the name of this item changes.
         /// </summary>
-        public event TypedEventHandler<IItem, ItemNameChangedEventArgs> ItemNameChanged;
+        event TypedEventHandler<IItem, ItemNameChangedEventArgs> ItemNameChanged;
 
         /// <summary>
         /// Requests a name update for this item, causing ItemNameChanged event.
         /// </summary>
-        public void RequestItemNameUpdate();
+        /// <exception cref="InvalidOperationException">Can be thrown if the IItem has already been deleted</exception>
+        void RequestItemNameUpdate();
 
         /// <summary>
         /// Changes the name of this item.
         /// </summary>
         /// <param name="newName">The new name of this item.</param>
-        public void ChangeItemName(string newName);
+        /// <exception cref="InvalidOperationException">Can be thrown if the IItem has already been deleted</exception>
+        void ChangeItemName(string newName);
+
+        /// <summary>
+        /// Deletes the assosiated entity
+        /// </summary>
+        /// <exception cref="InvalidOperationException">Can be thrown if the IItem has already been deleted</exception>
+        void Delete();
     }
 }

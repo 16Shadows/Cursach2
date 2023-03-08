@@ -1,78 +1,81 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using DMOrganizerModel.Interface.Items;
+using System;
+using System.Collections.Generic;
 
-using DMOrganizerModel.Interface.Reference;
-using DMOrganizerModel.Interface.Content;
-using DMOrganizerModel.Interface.NavigationTree;
-using DMOrganizerModel.Interface.Items;
-
-namespace DMOrganizerModel.Interface.Model
+namespace DMOrganizerModel.Interface.Organizer
 {
-    public class NavigationTreeReceivedEventArgs : OperationResultEventArgs
+    public class OrganizerCurrentContentEventArgs : EventArgs
     {
-        /// <summary>
-        /// If the request succeeds, contains the navigation tree's root nodes
-        /// </summary>
-        public INavigationTreeRoot? NavigationTree { get; init; } = null;
+        public List<IItem> Content { get; }
+
+        public OrganizerCurrentContentEventArgs(List<IItem> content)
+        {
+            Content = content ?? throw new ArgumentNullException(nameof(content));
+        }
     }
 
-    public class ReferenceDecodedEventArgs : OperationResultEventArgs
+    public class OrganizerContentChangedEventArgs : EventArgs
     {
-        public ReferenceDecodedEventArgs(string encodedReference)
+        public enum ChangeType
         {
-            EncodedReference = encodedReference ?? throw new ArgumentNullException(nameof(encodedReference));
+            ItemAdded,
+            ItemRemoved
         }
 
-        /// <summary>
-        /// Regardless of the request's result, contains the string-encoded reference which was provided for decoding
-        /// </summary>
-        public string EncodedReference { get; }
-        /// <summary>
-        /// If the request succeeds, contains the reference object
-        /// </summary>
-        public IReference? ReferenceInstance { get; init; } = null;
+        public IItem Item { get; }
+        public ChangeType Type { get; }
+
+        public OrganizerContentChangedEventArgs(IItem item, ChangeType type)
+        {
+            Item = item ?? throw new ArgumentNullException(nameof(item));
+            Type = type;
+        }
     }
 
     public interface IOrganizer
     {
         /// <summary>
-        /// Creates a reference to a document's section or a document
+        /// Is invoked when a request for this organizer's content is complete
         /// </summary>
-        /// <param name="section">The entity to reference</param>
-        /// <returns>A reference to the entity</returns>
-        /// /// <exception cref="ArgumentException">If prodvided instance is not compatiable with this model</exception>
-        IReference CreateReference(IItem section);
+        event TypedEventHandler<IOrganizer, OrganizerCurrentContentEventArgs> OrganizerCurrentContent;
 
         /// <summary>
-        /// Converts a string-encoded reference to a reference object
+        /// Is invoked when the content of this organizer changes
         /// </summary>
-        /// <param name="reference">String-encoded reference</param>
-        /// <returns>
-        /// True if the request has been queued, false otherwise
-        /// </returns>
-        Task DecodeReference(string reference);
-        /// <summary>
-        /// Is called when a reference has been decoded
-        /// </summary>
-        event OperationResultEventHandler<IOrganizer, ReferenceDecodedEventArgs>? ReferenceDecoded;
+        event TypedEventHandler<IOrganizer, OrganizerContentChangedEventArgs> OrganizerContentChanged;
+
 
         /// <summary>
-        /// Get the root of this model's navigation tree (which is a dummy node)
+        /// Requests organizer's current content
         /// </summary>
-        Task GetNavigationTree();
-        /// <summary>
-        /// Is called when the navigation tree has been received
-        /// </summary>
-        event OperationResultEventHandler<IOrganizer, NavigationTreeReceivedEventArgs>? NavigationTreeReceived;
+        void RequestCurrentOrganizerContent();
 
         /// <summary>
-        /// Permanently deletes all data managed by this model
+        /// Adds an item to the organizer
         /// </summary>
-        /// <returns>True if the request has been successfully queued, false otherwise</returns>
-        Task DeleteData();
-         /// <summary>
-        /// Is called when a document has been created successfully
+        /// <param name="item">The item to add</param>
+        /// <exception cref="ArgumentException">Can be throw if the IOrganizer already has the item</exception>
+        void AddOrganizerItem(IItem item);
+
+        /// <summary>
+        /// Removes an item from the organizer
         /// </summary>
-        event OperationResultEventHandler<IOrganizer>? DataDeleted;
+        /// <param name="item">The item to remove</param>
+        /// <exception cref="ArgumentException">Can be throw if the IOrganizer doesn't have the item</exception>
+        void RemoveOrganizerItem(IItem item);
+
+        /// <summary>
+        /// Creates a category in the organizer
+        /// </summary>
+        /// <param name="name">The name of the category</param>
+        /// <exception cref="ArgumentException">Can be throw if the IOrganizer already contains a category with the same name</exception>
+        void CreateCategory(string name);
+
+        /// <summary>
+        /// Creates a document in the organizer
+        /// </summary>
+        /// <param name="name">The name of the category</param>
+        /// <exception cref="ArgumentException">Can be throw if the IOrganizer already contains a document with the same name</exception>
+        void CreateDocument(string name);
     }
 }

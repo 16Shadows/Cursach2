@@ -63,31 +63,34 @@ namespace DMOrganizerModel.Interface.Items
         /// <summary>
         /// Is invoked when a request to this document's tags is complete.
         /// </summary>
-        public event TypedEventHandler<IDocument, DocumentCurrentTagsEventArgs> DocumentCurrentTags;
+        event TypedEventHandler<IDocument, DocumentCurrentTagsEventArgs> DocumentCurrentTags;
 
         /// <summary>
         /// Is invoked when a tag is added to or removed from this document.
         /// </summary>
-        public event TypedEventHandler<IDocument, DocumentTagsChangedEventArgs> DocumentTagsChanged;
+        event TypedEventHandler<IDocument, DocumentTagsChangedEventArgs> DocumentTagsChanged;
 
 
         /// <summary>
         /// Request's document's current tags
         /// </summary>
-        public void RequestDocumentCurrentTags();
+        /// <exception cref="InvalidOperationException">Can be thrown if the IDocument has already been deleted</exception>
+        void RequestDocumentCurrentTags();
 
         /// <summary>
         /// Adds a new tag to this document
         /// </summary>
         /// <param name="tag">The tag to add</param>
         /// <exception cref="ArgumentException">Can be throw if the document already has the tag</exception>
-        public void AddDocumentTag(string tag);
+        /// <exception cref="InvalidOperationException">Can be thrown if the IDocument has already been deleted</exception>
+        void AddDocumentTag(string tag);
 
         /// <summary>
         /// Removes a tag from this document
         /// </summary>
         /// <param name="tag">The tag to remove</param>
         /// <exception cref="ArgumentException">Can be throw if the document doesn't have the tag</exception>
-        public void RemoveDocumentTag(string tag);
+        /// <exception cref="InvalidOperationException">Can be thrown if the IDocument has already been deleted</exception>
+        void RemoveDocumentTag(string tag);
     }
 }
