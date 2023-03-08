@@ -11,9 +11,9 @@ namespace DMOrganizerModel.Interface.Items
         /// <summary>
         /// A list of current tags
         /// </summary>
-        public List<string> Tags { get; }
+        public IEnumerable<string> Tags { get; }
 
-        public DocumentCurrentTagsEventArgs(List<string> tags)
+        public DocumentCurrentTagsEventArgs(IEnumerable<string> tags)
         {
             Tags = tags ?? throw new ArgumentNullException(nameof(tags));
         }
@@ -24,6 +24,22 @@ namespace DMOrganizerModel.Interface.Items
     /// </summary>
     public class DocumentTagsChangedEventArgs : EventArgs
     {
+        public enum ResultType
+        {
+            /// <summary>
+            /// The operation completed successfully
+            /// </summary>
+            Success,
+            /// <summary>
+            /// There is already such tag present on the document
+            /// </summary>
+            DuplicateTag,
+            /// <summary>
+            /// There is no such tag on the document
+            /// </summary>
+            NoSuchTag
+        }
+
         /// <summary>
         /// The type of change this event represents.
         /// </summary>
@@ -43,15 +59,27 @@ namespace DMOrganizerModel.Interface.Items
         /// The tag that was added or removed.
         /// </summary>
         public string Tag { get; }
+
         /// <summary>
         /// The type of change this event represents.
         /// </summary>
         public ChangeType Type { get; }
 
-        public DocumentTagsChangedEventArgs(string tag, ChangeType type)
+        /// <summary>
+        /// The result of the operation
+        /// </summary>
+        public ResultType Result { get; }
+
+        /// <summary>
+        /// True if the tags collection has actually changed
+        /// </summary>
+        public bool HasChanged => Result == ResultType.Success;
+
+        public DocumentTagsChangedEventArgs(string tag, ChangeType type, ResultType result)
         {
             Tag = tag ?? throw new ArgumentNullException(nameof(tag));
             Type = type;
+            Result = result;
         }
     }
 

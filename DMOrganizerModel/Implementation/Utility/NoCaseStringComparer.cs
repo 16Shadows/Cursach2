@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 
-namespace DMOrganizerModel.Implementation
+namespace DMOrganizerModel.Implementation.Utility
 {
     internal class NoCaseStringComparer : IEqualityComparer<string>
     {
@@ -10,7 +9,7 @@ namespace DMOrganizerModel.Implementation
             return string.Compare(x, y, true) == 0;
         }
 
-        public int GetHashCode([DisallowNull] string obj)
+        public int GetHashCode(string obj)
         {
             return obj.ToLower().GetHashCode();
         }

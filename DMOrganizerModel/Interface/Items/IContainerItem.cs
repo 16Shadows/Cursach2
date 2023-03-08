@@ -11,9 +11,9 @@ namespace DMOrganizerModel.Interface.Items
         /// <summary>
         /// The entire current content of container item.
         /// </summary>
-        public List<ContentType> Content { get; }
+        public IEnumerable<ContentType> Content { get; }
 
-        public ContainerItemCurrentContentEventArgs(List<ContentType> content)
+        public ContainerItemCurrentContentEventArgs(IEnumerable<ContentType> content)
         {
             Content = content ?? throw new ArgumentNullException(nameof(content));
         }
@@ -24,6 +24,22 @@ namespace DMOrganizerModel.Interface.Items
     /// </summary>
     public class ContainerItemContentChangedEventArgs<ContentType> : EventArgs where ContentType : IItem
     {
+        public enum ResultType
+        {
+            /// <summary>
+            /// The operation was completed successfully
+            /// </summary>
+            Success,
+            /// <summary>
+            /// There already is an item with the same name
+            /// </summary>
+            DuplicateItem,
+            /// <summary>
+            /// There is no such item
+            /// </summary>
+            NoSuchItem
+        }
+
         /// <summary>
         /// The type of change this event represents.
         /// </summary>
@@ -49,10 +65,21 @@ namespace DMOrganizerModel.Interface.Items
         /// </summary>
         public ChangeType Type { get; }
 
-        public ContainerItemContentChangedEventArgs(ContentType item, ChangeType type)
+        /// <summary>
+        /// The result of the operation
+        /// </summary>
+        public ResultType Result { get; }
+
+        /// <summary>
+        /// True if the content has actually changed
+        /// </summary>
+        public bool HasChanged => Result == ResultType.Success;
+
+        public ContainerItemContentChangedEventArgs(ContentType item, ChangeType type, ResultType result = ResultType.Success)
         {
             Item = item ?? throw new ArgumentNullException(nameof(item));
             Type = type;
+            Result = result;
         }
     }
 
@@ -83,16 +110,14 @@ namespace DMOrganizerModel.Interface.Items
         /// Adds an item to this IContainerItem.
         /// </summary>
         /// <param name="item">The item to add</param>
-        /// <exception cref="ArgumentException">Can be throw if the IContainerItem already has the item</exception>
         /// <exception cref="InvalidOperationException">Can be thrown if the IContainerItem has already been deleted</exception>
-        void AddContainerItemItem(ContentType item);
+        void AddContainerItem(ContentType item);
 
         /// <summary>
         /// Removes and item from this IContainerItem.
         /// </summary>
         /// <param name="item">The item to remove</param>
-        /// <exception cref="ArgumentException">Can be throw if the IContainerItem doesn't have the item</exception>
         /// <exception cref="InvalidOperationException">Can be thrown if the IContainerItem has already been deleted</exception>
-        void RemoveContainerItemItem(ContentType item);
+        void RemoveContainerItem(ContentType item);
     }
 }
