@@ -35,7 +35,7 @@ namespace DMOrganizerModel.Implementation.Model
         /// <param name="identifier">Implementation-dependent identifier for organizer. This implementation uses path to a file on the disk</param>
         /// <returns>An instance of an organizer</returns>
         /// <exception cref="Exception">Can throw implementation-dependent exception if loading fails</exception>
-        public static IOrganizerModel LoadOrganizer(string identifier)
+        public static IOrganizer LoadOrganizer(string identifier)
         {
             lock (m_SyncRoot)
             {
@@ -58,7 +58,7 @@ namespace DMOrganizerModel.Implementation.Model
         /// </summary>
         /// <param name="organizer">The organizer to unload</param>
         /// <exception cref="ArgumentException">Thrown when organizer was not created by LoadOrganizer of this instance</exception>
-        public static void UnloadOrganizer(IOrganizerModel organizer)
+        public static void UnloadOrganizer(IOrganizer organizer)
         {
             lock (m_SyncRoot)
             {

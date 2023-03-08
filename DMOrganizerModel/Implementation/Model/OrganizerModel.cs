@@ -3,7 +3,6 @@ using System.Data.SQLite;
 using System.Threading.Tasks;
 using DMOrganizerModel.Implementation.Content;
 using DMOrganizerModel.Implementation.NavigationTree;
-using DMOrganizerModel.Interface;
 using DMOrganizerModel.Interface.Content;
 using DMOrganizerModel.Interface.Model;
 using DMOrganizerModel.Interface.Reference;
@@ -12,10 +11,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows.Media.Animation;
+using DMOrganizerModel.Interface.Items;
 
 namespace DMOrganizerModel.Implementation.Model
 {
-    internal sealed class OrganizerModel : IOrganizerModel, IDisposable
+    internal sealed class OrganizerModel : IOrganizer, IDisposable
     {
         private class NoCaseCollation : SQLiteFunction
         {
@@ -45,9 +45,9 @@ namespace DMOrganizerModel.Implementation.Model
         #endregion
 
         #region Events
-        public event OperationResultEventHandler<IOrganizerModel, ReferenceDecodedEventArgs>? ReferenceDecoded;
-        public event OperationResultEventHandler<IOrganizerModel, NavigationTreeReceivedEventArgs>? NavigationTreeReceived;
-        public event OperationResultEventHandler<IOrganizerModel>? DataDeleted;
+        public event OperationResultEventHandler<IOrganizer, ReferenceDecodedEventArgs>? ReferenceDecoded;
+        public event OperationResultEventHandler<IOrganizer, NavigationTreeReceivedEventArgs>? NavigationTreeReceived;
+        public event OperationResultEventHandler<IOrganizer>? DataDeleted;
         #endregion
 
         #region Constructors

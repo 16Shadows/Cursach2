@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using DMOrganizerModel.Interface.Reference;
 using DMOrganizerModel.Interface.Content;
 using DMOrganizerModel.Interface.NavigationTree;
+using DMOrganizerModel.Interface.Items;
 
 namespace DMOrganizerModel.Interface.Model
 {
@@ -32,7 +33,7 @@ namespace DMOrganizerModel.Interface.Model
         public IReference? ReferenceInstance { get; init; } = null;
     }
 
-    public interface IOrganizerModel
+    public interface IOrganizer
     {
         /// <summary>
         /// Creates a reference to a document's section or a document
@@ -53,7 +54,7 @@ namespace DMOrganizerModel.Interface.Model
         /// <summary>
         /// Is called when a reference has been decoded
         /// </summary>
-        event OperationResultEventHandler<IOrganizerModel, ReferenceDecodedEventArgs>? ReferenceDecoded;
+        event OperationResultEventHandler<IOrganizer, ReferenceDecodedEventArgs>? ReferenceDecoded;
 
         /// <summary>
         /// Get the root of this model's navigation tree (which is a dummy node)
@@ -62,7 +63,7 @@ namespace DMOrganizerModel.Interface.Model
         /// <summary>
         /// Is called when the navigation tree has been received
         /// </summary>
-        event OperationResultEventHandler<IOrganizerModel, NavigationTreeReceivedEventArgs>? NavigationTreeReceived;
+        event OperationResultEventHandler<IOrganizer, NavigationTreeReceivedEventArgs>? NavigationTreeReceived;
 
         /// <summary>
         /// Permanently deletes all data managed by this model
@@ -72,6 +73,6 @@ namespace DMOrganizerModel.Interface.Model
          /// <summary>
         /// Is called when a document has been created successfully
         /// </summary>
-        event OperationResultEventHandler<IOrganizerModel>? DataDeleted;
+        event OperationResultEventHandler<IOrganizer>? DataDeleted;
     }
 }

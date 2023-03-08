@@ -1,11 +1,11 @@
 ﻿using DMOrganizerModel.Implementation.Model;
-using DMOrganizerModel.Interface;
 using DMOrganizerModel.Interface.Content;
 using DMOrganizerModel.Interface.NavigationTree;
 using DMOrganizerModel.Implementation.NavigationTree;
 using System;
 using System.Text;
 using System.Threading.Tasks;
+using DMOrganizerModel.Interface.Items;
 
 namespace DMOrganizerModel.Implementation.Content
 {
