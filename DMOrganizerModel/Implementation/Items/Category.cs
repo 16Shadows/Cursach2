@@ -1,62 +1,13 @@
 ﻿using DMOrganizerModel.Implementation.Utility;
 using DMOrganizerModel.Interface.Items;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using System.Transactions;
 
 namespace DMOrganizerModel.Implementation.Items
 {
     internal sealed class Category : ContainerItem<IItem>, ICategory
     {
         #region IItem
-        public override void ChangeItemName(string newName)
-        {
-            CheckDeleted();
-            Task.Run(() =>
-            {
-                //TODO: Validate name
-                if (false)
-                {
-                    InvokeItemNameChanged(null, ItemNameChangedEventArgs.ResultType.InvalidName);
-                    return;
-                }
-
-                bool isUnique = false;
-                lock (Lock)
-                {
-                    
-                    Connection.Read(connection =>
-                    {
-                        using (var command = connection.CreateCommand())
-                        {
-                            command.CommandText = $"SELECT ID FROM Category WHERE Title IN (SELECT Title FROM Category WHERE ID={ItemID})";
-                            isUnique = command.ExecuteScalar() == null;
-                        }
-                    });
-
-                    if (isUnique)
-                    {
-                        Connection.Write(connection =>
-                        {
-                            using (var command = connection.CreateCommand())
-                            {
-                                command.CommandText = $"UPDATE Category SET Title=$title WHERE ID={ItemID}";
-                                command.Parameters.AddWithValue("$title", newName);
-                                command.ExecuteNonQuery();
-                            }
-                        });
-                    }
-                }
-                if (isUnique)
-                    InvokeItemNameChanged(newName, ItemNameChangedEventArgs.ResultType.Success);
-                else
-                    InvokeItemNameChanged(null, ItemNameChangedEventArgs.ResultType.DuplicateName);         
-            });
-        }
-
         public override void DeleteItem()
         {
             CheckDeleted();
@@ -65,57 +16,31 @@ namespace DMOrganizerModel.Implementation.Items
                 bool success = false;
                 lock(Lock)
                 {
-                    Connection.Write(connection =>
-                    {
-                        using (var command = connection.CreateCommand())
-                        {
-                            command.CommandText = $"DELETE FROM Category WHERE ID={ItemID}";
-                            success = command.ExecuteNonQuery() > 0;
-                        }
-                    });
+                    success = Query.DeleteCategory(Connection, ItemID);
                     base.DeleteItem();
                 }
                 InvokeItemDeleted(success ? ItemDeletedResult.Success : ItemDeletedResult.AlreadyDeleted);
             });
         }
-
-        public override void RequestItemNameUpdate()
-        {
-            CheckDeleted();
-            Task.Run(() =>
-            {
-                string result = "";
-                Connection.Read(connection =>
-                {
-                    using (var command = connection.CreateCommand())
-                    {
-                        command.CommandText = $"SELECT Title FROM Category WHERE ID={ItemID}";
-                        using (var reader = command.ExecuteReader())
-                        {
-                            reader.Read();
-                            result = reader.GetString(0);
-                        }
-                    }
-                });
-                InvokeItemNameChanged(result, ItemNameChangedEventArgs.ResultType.Requested);
-            });
-        }
         #endregion
 
         #region IContainerItem
-        public override void AddContainerItem(IItem item)
-        {
-            CheckDeleted();
-        }
-
-        public override void RemoveContainerItem(IItem item)
-        {
-            CheckDeleted();
-        }
-
         public override void RequestContainerItemCurrentContent()
         {
             CheckDeleted();
+
+            Task.Run(() =>
+            {
+                List<IItem> result = new List<IItem>();
+                lock (Lock)
+                {
+                    foreach (int item in Query.GetCategoriesInCategory(Connection, ItemID))
+                        result.Add(new Category(item, this, Connection));
+                    foreach (int item in Query.GetDocumentsInCategory(Connection, ItemID))
+                        result.Add(new Document(item, this, Connection));
+                }
+                InvokeContainerItemCurrentContent(result);
+            });
         }
         #endregion
 
@@ -123,14 +48,73 @@ namespace DMOrganizerModel.Implementation.Items
         public void CreateCategory(string name)
         {
             CheckDeleted();
+            Task.Run(() =>
+            {
+                bool isUnique = false;
+                IItem item = null;
+                lock (Lock)
+                {
+                    isUnique = Query.HasDuplicateNameInCategory(Connection, name, ItemID);
+
+                    if (isUnique)
+                        item = new Category(Query.CreateCategory(Connection, name, ItemID), this, Connection);
+                }
+                InvokeContainerItemContentChanged(ContainerItemContentChangedEventArgs<IItem>.ChangeType.ItemCreated, item, isUnique ? ContainerItemContentChangedEventArgs<IItem>.ResultType.Success : ContainerItemContentChangedEventArgs<IItem>.ResultType.DuplicateItem);
+            });
         }
 
         public void CreateDocument(string name)
         {
             CheckDeleted();
+            Task.Run(() =>
+            {
+                bool isUnique = false;
+                IItem item = null;
+                lock (Lock)
+                {
+                    isUnique = Query.HasDuplicateNameInCategory(Connection, name, ItemID);
+
+                    if (isUnique)
+                        item = new Document(Query.CreateDocument(Connection, name, ItemID), this, Connection);
+                }
+                InvokeContainerItemContentChanged(ContainerItemContentChangedEventArgs<IItem>.ChangeType.ItemCreated, item, isUnique ? ContainerItemContentChangedEventArgs<IItem>.ResultType.Success : ContainerItemContentChangedEventArgs<IItem>.ResultType.DuplicateItem);
+            });
         }
         #endregion
 
-        public Category(SyncronizedSQLiteConnection connection) : base(connection) {}
+        public Category(int itemID, ContainerItemBase? parent, SyncronizedSQLiteConnection connection) : base(itemID, parent, connection) {}
+
+        public override bool SetParent(ContainerItemBase? parent)
+        {
+            CheckDeleted();
+            lock (Lock)
+            {
+                bool suc = Query.SetCategoryParent(Connection, ItemID, parent?.ItemID);
+                Parent = parent;
+                return suc;
+            }
+        }
+
+        protected override bool SetName(string name)
+        {
+            return Query.SetSectionName(Connection, ItemID, name);
+        }
+
+        public override string GetName()
+        {
+            CheckDeleted();
+            lock (Lock)
+                return Query.GetCategoryName(Connection, ItemID);
+        }
+
+        public override bool HasItem(IItem item)
+        {
+            return (item is Document doc && Query.CategoryHasDocument(Connection, doc.ItemID, ItemID));
+        }
+
+        public override bool HasItemWithName(string name)
+        {
+            return Query.HasDuplicateNameInCategory(Connection, name, ItemID);
+        }
     }
 }

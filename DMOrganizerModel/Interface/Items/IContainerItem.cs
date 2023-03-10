@@ -52,7 +52,11 @@ namespace DMOrganizerModel.Interface.Items
             /// <summary>
             /// An item was removed from this IContainerItem.
             /// </summary>
-            ItemRemoved
+            ItemRemoved,
+            /// <summary>
+            /// An item was created within the container
+            /// </summary>
+            ItemCreated
         }
 
         /// <summary>
