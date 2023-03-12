@@ -19,7 +19,7 @@ namespace DMOrganizerModel.Interface.Items
         /// <summary>
         /// Is invoked when the DeleteItem is completed
         /// </summary>
-        event TypedEventHandler<INamedItem, ItemDeletedResult> ItemDeleted;
+        event TypedEventHandler<IItem, ItemDeletedResult> ItemDeleted;
 
         /// <summary>
         /// Deletes the assosiated entity

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DMOrganizerModel.Implementation.Items;
+using System;
 using System.Collections.Generic;
 
 namespace DMOrganizerModel.Interface.Items
@@ -88,12 +89,12 @@ namespace DMOrganizerModel.Interface.Items
         /// <summary>
         /// Is invoked when a request for this item's current content is complete.
         /// </summary>
-        event TypedEventHandler<ICategory, ItemsContainerCurrentContentEventArgs<ContentType>> ItemsContainerCurrentContent;
+        event TypedEventHandler<IItemsContainer<ContentType>, ItemsContainerCurrentContentEventArgs<ContentType>> ItemsContainerCurrentContent;
         
         /// <summary>
         /// Is invoked when an item is added to or removed from this item.
         /// </summary>
-        event TypedEventHandler<ICategory, ItemsContainerContentChangedEventArgs<ContentType>> ItemsContainerContentChanged;
+        event TypedEventHandler<IItemsContainer<ContentType>, ItemsContainerContentChangedEventArgs<ContentType>> ItemsContainerContentChanged;
 
         /// <summary>
         /// Requests item's current content.
