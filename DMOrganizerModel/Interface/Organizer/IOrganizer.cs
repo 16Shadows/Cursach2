@@ -32,7 +32,7 @@ namespace DMOrganizerModel.Interface.Organizer
         }
     }
 
-    public interface IOrganizer : IItemsContainer<IOrganizerItem>
+    public interface IOrganizer : IContainerItem<IOrganizerItem>
     {
         /// <summary>
         /// Is invoked when a create operation is completed

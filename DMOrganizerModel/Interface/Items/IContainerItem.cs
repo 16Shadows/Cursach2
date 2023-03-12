@@ -1,5 +1,4 @@
-﻿using DMOrganizerModel.Implementation.Items;
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace DMOrganizerModel.Interface.Items
@@ -34,11 +33,7 @@ namespace DMOrganizerModel.Interface.Items
             /// <summary>
             /// There already is an item with the same name
             /// </summary>
-            DuplicateItem,
-            /// <summary>
-            /// There is no such item
-            /// </summary>
-            NoSuchItem
+            DuplicateItem
         }
 
         /// <summary>
@@ -84,17 +79,17 @@ namespace DMOrganizerModel.Interface.Items
         }
     }
 
-    public interface IItemsContainer<ContentType> where ContentType : IItem
+    public interface IContainerItem<ContentType> where ContentType : IItem
     {
         /// <summary>
         /// Is invoked when a request for this item's current content is complete.
         /// </summary>
-        event TypedEventHandler<IItemsContainer<ContentType>, ItemsContainerCurrentContentEventArgs<ContentType>> ItemsContainerCurrentContent;
+        event TypedEventHandler<IContainerItem<ContentType>, ItemsContainerCurrentContentEventArgs<ContentType>> ItemsContainerCurrentContent;
         
         /// <summary>
         /// Is invoked when an item is added to or removed from this item.
         /// </summary>
-        event TypedEventHandler<IItemsContainer<ContentType>, ItemsContainerContentChangedEventArgs<ContentType>> ItemsContainerContentChanged;
+        event TypedEventHandler<IContainerItem<ContentType>, ItemsContainerContentChangedEventArgs<ContentType>> ItemsContainerContentChanged;
 
         /// <summary>
         /// Requests item's current content.
