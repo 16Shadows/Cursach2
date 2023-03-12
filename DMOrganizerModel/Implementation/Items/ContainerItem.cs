@@ -12,22 +12,22 @@ namespace DMOrganizerModel.Implementation.Items
     /// A generic implementation of container item
     /// </summary>
     /// <typeparam name="ContentType">The type of items container within</typeparam>
-    internal abstract class ContainerItem<ContentType> : Item, IItemContainerBaseTyped<ContentType> where ContentType : IItem
+    internal abstract class ContainerItem<ContentType> : Item, IItemContainer<ContentType>, IItemContainerBase where ContentType : IItem
     {
         protected ContainerItem(int itemID, IItemContainerBase parent, Organizer organizer) : base(itemID, parent, organizer) {}
 
         #region IItemsContainer
-        public event TypedEventHandler<IItemContainer<ContentType>, ItemsContainerCurrentContentEventArgs<ContentType>>? ItemsContainerCurrentContent;
-        public event TypedEventHandler<IItemContainer<ContentType>, ItemsContainerContentChangedEventArgs<ContentType>>? ItemsContainerContentChanged;
+        public event TypedEventHandler<IItemContainer<ContentType>, ItemContainerCurrentContentEventArgs<ContentType>>? ItemContainerCurrentContent;
+        public event TypedEventHandler<IItemContainer<ContentType>, ItemContainerContentChangedEventArgs<ContentType>>? ItemContainerContentChanged;
 
-        protected void InvokeItemsContainerCurrentContent(IEnumerable<ContentType> items)
+        protected void InvokeItemContainerCurrentContent(IEnumerable<ContentType> items)
         {
-            ItemsContainerCurrentContent?.Invoke(this, new ItemsContainerCurrentContentEventArgs<ContentType>(items));
+            ItemContainerCurrentContent?.Invoke(this, new ItemContainerCurrentContentEventArgs<ContentType>(items));
         }
 
-        protected void InvokeItemsContainerContentChanged(ContentType item, ItemsContainerContentChangedEventArgs<ContentType>.ChangeType type, ItemsContainerContentChangedEventArgs<ContentType>.ResultType result)
+        protected void InvokeItemContainerContentChanged(ContentType item, ItemContainerContentChangedEventArgs<ContentType>.ChangeType type, ItemContainerContentChangedEventArgs<ContentType>.ResultType result)
         {
-            ItemsContainerContentChanged?.Invoke(this, new ItemsContainerContentChangedEventArgs<ContentType>(item, type, result));
+            ItemContainerContentChanged?.Invoke(this, new ItemContainerContentChangedEventArgs<ContentType>(item, type, result));
         }
 
         public void MakeParentOf(ContentType item)
@@ -44,26 +44,26 @@ namespace DMOrganizerModel.Implementation.Items
                     if (isUnique)
                         itemBase.SetParent(this);
                 }
-                InvokeItemsContainerContentChanged(item, ItemsContainerContentChangedEventArgs<ContentType>.ChangeType.ItemAdded, isUnique ? ItemsContainerContentChangedEventArgs<ContentType>.ResultType.Success : ItemsContainerContentChangedEventArgs<ContentType>.ResultType.DuplicateItem);
+                InvokeItemContainerContentChanged(item, ItemContainerContentChangedEventArgs<ContentType>.ChangeType.ItemAdded, isUnique ? ItemContainerContentChangedEventArgs<ContentType>.ResultType.Success : ItemContainerContentChangedEventArgs<ContentType>.ResultType.DuplicateItem);
             });
         }
 
-        public void RequestOrganizerItemsContainerCurrentContent()
+        public void RequestItemContainerCurrentContent()
         {
             Task.Run(() =>
             {
                 IEnumerable<ContentType> res = null;
                 lock (Lock)
                     res = GetContent();
-                InvokeItemsContainerCurrentContent(res);
+                InvokeItemContainerCurrentContent(res);
             });
         }
         #endregion
 
         #region IItemsContainerBase
-        public virtual bool CanBeParentOf(ContentType item) => true;
+        protected virtual bool CanBeParentOf(ContentType item) => true;
         public virtual bool CanHaveItemWithName(string name) => true;
-        public abstract bool HasItem(ContentType item);
+        protected abstract bool HasItem(ContentType item);
         #endregion
 
         protected abstract IEnumerable<ContentType> GetContent();
@@ -75,7 +75,7 @@ namespace DMOrganizerModel.Implementation.Items
             else if (!HasItem(itemTyped))
                 throw new ArgumentException("This container does not have such item.", nameof(item));
 
-            InvokeItemsContainerContentChanged(itemTyped, ItemsContainerContentChangedEventArgs<ContentType>.ChangeType.ItemRemoved, ItemsContainerContentChangedEventArgs<ContentType>.ResultType.Success);
+            InvokeItemContainerContentChanged(itemTyped, ItemContainerContentChangedEventArgs<ContentType>.ChangeType.ItemRemoved, ItemContainerContentChangedEventArgs<ContentType>.ResultType.Success);
         }
     }
 }

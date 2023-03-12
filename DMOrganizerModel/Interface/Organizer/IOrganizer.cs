@@ -1,5 +1,5 @@
 ﻿using DMOrganizerModel.Interface.Items;
-using DMOrganizerModel.Interface.Reference;
+using DMOrganizerModel.Interface.References;
 using System;
 
 namespace DMOrganizerModel.Interface.Organizer

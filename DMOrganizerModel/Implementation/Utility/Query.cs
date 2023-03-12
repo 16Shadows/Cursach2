@@ -6,6 +6,45 @@ namespace DMOrganizerModel.Implementation.Utility
     internal static class Query
     {
         #region Organizer
+        public static bool HasNameInOrganizer(SyncronizedSQLiteConnection connection, string name)
+        {
+            bool success = false;
+            connection.Read(con =>
+            {
+                using SQLiteCommand cmd = con.CreateCommand();
+                cmd.CommandText = $"(SELECT ID FROM Category WHERE Title=$title AND Parent=NULL)" +
+                                  " UNION ALL " +
+                                  $"(SELECT Section.ID FROM (Document INNER JOIN Section ON Document.SectionID=Section.ID) WHERE Section.Title=$title AND Document.CategoryID=NULL)";
+                cmd.Parameters.AddWithValue("$title", name);
+                success = cmd.ExecuteScalar() != null;
+            });
+            return success;
+        }
+
+        public static bool OrganizerHasDocument(SyncronizedSQLiteConnection connection, int documentID)
+        {
+            bool success = false;
+            connection.Read(con =>
+            {
+                using SQLiteCommand cmd = con.CreateCommand();
+                cmd.CommandText = $"SELECT SectionID FROM Document WHERE SectionID={documentID} AND CategoryID=NULL";
+                success = cmd.ExecuteNonQuery() > 0;
+            });
+            return success;
+        }
+
+        public static bool OrganizerHasCategory(SyncronizedSQLiteConnection connection, int categoryID)
+        {
+            bool success = false;
+            connection.Read(con =>
+            {
+                using SQLiteCommand cmd = con.CreateCommand();
+                cmd.CommandText = $"SELECT ID FROM Category WHERE ID={categoryID} AND Parent=NULL";
+                success = cmd.ExecuteNonQuery() > 0;
+            });
+            return success;
+        }
+
         public static List<int> GetDocumentsInOrganizer(SyncronizedSQLiteConnection connection)
         {
             List<int> res = new List<int>();
@@ -36,6 +75,30 @@ namespace DMOrganizerModel.Implementation.Utility
         #endregion
 
         #region Document
+        public static int CreateDocument(SyncronizedSQLiteConnection connecton, string name, int? parentID)
+        {
+            int res = -1;
+            connecton.Write(con =>
+            {
+                using SQLiteCommand cmd = con.CreateCommand();
+                if (parentID.HasValue)
+                {
+                    cmd.CommandText = $"INSERT INTO Section (Title) VALUES ($title);" +
+                                  $"INSERT INTO Document (CategoryID, SectionID) VALUES ({parentID}, last_insert_rowid());" +
+                                  $"SELECT SectionID FROM Document WHERE rowid=last_insert_rowid();";
+                }
+                else
+                {
+                    cmd.CommandText = $"INSERT INTO Section (Title) VALUES ($title);" +
+                                  $"INSERT INTO Document (SectionID) VALUES (last_insert_rowid());" +
+                                  $"SELECT SectionID FROM Document WHERE rowid=last_insert_rowid();";
+                }
+                cmd.Parameters.AddWithValue("$title", name);
+                res = (int)cmd.ExecuteScalar();
+            });
+            return res;
+        }
+
         public static bool DocumentHasTag(SyncronizedSQLiteConnection connection, int documentID, string tag)
         {
             bool success = false;
@@ -101,6 +164,17 @@ namespace DMOrganizerModel.Implementation.Utility
             return result;
         }
 
+        public static bool SetDocumentParent(SyncronizedSQLiteConnection connection, int documentID, int categoryID)
+        {
+            bool success = false;
+            connection.Write(con =>
+            {
+                using SQLiteCommand cmd = con.CreateCommand();
+                cmd.CommandText = $"UPDATE Document SET CategoryID={categoryID} WHERE SectionID={documentID}";
+                success = cmd.ExecuteNonQuery() > 0;
+            });
+            return success;
+        }
         #endregion
 
         #region Section
@@ -131,16 +205,13 @@ namespace DMOrganizerModel.Implementation.Utility
             return success;
         }
         
-        public static bool SetSectionParent(SyncronizedSQLiteConnection connection, int sectionID, int? parentID)
+        public static bool SetSectionParent(SyncronizedSQLiteConnection connection, int sectionID, int parentID)
         {
             bool success = false;
             connection.Write(con =>
             {
                 using SQLiteCommand cmd = con.CreateCommand();
-                if (parentID.HasValue)
-                    cmd.CommandText = $"UPDATE Category SET Parent={parentID} WHERE ID={sectionID}";
-                else
-                    cmd.CommandText = $"UPDATE Category SET Parent=NULL WHERE ID={sectionID}";
+                cmd.CommandText = $"UPDATE Category SET Parent={parentID} WHERE ID={sectionID}";
                 success = cmd.ExecuteNonQuery() > 0;
             });
             return success;
@@ -223,6 +294,18 @@ namespace DMOrganizerModel.Implementation.Utility
             });
             return res;
         }
+
+        public static bool DeleteSection(SyncronizedSQLiteConnection connection, int sectionID)
+        {
+            bool success = false;
+            connection.Write(con =>
+            {
+                using SQLiteCommand cmd = con.CreateCommand();
+                cmd.CommandText = $"DELETE FROM Section WHERE ID={sectionID}";
+                success = cmd.ExecuteNonQuery() > 0;
+            });
+            return success;
+        }
         #endregion
 
         #region Category
@@ -240,30 +323,24 @@ namespace DMOrganizerModel.Implementation.Utility
             });
             return success;
         }
-        
-        public static int CreateDocument(SyncronizedSQLiteConnection connecton, string name, int parentID)
-        {
-            int res = -1;
-            connecton.Write(con =>
-            {
-                using SQLiteCommand cmd = con.CreateCommand();
-                cmd.CommandText = $"INSERT INTO Section (Title) VALUES ($title);" +
-                                  $"INSERT INTO Document (CategoryID, SectionID) VALUES ({parentID}, last_insert_rowid());" +
-                                  $"SELECT SectionID FROM Document WHERE rowid=last_insert_rowid();";
-                cmd.Parameters.AddWithValue("$title", name);
-                res = (int)cmd.ExecuteScalar();
-            });
-            return res;
-        }
 
-        public static int CreateCategory(SyncronizedSQLiteConnection connection, string name, int parentID)
+        public static int CreateCategory(SyncronizedSQLiteConnection connection, string name, int? parentID)
         {
             int res = -1;
             connection.Write(con =>
             {
                 using SQLiteCommand cmd = con.CreateCommand();
-                cmd.CommandText = $"INSERT INTO Category (Title, Parent) VALUES ($title, {parentID});" +
+                if (parentID.HasValue)
+                {
+                    cmd.CommandText = $"INSERT INTO Category (Title, Parent) VALUES ($title, {parentID});" +
                                   $"SELECT last_insert_rowid();";
+                }
+                else
+                {
+                    cmd.CommandText = $"INSERT INTO Category (Title) VALUES ($title);" +
+                                  $"SELECT last_insert_rowid();";
+                }
+                
                 cmd.Parameters.AddWithValue("$title", name);
                 res = (int)cmd.ExecuteScalar();
             });

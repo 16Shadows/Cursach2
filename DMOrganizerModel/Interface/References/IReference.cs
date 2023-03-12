@@ -1,4 +1,4 @@
-﻿namespace DMOrganizerModel.Interface.Reference
+﻿namespace DMOrganizerModel.Interface.References
 {
     public interface IReference
     {

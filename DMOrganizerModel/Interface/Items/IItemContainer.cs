@@ -6,14 +6,14 @@ namespace DMOrganizerModel.Interface.Items
     /// <summary>
     /// Event args for ContainerItemCurrentContent of IContainerItem.
     /// </summary>
-    public class ItemsContainerCurrentContentEventArgs<ContentType> : EventArgs where ContentType : IItem
+    public class ItemContainerCurrentContentEventArgs<ContentType> : EventArgs where ContentType : IItem
     {
         /// <summary>
         /// The entire current content of container item.
         /// </summary>
         public IEnumerable<ContentType> Content { get; }
 
-        public ItemsContainerCurrentContentEventArgs(IEnumerable<ContentType> content)
+        public ItemContainerCurrentContentEventArgs(IEnumerable<ContentType> content)
         {
             Content = content ?? throw new ArgumentNullException(nameof(content));
         }
@@ -22,7 +22,7 @@ namespace DMOrganizerModel.Interface.Items
     /// <summary>
     /// Event args for ContainerItemContentChanged of IContainerItem.
     /// </summary>
-    public class ItemsContainerContentChangedEventArgs<ContentType> : EventArgs where ContentType : IItem
+    public class ItemContainerContentChangedEventArgs<ContentType> : EventArgs where ContentType : IItem
     {
         public enum ResultType
         {
@@ -71,7 +71,7 @@ namespace DMOrganizerModel.Interface.Items
         /// </summary>
         public bool HasChanged => Result == ResultType.Success;
 
-        public ItemsContainerContentChangedEventArgs(ContentType item, ChangeType type, ResultType result = ResultType.Success)
+        public ItemContainerContentChangedEventArgs(ContentType item, ChangeType type, ResultType result = ResultType.Success)
         {
             Item = item ?? throw new ArgumentNullException(nameof(item));
             Type = type;
@@ -84,18 +84,18 @@ namespace DMOrganizerModel.Interface.Items
         /// <summary>
         /// Is invoked when a request for this item's current content is complete.
         /// </summary>
-        event TypedEventHandler<IItemContainer<ContentType>, ItemsContainerCurrentContentEventArgs<ContentType>> ItemsContainerCurrentContent;
+        event TypedEventHandler<IItemContainer<ContentType>, ItemContainerCurrentContentEventArgs<ContentType>> ItemContainerCurrentContent;
         
         /// <summary>
         /// Is invoked when an item is added to or removed from this item.
         /// </summary>
-        event TypedEventHandler<IItemContainer<ContentType>, ItemsContainerContentChangedEventArgs<ContentType>> ItemsContainerContentChanged;
+        event TypedEventHandler<IItemContainer<ContentType>, ItemContainerContentChangedEventArgs<ContentType>> ItemContainerContentChanged;
 
         /// <summary>
         /// Requests item's current content.
         /// </summary>
         /// <exception cref="InvalidOperationException">Can be thrown if the items has already been deleted</exception>
-        void RequestOrganizerItemsContainerCurrentContent();
+        void RequestItemContainerCurrentContent();
 
         /// <summary>
         /// Makes this container the parent of the item
