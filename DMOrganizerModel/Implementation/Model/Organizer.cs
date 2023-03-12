@@ -141,6 +141,80 @@ namespace DMOrganizerModel.Implementation.Model
                 COMMIT;";
 
                 command.ExecuteNonQuery();
+
+                // second module database init
+                command.CommandText =
+                @"BEGIN TRANSACTION;
+                CREATE TABLE IF NOT EXISTS ""Book"" (
+	                ""ID""	INTEGER NOT NULL UNIQUE,
+	                ""Title"" 	TEXT NOT NULL,
+	                ""ID_Parent_Category""	INTEGER,
+	                PRIMARY KEY(""ID"" AUTOINCREMENT)
+                FOREIGN KEY(""ID_Parent_Category"") REFERENCES ""Category""(""ID"") ON DELETE CASCADE
+                );
+                CREATE TABLE IF NOT EXISTS ""Object"" (
+	                ""ID""	INTEGER NOT NULL UNIQUE,
+	                ""Link_to_Object""	TEXT NOT NULL,
+	                PRIMARY KEY(""ID"" AUTOINCREMENT)
+                );
+                CREATE TABLE IF NOT EXISTS ""Page"" (
+	                ""ID""	INTEGER NOT NULL UNIQUE,
+	                ""ID_Parent_Book""	INTEGER NOT NULL,
+	                PRIMARY KEY(""ID"" AUTOINCREMENT),
+	                FOREIGN KEY(""ID_Parent_Book"") REFERENCES ""Book""(""ID"") ON DELETE CASCADE
+                );
+                CREATE TABLE IF NOT EXISTS ""Container"" (
+	                ""ID""	INTEGER NOT NULL UNIQUE,
+	                ""Type""	INTEGER NOT NULL,
+	                ""Height""	INTEGER NOT NULL,
+                ""Width""	INTEGER NOT NULL,
+	                ""CoordinateX""	INTEGER NOT NULL,
+                ""CoordinateY""	INTEGER NOT NULL,
+	                PRIMARY KEY(""ID"" AUTOINCREMENT)
+                );
+                CREATE TABLE IF NOT EXISTS ""Set_Page_Containers"" (
+	                ""ID""	INTEGER NOT NULL UNIQUE,
+	                ""ID_Page""	INTEGER NOT NULL,
+	                ""ID_Container""	INTEGER NOT NULL,
+	                PRIMARY KEY(""ID"" AUTOINCREMENT),
+	                FOREIGN KEY(""ID_Container"") REFERENCES ""Container""(""ID""),
+	                FOREIGN KEY(""ID_Page"") REFERENCES ""Page""(""ID"") ON DELETE CASCADE
+                );
+                CREATE TABLE IF NOT EXISTS ""Set_Book_Pages"" (
+	                ""ID""	INTEGER NOT NULL UNIQUE,
+	                ""ID_Book""	INTEGER NOT NULL,
+	                ""ID_Page""	INTEGER NOT NULL,
+	                PRIMARY KEY(""ID"" AUTOINCREMENT),
+	                FOREIGN KEY(""ID_Page"") REFERENCES ""Page""(""ID""),
+	                FOREIGN KEY(""ID_Book"") REFERENCES ""Book""(""ID"") ON DELETE CASCADE
+                );
+                CREATE TABLE IF NOT EXISTS ""Set_Container_Objects"" (
+	                ""ID""	INTEGER NOT NULL UNIQUE,
+	                ""ID_Container""	INTEGER NOT NULL,
+	                ""ID_Object""	INTEGER NOT NULL,
+	                PRIMARY KEY(""ID"" AUTOINCREMENT),
+	                FOREIGN KEY(""ID_Object"") REFERENCES ""Object""(""ID""),
+	                FOREIGN KEY(""ID_Container"") REFERENCES ""Container""(""ID"") ON DELETE CASCADE
+                );
+
+                CREATE TRIGGER IF NOT EXISTS Page_deletion_on_book_deletion AFTER DELETE ON Set_Book_Pages
+                BEGIN
+                DELETE FROM Page WHERE Page.ID=OLD.ID_Page;
+                END;
+
+                CREATE TRIGGER IF NOT EXISTS Container_deletion_on_page_deletion AFTER DELETE ON Set_Page_Containers
+                BEGIN
+                DELETE FROM Container WHERE Container.ID=OLD.ID_Container;
+                END;
+
+                CREATE TRIGGER IF NOT EXISTS Object_deletion_on_container_deletion AFTER DELETE ON Set_Container_Objects
+                BEGIN
+                DELETE FROM Object WHERE Object.ID=OLD.ID_Object;
+                END;
+
+                COMMIT;
+                ";
+                command.ExecuteNonQuery();
             }
             finally
             {

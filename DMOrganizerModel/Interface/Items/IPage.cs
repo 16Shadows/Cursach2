@@ -7,6 +7,9 @@ namespace DMOrganizerModel.Interface.Items
     /// </summary>
     public interface IPage: INamedItem, IItemContainer<IObjectContainer>
     {
-        //Name
+        //editMode - true/false, 
+        //create container
+        
+
     }
 }

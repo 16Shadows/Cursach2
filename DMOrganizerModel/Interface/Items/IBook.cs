@@ -12,5 +12,9 @@ namespace DMOrganizerModel.Interface.Items
     public interface IBook : INamedItem, IItemContainer<IPage>
     {
         //Name, ID of parent category
+
+        // create page
+        //change pages order
+        //
     }
 }

@@ -7,6 +7,11 @@ namespace DMOrganizerModel.Interface.Items
     /// </summary>
     public interface IObjectContainer : IItem, IItemContainer<IObject>
     {
-        //Type(int), Size(string?), Coordinates(string?)
+        //has minimum (will set) size and maximum (page size)
+        //Type(int), Height(int), Width(int), CoordX(int), CoordY(int)
+
+        //create child-object (with + button maybe)
+        //update coordinates X, Y
+        //update height, width
     }
 }
