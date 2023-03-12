@@ -12,21 +12,57 @@ namespace DMOrganizerModel.Interface.Items
         /// </summary>
         public string Content { get; }
 
-        public SectionContentChangedEventArgs(string name)
+        /// <summary>
+        /// True if the content has actually changed and wasn't just requested
+        /// </summary>
+        public bool HasChanged { get; }
+
+        public SectionContentChangedEventArgs(string content, bool requested = false)
         {
-            Content = name ?? throw new ArgumentNullException(nameof(name));
+            Content = content ?? throw new ArgumentNullException(nameof(content));
+            HasChanged = !requested;
+        }
+    }
+
+    public class SectionItemCreatedEventArgs : EventArgs
+    {
+        public enum ResultType
+        {
+            /// <summary>
+            /// The item was created successfully
+            /// </summary>
+            Success,
+            /// <summary>
+            /// The item's name is invalid
+            /// </summary>
+            InvalidName,
+            /// <summary>
+            /// There is already an item with such name
+            /// </summary>
+            DuplicateName
+        }
+
+        public ResultType Result { get; }
+        public string Name { get; }
+
+        public SectionItemCreatedEventArgs(string name, ResultType result = ResultType.Success)
+        {
+            Result = result;
+            Name = name;
         }
     }
 
     /// <summary>
     /// A document representing a document section entity
     /// </summary>
-    public interface ISection : IContainerItem<ISection>
+    public interface ISection : INamedItem, IItemsContainer<ISection>
     {
         /// <summary>
         /// Is invoked when the content of this section changes.
         /// </summary>
         event TypedEventHandler<ISection, SectionContentChangedEventArgs> SectionContentChanged;
+
+        event TypedEventHandler<ISection, SectionItemCreatedEventArgs> SectionItemCreated;
 
         /// <summary>
         /// Requests a content update for this section

@@ -4,65 +4,40 @@ using System.Collections.Generic;
 
 namespace DMOrganizerModel.Interface.Organizer
 {
-    public class OrganizerCurrentContentEventArgs : EventArgs
+    public class OrganizerItemCreatedEventArgs : EventArgs
     {
-        public List<IItem> Content { get; }
-
-        public OrganizerCurrentContentEventArgs(List<IItem> content)
+        public enum ResultType
         {
-            Content = content ?? throw new ArgumentNullException(nameof(content));
+            /// <summary>
+            /// The item was created successfully
+            /// </summary>
+            Success,
+            /// <summary>
+            /// The item's name is invalid
+            /// </summary>
+            InvalidName,
+            /// <summary>
+            /// There is already an item with such name
+            /// </summary>
+            DuplicateName
+        }
+
+        public ResultType Result { get; }
+        public string Name { get; }
+
+        public OrganizerItemCreatedEventArgs(string name, ResultType result = ResultType.Success)
+        {
+            Result = result;
+            Name = name;
         }
     }
 
-    public class OrganizerContentChangedEventArgs : EventArgs
-    {
-        public enum ChangeType
-        {
-            ItemAdded,
-            ItemRemoved
-        }
-
-        public IItem Item { get; }
-        public ChangeType Type { get; }
-
-        public OrganizerContentChangedEventArgs(IItem item, ChangeType type)
-        {
-            Item = item ?? throw new ArgumentNullException(nameof(item));
-            Type = type;
-        }
-    }
-
-    public interface IOrganizer
+    public interface IOrganizer : IItemsContainer<IOrganizerItem>
     {
         /// <summary>
-        /// Is invoked when a request for this organizer's content is complete
+        /// Is invoked when a create operation is completed
         /// </summary>
-        event TypedEventHandler<IOrganizer, OrganizerCurrentContentEventArgs> OrganizerCurrentContent;
-
-        /// <summary>
-        /// Is invoked when the content of this organizer changes
-        /// </summary>
-        event TypedEventHandler<IOrganizer, OrganizerContentChangedEventArgs> OrganizerContentChanged;
-
-
-        /// <summary>
-        /// Requests organizer's current content
-        /// </summary>
-        void RequestCurrentOrganizerContent();
-
-        /// <summary>
-        /// Adds an item to the organizer
-        /// </summary>
-        /// <param name="item">The item to add</param>
-        /// <exception cref="ArgumentException">Can be throw if the IOrganizer already has the item</exception>
-        void AddOrganizerItem(IItem item);
-
-        /// <summary>
-        /// Removes an item from the organizer
-        /// </summary>
-        /// <param name="item">The item to remove</param>
-        /// <exception cref="ArgumentException">Can be throw if the IOrganizer doesn't have the item</exception>
-        void RemoveOrganizerItem(IItem item);
+        event TypedEventHandler<IOrganizer, OrganizerItemCreatedEventArgs> OrganizerItemCreated;
 
         /// <summary>
         /// Creates a category in the organizer
