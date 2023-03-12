@@ -1,4 +1,5 @@
 ﻿using DMOrganizerModel.Interface.Items;
+using DMOrganizerModel.Interface.Reference;
 using System;
 
 namespace DMOrganizerModel.Interface.Organizer
@@ -51,5 +52,12 @@ namespace DMOrganizerModel.Interface.Organizer
         /// <param name="name">The name of the category</param>
         /// <exception cref="ArgumentException">Can be throw if the IOrganizer already contains a document with the same name</exception>
         void CreateDocument(string name);
+
+        /// <summary>
+        /// Converts a string representation of a reference to an instance
+        /// </summary>
+        /// <param name="">The reference to decode</param>
+        /// <returns>An instance referncing the item the encoded reference references</returns>
+        IReference DecodeReference(string reference);
     }
 }

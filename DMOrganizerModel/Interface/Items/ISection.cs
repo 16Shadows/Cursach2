@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DMOrganizerModel.Interface.Reference;
+using System;
 
 namespace DMOrganizerModel.Interface.Items
 {
@@ -55,7 +56,7 @@ namespace DMOrganizerModel.Interface.Items
     /// <summary>
     /// A document representing a document section entity
     /// </summary>
-    public interface ISection : INamedItem, IItemContainer<ISection>
+    public interface ISection : INamedItem, IItemContainer<ISection>, IReferenceable
     {
         /// <summary>
         /// Is invoked when the content of this section changes.
