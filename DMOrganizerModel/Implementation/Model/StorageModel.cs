@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
-using DMOrganizerModel.Interface.Model;
+/*using DMOrganizerModel.Interface.Model;
 
 namespace DMOrganizerModel.Implementation.Model
 {
@@ -108,4 +108,4 @@ namespace DMOrganizerModel.Implementation.Model
         }
         #endregion
     }
-}
+}*/

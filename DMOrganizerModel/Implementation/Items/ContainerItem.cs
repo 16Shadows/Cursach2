@@ -1,7 +1,9 @@
-﻿using DMOrganizerModel.Implementation.Utility;
+﻿using DMOrganizerModel.Implementation.Model;
+using DMOrganizerModel.Implementation.Utility;
 using DMOrganizerModel.Interface;
 using DMOrganizerModel.Interface.Items;
 using System.Collections.Generic;
+using System.Reflection.PortableExecutable;
 using System.Threading.Tasks;
 
 namespace DMOrganizerModel.Implementation.Items
@@ -10,68 +12,59 @@ namespace DMOrganizerModel.Implementation.Items
     /// A generic implementation of container item
     /// </summary>
     /// <typeparam name="ContentType">The type of items container within</typeparam>
-    internal abstract class ContainerItem<ContentType> : ContainerItemBase, IContainerItem<ContentType> where ContentType : IItem
+    internal abstract class ContainerItem<ContentType> : Item, IContainerItem<ContentType>, IItemContainerBaseTyped<ContentType> where ContentType : IItem
     {
-        #region IContainerItem
-        public event TypedEventHandler<IContainerItem<ContentType>, ContainerItemCurrentContentEventArgs<ContentType>>? ContainerItemCurrentContent;
+        protected ContainerItem(int itemID, IItemContainerBase parent, Organizer organizer) : base(itemID, parent, organizer) {}
 
-        protected void InvokeContainerItemCurrentContent(List<ContentType> content)
+        #region IItemsContainer
+        public event TypedEventHandler<IContainerItem<ContentType>, ItemsContainerCurrentContentEventArgs<ContentType>>? ItemsContainerCurrentContent;
+        public event TypedEventHandler<IContainerItem<ContentType>, ItemsContainerContentChangedEventArgs<ContentType>>? ItemsContainerContentChanged;
+
+        protected void InvokeItemsContainerCurrentContent(IEnumerable<ContentType> items)
         {
-            ContainerItemCurrentContent?.Invoke(this, new ContainerItemCurrentContentEventArgs<ContentType>(content));
+            ItemsContainerCurrentContent?.Invoke(this, new ItemsContainerCurrentContentEventArgs<ContentType>(items));
         }
 
-        public event TypedEventHandler<IContainerItem<ContentType>, ContainerItemContentChangedEventArgs<ContentType>>? ContainerItemContentChanged;
-
-        protected void InvokeContainerItemContentChanged(ContainerItemContentChangedEventArgs<ContentType>.ChangeType type, ContentType item, ContainerItemContentChangedEventArgs<ContentType>.ResultType result = ContainerItemContentChangedEventArgs<ContentType>.ResultType.Success)
+        protected void InvokeItemsContainerContentChanged(ContentType item, ItemsContainerContentChangedEventArgs<ContentType>.ChangeType type, ItemsContainerContentChangedEventArgs<ContentType>.ResultType result)
         {
-            ContainerItemContentChanged?.Invoke(this, new ContainerItemContentChangedEventArgs<ContentType>(item, type, result));
+            ItemsContainerContentChanged?.Invoke(this, new ItemsContainerContentChangedEventArgs<ContentType>(item, type, result));
         }
-        
-        public abstract void RequestContainerItemCurrentContent();
 
-        public void AddContainerItem(ContentType item)
+        public void MakeParentOf(ContentType item)
         {
-            CheckDeleted();
-            if (item is not Item itemTyped)
-                throw new ArgumentTypeException(nameof(item));
+            if (item is not ContentType itemTyped || item is not Item itemBase)
+                throw new ArgumentTypeException(nameof(item), "Unsupported item type.");
 
             Task.Run(() =>
             {
-                bool isUnique;
+                bool isUnique = false;
                 lock (Lock)
                 {
-                    isUnique = HasItemWithName(itemTyped.GetName());
+                    isUnique = CanBeParentOf(itemTyped);
                     if (isUnique)
-                        itemTyped.SetParent(this);
+                        itemBase.SetParent(this);
                 }
-                
-                InvokeContainerItemContentChanged(ContainerItemContentChangedEventArgs<ContentType>.ChangeType.ItemAdded, item, isUnique ? ContainerItemContentChangedEventArgs<ContentType>.ResultType.Success : ContainerItemContentChangedEventArgs<ContentType>.ResultType.DuplicateItem);
+                InvokeItemsContainerContentChanged(item, ItemsContainerContentChangedEventArgs<ContentType>.ChangeType.ItemAdded, isUnique ? ItemsContainerContentChangedEventArgs<ContentType>.ResultType.Success : ItemsContainerContentChangedEventArgs<ContentType>.ResultType.DuplicateItem);
             });
         }
 
-        public void RemoveContainerItem(ContentType item)
+        public void RequestOrganizerItemsContainerCurrentContent()
         {
-            CheckDeleted();
-            if (item is not Item itemTyped)
-                throw new ArgumentTypeException(nameof(item));
-
             Task.Run(() =>
             {
-                bool hasItem = false;
-                lock(Lock)
-                    lock (item)
-                    {
-                        hasItem = HasItem(item);
-                        if (hasItem)
-                            itemTyped.SetParent(null);
-                    }
-                InvokeContainerItemContentChanged(ContainerItemContentChangedEventArgs<ContentType>.ChangeType.ItemRemoved, item, hasItem ? ContainerItemContentChangedEventArgs<ContentType>.ResultType.Success : ContainerItemContentChangedEventArgs<ContentType>.ResultType.NoSuchItem);
+                IEnumerable<ContentType> res = null;
+                lock (Lock)
+                    res = GetContent();
+                InvokeItemsContainerCurrentContent(res);
             });
         }
         #endregion
 
-        public ContainerItem(int itemID, ContainerItemBase parent, SyncronizedSQLiteConnection connection) : base(itemID, parent, connection) {}
+        #region IItemsContainerBase
+        public virtual bool CanBeParentOf(ContentType item) => true;
+        public virtual bool CanHaveItemWithName(string name) => true;
+        #endregion
 
-        public abstract bool HasItem(ContentType item);
+        protected abstract IEnumerable<ContentType> GetContent();
     }
 }

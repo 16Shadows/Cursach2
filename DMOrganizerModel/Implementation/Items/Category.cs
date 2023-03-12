@@ -1,120 +1,61 @@
-﻿using DMOrganizerModel.Implementation.Utility;
+﻿using DMOrganizerModel.Implementation.Model;
+using DMOrganizerModel.Interface;
 using DMOrganizerModel.Interface.Items;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace DMOrganizerModel.Implementation.Items
 {
-    internal sealed class Category : ContainerItem<IItem>, ICategory
+    internal sealed class Category : NamedContainerItem<IOrganizerItem>, ICategory
     {
-        #region IItem
-        public override void DeleteItem()
-        {
-            CheckDeleted();
-            Task.Run(() =>
-            {
-                bool success = false;
-                lock(Lock)
-                {
-                    success = Query.DeleteCategory(Connection, ItemID);
-                    base.DeleteItem();
-                }
-                InvokeItemDeleted(success ? ItemDeletedResult.Success : ItemDeletedResult.AlreadyDeleted);
-            });
-        }
-        #endregion
-
-        #region IContainerItem
-        public override void RequestContainerItemCurrentContent()
-        {
-            CheckDeleted();
-
-            Task.Run(() =>
-            {
-                List<IItem> result = new List<IItem>();
-                lock (Lock)
-                {
-                    foreach (int item in Query.GetCategoriesInCategory(Connection, ItemID))
-                        result.Add(new Category(item, this, Connection));
-                    foreach (int item in Query.GetDocumentsInCategory(Connection, ItemID))
-                        result.Add(new Document(item, this, Connection));
-                }
-                InvokeContainerItemCurrentContent(result);
-            });
-        }
-        #endregion
+        public Category(int itemID, IItemContainerBase parent, Organizer organizer) : base(itemID, parent, organizer) {}
 
         #region ICategory
+        public event TypedEventHandler<ICategory, CategoryItemCreatedEventArgs>? CategoryItemCreated;
+
         public void CreateCategory(string name)
         {
-            CheckDeleted();
-            Task.Run(() =>
-            {
-                bool isUnique = false;
-                IItem item = null;
-                lock (Lock)
-                {
-                    isUnique = Query.HasDuplicateNameInCategory(Connection, name, ItemID);
-
-                    if (isUnique)
-                        item = new Category(Query.CreateCategory(Connection, name, ItemID), this, Connection);
-                }
-                InvokeContainerItemContentChanged(ContainerItemContentChangedEventArgs<IItem>.ChangeType.ItemCreated, item, isUnique ? ContainerItemContentChangedEventArgs<IItem>.ResultType.Success : ContainerItemContentChangedEventArgs<IItem>.ResultType.DuplicateItem);
-            });
+            throw new System.NotImplementedException();
         }
 
         public void CreateDocument(string name)
         {
-            CheckDeleted();
-            Task.Run(() =>
-            {
-                bool isUnique = false;
-                IItem item = null;
-                lock (Lock)
-                {
-                    isUnique = Query.HasDuplicateNameInCategory(Connection, name, ItemID);
-
-                    if (isUnique)
-                        item = new Document(Query.CreateDocument(Connection, name, ItemID), this, Connection);
-                }
-                InvokeContainerItemContentChanged(ContainerItemContentChangedEventArgs<IItem>.ChangeType.ItemCreated, item, isUnique ? ContainerItemContentChangedEventArgs<IItem>.ResultType.Success : ContainerItemContentChangedEventArgs<IItem>.ResultType.DuplicateItem);
-            });
+            throw new System.NotImplementedException();
         }
         #endregion
 
-        public Category(int itemID, ContainerItemBase? parent, SyncronizedSQLiteConnection connection) : base(itemID, parent, connection) {}
-
-        public override bool SetParent(ContainerItemBase? parent)
-        {
-            CheckDeleted();
-            lock (Lock)
-            {
-                bool suc = Query.SetCategoryParent(Connection, ItemID, parent?.ItemID);
-                Parent = parent;
-                return suc;
-            }
-        }
-
-        protected override bool SetName(string name)
-        {
-            return Query.SetSectionName(Connection, ItemID, name);
-        }
-
         public override string GetName()
         {
-            CheckDeleted();
-            lock (Lock)
-                return Query.GetCategoryName(Connection, ItemID);
+            throw new System.NotImplementedException();
         }
 
-        public override bool HasItem(IItem item)
+        public override void SetName(string name)
         {
-            return (item is Document doc && Query.CategoryHasDocument(Connection, doc.ItemID, ItemID));
+            throw new System.NotImplementedException();
         }
 
-        public override bool HasItemWithName(string name)
+        protected override IEnumerable<IOrganizerItem> GetContent()
         {
-            return Query.HasDuplicateNameInCategory(Connection, name, ItemID);
+            throw new System.NotImplementedException();
+        }
+
+        public override bool CanBeParentOf(IOrganizerItem item)
+        {
+            return base.CanBeParentOf(item);
+        }
+
+        public override bool CanHaveItemWithName(string name)
+        {
+            return base.CanHaveItemWithName(name);
+        }
+
+        public override void SetParent(IItemContainerBase parent)
+        {
+            base.SetParent(parent);
+        }
+
+        public override void DeleteItem()
+        {
+            base.DeleteItem();
         }
     }
 }

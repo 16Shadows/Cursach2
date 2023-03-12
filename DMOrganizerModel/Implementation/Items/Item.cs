@@ -1,63 +1,27 @@
-﻿using DMOrganizerModel.Implementation.Utility;
+﻿using DMOrganizerModel.Implementation.Model;
 using DMOrganizerModel.Interface;
 using DMOrganizerModel.Interface.Items;
 using System;
-using System.Threading.Tasks;
 
 namespace DMOrganizerModel.Implementation.Items
 {
-    internal abstract class Item : IItem
+    internal class Item : IItem
     {
+        public Item(int itemID, IItemContainerBase parent, Organizer organizer)
+        {
+            Organizer = organizer ?? throw new ArgumentNullException(nameof(organizer));
+            Parent = parent ?? throw new ArgumentNullException(nameof(organizer));
+            ItemID = itemID;
+            IsDeleted = false;
+            Lock = new object();
+        }
+
         #region IItem
-        public event TypedEventHandler<IItem, ItemNameChangedEventArgs>? ItemNameChanged;
         public event TypedEventHandler<IItem, ItemDeletedResult>? ItemDeleted;
-
-        protected void InvokeItemNameChanged(string name, ItemNameChangedEventArgs.ResultType result = ItemNameChangedEventArgs.ResultType.Success)
-        {
-            ItemNameChanged?.Invoke(this, new ItemNameChangedEventArgs(name));
-        }
-
-        protected void InvokeItemDeleted(ItemDeletedResult result)
-        {
-            ItemDeleted?.Invoke(this, result);
-        }
 
         public virtual void DeleteItem()
         {
             IsDeleted = true;
-        }
-
-        public void ChangeItemName(string newName)
-        {
-            CheckDeleted();
-
-            Task.Run(() =>
-            {
-                if (NamingRules.IsValidName(newName))
-                {
-                    InvokeItemNameChanged(null, ItemNameChangedEventArgs.ResultType.InvalidName);
-                    return;
-                }
-
-                bool isUnique = false;
-                lock (Lock)
-                {
-                    isUnique = !Parent.HasItemWithName(newName);
-                    
-                    if (isUnique)
-                        SetName(newName);
-                }
-                if (isUnique)
-                    InvokeItemNameChanged(newName, ItemNameChangedEventArgs.ResultType.Success);
-                else
-                    InvokeItemNameChanged(null, ItemNameChangedEventArgs.ResultType.DuplicateName);         
-            });
-        }
-        
-        public void RequestItemNameUpdate()
-        {
-            CheckDeleted();
-            Task.Run(() => InvokeItemNameChanged(GetName(), ItemNameChangedEventArgs.ResultType.Requested));
         }
         #endregion
 
@@ -65,16 +29,16 @@ namespace DMOrganizerModel.Implementation.Items
         /// The rowid of this item
         /// </summary>
         public int ItemID { get; }
-        
-        /// <summary>
-        /// The rowid of this item's parent
-        /// </summary>
-        public ContainerItemBase Parent { get; protected set; }
 
         /// <summary>
-        /// The connection syncronizer to use when accessing the database from this object
+        /// The organizer this item belongs to
         /// </summary>
-        protected SyncronizedSQLiteConnection Connection { get; }
+        protected Organizer Organizer { get; }
+
+        /// <summary>
+        /// The parent of this item
+        /// </summary>
+        protected IItemContainerBase Parent { get; private set; }
 
         /// <summary>
         /// The lock used to syncronize multi-threaded access to this object
@@ -86,15 +50,6 @@ namespace DMOrganizerModel.Implementation.Items
         /// </summary>
         private bool IsDeleted { get; set; }
 
-        public Item(int itemID, ContainerItemBase parent, SyncronizedSQLiteConnection connection)
-        {
-            Connection = connection ?? throw new ArgumentNullException(nameof(connection)); 
-            ItemID = itemID;
-            Parent = parent;
-            IsDeleted = false;
-            Lock = new object();
-        }
-
         /// <summary>
         /// A method to check if this object has been deleted
         /// </summary>
@@ -105,19 +60,9 @@ namespace DMOrganizerModel.Implementation.Items
                 throw new InvalidOperationException("This item has been deleted.");
         }
 
-        /// <summary>
-        /// Sets current parent of this item syncronyously
-        /// </summary>
-        /// <param name="parent">The parent to set</param>
-        /// <returns>true on success</returns>
-        public abstract bool SetParent(ContainerItemBase? parent);
-
-        /// <summary>
-        /// Gets this item's name syncronyously
-        /// </summary>
-        /// <returns></returns>
-        public abstract string GetName();
-
-        protected abstract bool SetName(string name);
+        public virtual void SetParent(IItemContainerBase parent)
+        {
+            Parent = parent;
+        }
     }
 }

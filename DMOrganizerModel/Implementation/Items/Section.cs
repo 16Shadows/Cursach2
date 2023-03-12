@@ -2,22 +2,19 @@
 using DMOrganizerModel.Interface;
 using DMOrganizerModel.Interface.Items;
 using System;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+using DMOrganizerModel.Implementation.Model;
 
 namespace DMOrganizerModel.Implementation.Items
 {
-    internal class Section : ContainerItem<ISection>, ISection
+    internal class Section : NamedContainerItem<ISection>, ISection
     {
-        public Section(int itemID, ContainerItemBase parent, SyncronizedSQLiteConnection connection) : base(itemID, parent, connection) {}
-
-        #region IContainerItem
-        public override void RequestContainerItemCurrentContent()
-        {
-            throw new NotImplementedException();
-        }
-        #endregion
+        public Section(int itemID, IItemContainerBase parent, Organizer organizer) : base(itemID, parent, organizer) {}
 
         #region ISection
         public event TypedEventHandler<ISection, SectionContentChangedEventArgs>? SectionContentChanged;
+        public event TypedEventHandler<ISection, SectionItemCreatedEventArgs>? SectionItemCreated;
 
         public void CreateSection(string name)
         {
@@ -35,39 +32,39 @@ namespace DMOrganizerModel.Implementation.Items
         }
         #endregion
 
-        public override bool SetParent(ContainerItemBase? parent)
-        {
-            CheckDeleted();
-            lock (Lock)
-            {
-                bool suc = Query.SetSectionParent(Connection, ItemID, parent?.ItemID);
-                Parent = parent;
-                return suc;
-            }
-        }
-
         public override string GetName()
         {
-            CheckDeleted();
-            lock (Lock)
-                return Query.GetSectionName(Connection, ItemID);
+            throw new NotImplementedException();
         }
 
-        protected override bool SetName(string name)
+        public override void SetName(string name)
         {
-            CheckDeleted();
-            lock (Lock)
-                return Query.SetSectionName(Connection, ItemID, name);
+            throw new NotImplementedException();
         }
 
-        public override bool HasItem(ISection item)
+        protected override IEnumerable<ISection> GetContent()
         {
-            return (item is Section sec && Query.SectionHasSection(Connection, sec.ItemID, ItemID));
+            throw new NotImplementedException();
         }
 
-        public override bool HasItemWithName(string name)
+        public override bool CanBeParentOf(ISection item)
         {
-            return Query.HasDuplicateNameInSection(Connection, name, ItemID);
+            return base.CanBeParentOf(item);
+        }
+
+        public override bool CanHaveItemWithName(string name)
+        {
+            return base.CanHaveItemWithName(name);
+        }
+
+        public override void DeleteItem()
+        {
+            base.DeleteItem();
+        }
+
+        public override void SetParent(IItemContainerBase parent)
+        {
+            base.SetParent(parent);
         }
     }
 }
