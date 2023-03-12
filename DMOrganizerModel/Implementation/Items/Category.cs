@@ -40,7 +40,7 @@ namespace DMOrganizerModel.Implementation.Items
                 if (isUnique)
                 {
                     InvokeCategoryItemCreated(name, CategoryItemCreatedEventArgs.ResultType.Success);
-                    InvokeItemsContainerContentChanged(item, ItemsContainerContentChangedEventArgs<IOrganizerItem>.ChangeType.ItemAdded, ItemsContainerContentChangedEventArgs<IOrganizerItem>.ResultType.Success);
+                    InvokeItemContainerContentChanged(item, ItemContainerContentChangedEventArgs<IOrganizerItem>.ChangeType.ItemAdded, ItemContainerContentChangedEventArgs<IOrganizerItem>.ResultType.Success);
                 }
                 else
                     InvokeCategoryItemCreated(name, CategoryItemCreatedEventArgs.ResultType.DuplicateName);
@@ -68,7 +68,7 @@ namespace DMOrganizerModel.Implementation.Items
                 if (isUnique)
                 {
                     InvokeCategoryItemCreated(name, CategoryItemCreatedEventArgs.ResultType.Success);
-                    InvokeItemsContainerContentChanged(item, ItemsContainerContentChangedEventArgs<IOrganizerItem>.ChangeType.ItemAdded, ItemsContainerContentChangedEventArgs<IOrganizerItem>.ResultType.Success);
+                    InvokeItemContainerContentChanged(item, ItemContainerContentChangedEventArgs<IOrganizerItem>.ChangeType.ItemAdded, ItemContainerContentChangedEventArgs<IOrganizerItem>.ResultType.Success);
                 }
                 else
                     InvokeCategoryItemCreated(name, CategoryItemCreatedEventArgs.ResultType.DuplicateName);
@@ -96,7 +96,7 @@ namespace DMOrganizerModel.Implementation.Items
             return result;
         }
 
-        public override bool CanBeParentOf(IOrganizerItem item)
+        protected override bool CanBeParentOf(IOrganizerItem item)
         {
             if (item is not INamedItemBase itemTyped)
                 throw new ArgumentTypeException(nameof(item), "Unsupported item type.");
@@ -109,25 +109,23 @@ namespace DMOrganizerModel.Implementation.Items
             return !Query.HasNameInCategory(Organizer.Connection, name, ItemID);
         }
 
-        public override bool HasItem(IOrganizerItem item)
+        protected override bool HasItem(IOrganizerItem item)
         {
-            if (item is not Item itemTyped)
+            if (item is not Item)
                 throw new ArgumentTypeException(nameof(item), "Invalid item type.");
 
             return (item is Document doc && Query.CategoryHasDocument(Organizer.Connection, doc.ItemID, ItemID)) ||
                    (item is Category cat && Query.CategoryHasCategory(Organizer.Connection, cat.ItemID, ItemID));
         }
 
-        public override void SetParent(IItemContainerBase parent)
+        protected override bool DeleteItemInternal()
         {
-            Query.SetCategoryParent(Organizer.Connection, ItemID, (parent as Category)?.ItemID);
-            base.SetParent(parent);
+            return Query.DeleteCategory(Organizer.Connection, ItemID);
         }
 
-        public override void DeleteItem()
+        protected override void SetParentInternal(IItemContainerBase parent)
         {
-            Query.DeleteCategory(Organizer.Connection, ItemID);
-            base.DeleteItem();
+            Query.SetCategoryParent(Organizer.Connection, ItemID, (parent as Category)?.ItemID);
         }
     }
 }

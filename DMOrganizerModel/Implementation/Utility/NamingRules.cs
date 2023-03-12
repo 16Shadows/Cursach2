@@ -7,5 +7,10 @@
             //TODO: implement actual checks
             return true;
         }
+
+        public static bool IsValidTag(string tag)
+        {
+            return true;
+        }
     }
 }

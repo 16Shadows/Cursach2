@@ -5,7 +5,7 @@ using System;
 
 namespace DMOrganizerModel.Implementation.Items
 {
-    internal class Item : IItem
+    internal abstract class Item : IItem
     {
         public Item(int itemID, IItemContainerBase parent, Organizer organizer)
         {
@@ -19,10 +19,21 @@ namespace DMOrganizerModel.Implementation.Items
         #region IItem
         public event TypedEventHandler<IItem, ItemDeletedResult>? ItemDeleted;
 
-        public virtual void DeleteItem()
+        protected void InvokeItemDeleted(ItemDeletedResult result)
         {
-            Parent.OnItemRemoved(this);
-            IsDeleted = true;
+            ItemDeleted?.Invoke(this, result);
+        }
+
+        public void DeleteItem()
+        {
+            if (DeleteItemInternal())
+            {
+                InvokeItemDeleted(ItemDeletedResult.Success);
+                Parent.OnItemRemoved(this);
+                IsDeleted = true;
+            }
+            else
+                InvokeItemDeleted(ItemDeletedResult.AlreadyDeleted);
         }
         #endregion
 
@@ -61,10 +72,19 @@ namespace DMOrganizerModel.Implementation.Items
                 throw new InvalidOperationException("This item has been deleted.");
         }
 
-        public virtual void SetParent(IItemContainerBase parent)
+        public void SetParent(IItemContainerBase parent)
         {
+            SetParentInternal(parent);
             Parent.OnItemRemoved(this);
             Parent = parent;
         }
+
+        /// <summary>
+        /// Should set parent on actual implementation
+        /// </summary>
+        /// <param name="parent">The parent to set</param>
+        protected abstract void SetParentInternal(IItemContainerBase parent);
+        protected abstract bool DeleteItemInternal();
+        
     }
 }

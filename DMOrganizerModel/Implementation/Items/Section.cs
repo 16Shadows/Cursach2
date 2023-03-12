@@ -1,14 +1,15 @@
 ﻿using DMOrganizerModel.Implementation.Utility;
 using DMOrganizerModel.Interface;
 using DMOrganizerModel.Interface.Items;
-using System;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using DMOrganizerModel.Implementation.Model;
+using DMOrganizerModel.Interface.References;
+using DMOrganizerModel.Implementation.References;
 
 namespace DMOrganizerModel.Implementation.Items
 {
-    internal class Section : NamedContainerItem<ISection>, ISection
+    internal class Section : NamedContainerItem<ISection>, ISection, IReferenceableBase
     {
         public Section(int itemID, IItemContainerBase parent, Organizer organizer) : base(itemID, parent, organizer) {}
 
@@ -16,60 +17,117 @@ namespace DMOrganizerModel.Implementation.Items
         public event TypedEventHandler<ISection, SectionContentChangedEventArgs>? SectionContentChanged;
         public event TypedEventHandler<ISection, SectionItemCreatedEventArgs>? SectionItemCreated;
 
+        protected void InvokeSectionContentChanged(string content, bool requested)
+        {
+            SectionContentChanged?.Invoke(this, new SectionContentChangedEventArgs(content, requested));
+        }
+
+        protected void InvokeSectionItemCreated(string name, SectionItemCreatedEventArgs.ResultType result)
+        {
+            SectionItemCreated?.Invoke(this, new SectionItemCreatedEventArgs(name, result));
+        }
+
         public void CreateSection(string name)
         {
-            throw new NotImplementedException();
+            CheckDeleted();
+            Task.Run(() =>
+            {
+                if (!NamingRules.IsValidName(name))
+                {
+                    InvokeSectionItemCreated(name, SectionItemCreatedEventArgs.ResultType.InvalidName);
+                    return;
+                }
+
+                bool isUnique = false;
+                ISection item = null;
+                lock(Lock)
+                {
+                    isUnique = CanHaveItemWithName(name);
+                    if (isUnique)
+                        item = Organizer.GetSection(Query.CreateSection(Organizer.Connection, name, ItemID), this);
+                }
+                if (isUnique)
+                {
+                    InvokeSectionItemCreated(name, SectionItemCreatedEventArgs.ResultType.Success);
+                    InvokeItemContainerContentChanged(item, ItemContainerContentChangedEventArgs<ISection>.ChangeType.ItemAdded, ItemContainerContentChangedEventArgs<ISection>.ResultType.Success);
+                }
+                else
+                    InvokeSectionItemCreated(name, SectionItemCreatedEventArgs.ResultType.DuplicateName);
+            });
         }
 
         public void RequestSectionContentUpdate()
         {
-            throw new NotImplementedException();
+            CheckDeleted();
+            Task.Run(() => InvokeSectionContentChanged(Query.GetSectionContent(Organizer.Connection, ItemID), true));
         }
 
         public void UpdateContent(string content)
         {
-            throw new NotImplementedException();
+            CheckDeleted();
+            Task.Run(() =>
+            {
+                Query.SetSectionContent(Organizer.Connection, ItemID, content);
+                InvokeSectionContentChanged(content, false);
+            });
+        }
+
+        public IReference GetReference()
+        {
+            return new Reference(this);
         }
         #endregion
 
         public override string GetName()
         {
-            throw new NotImplementedException();
+            return Query.GetSectionName(Organizer.Connection, ItemID);
         }
 
         public override void SetName(string name)
         {
-            throw new NotImplementedException();
+            _ = Query.SetSectionName(Organizer.Connection, ItemID, name);
         }
 
         protected override IEnumerable<ISection> GetContent()
         {
-            throw new NotImplementedException();
+            List<ISection> res = new List<ISection>();
+            foreach (int id in Query.GetSectionsInSection(Organizer.Connection, ItemID))
+                res.Add(Organizer.GetSection(id, this));
+            return res;
         }
 
-        public override bool CanBeParentOf(ISection item)
+        protected override bool CanBeParentOf(ISection item)
         {
-            return base.CanBeParentOf(item);
+            if (item is not Section sec)
+                throw new ArgumentTypeException(nameof(item), "Invalid item type.");
+
+            return CanHaveItemWithName(sec.GetName());
         }
 
         public override bool CanHaveItemWithName(string name)
         {
-            return base.CanHaveItemWithName(name);
+            return Query.HasNameInSection(Organizer.Connection, name, ItemID);
         }
 
-        public override void DeleteItem()
+        protected override bool HasItem(ISection item)
         {
-            base.DeleteItem();
+            if (item is not Section sec)
+                throw new ArgumentTypeException(nameof(item), "Invalid item type.");
+
+            return Query.SectionHasSection(Organizer.Connection, sec.ItemID, ItemID);
         }
 
-        public override void SetParent(IItemContainerBase parent)
+        protected override bool DeleteItemInternal()
         {
-            base.SetParent(parent);
+            return Query.DeleteSection(Organizer.Connection, ItemID);
         }
 
-        public override bool HasItem(ISection item)
+        protected override void SetParentInternal(IItemContainerBase parent)
         {
-            throw new NotImplementedException();
+            if (parent is not Section sec)
+                throw new ArgumentTypeException(nameof(parent), "Invalid parent type.");
+
+            Query.SetSectionParent(Organizer.Connection, ItemID, sec.ItemID);
         }
     }
 }

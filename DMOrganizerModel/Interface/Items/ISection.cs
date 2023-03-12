@@ -1,4 +1,4 @@
-﻿using DMOrganizerModel.Interface.Reference;
+﻿using DMOrganizerModel.Interface.References;
 using System;
 
 namespace DMOrganizerModel.Interface.Items

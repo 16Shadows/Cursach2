@@ -37,7 +37,11 @@ namespace DMOrganizerModel.Interface.Items
             /// <summary>
             /// There is no such tag on the document
             /// </summary>
-            NoSuchTag
+            NoSuchTag,
+            /// <summary>
+            /// Invalid tag value
+            /// </summary>
+            InvalidTag
         }
 
         /// <summary>

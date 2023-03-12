@@ -6,12 +6,14 @@ using DMOrganizerModel.Interface.Organizer;
 using DMOrganizerModel.Implementation.Utility;
 using DMOrganizerModel.Interface;
 using DMOrganizerModel.Interface.Items;
-using System.Threading.Tasks;
 using DMOrganizerModel.Implementation.Items;
+using DMOrganizerModel.Interface.References;
+using System.Threading.Tasks;
+using System.Net.Mime;
 
 namespace DMOrganizerModel.Implementation.Model
 {
-    internal sealed class Organizer : IOrganizer, IItemContainerBaseTyped<IOrganizerItem>
+    internal sealed class Organizer : IOrganizer, IItemContainerBase
     {
         private class NoCaseCollation : SQLiteFunction
         {
@@ -157,25 +159,113 @@ namespace DMOrganizerModel.Implementation.Model
 
         #region IOrganizer
         public event TypedEventHandler<IOrganizer, OrganizerItemCreatedEventArgs>? OrganizerItemCreated;
-        public event TypedEventHandler<IItemContainer<IOrganizerItem>, ItemsContainerCurrentContentEventArgs<IOrganizerItem>>? ItemsContainerCurrentContent;
-        public event TypedEventHandler<IItemContainer<IOrganizerItem>, ItemsContainerContentChangedEventArgs<IOrganizerItem>>? ItemsContainerContentChanged;
+        public event TypedEventHandler<IItemContainer<IOrganizerItem>, ItemContainerCurrentContentEventArgs<IOrganizerItem>>? ItemContainerCurrentContent;
+        public event TypedEventHandler<IItemContainer<IOrganizerItem>, ItemContainerContentChangedEventArgs<IOrganizerItem>>? ItemContainerContentChanged;
+        
+        private void InvokeOrganizerItemCreated(string name, OrganizerItemCreatedEventArgs.ResultType result)
+        {
+            OrganizerItemCreated?.Invoke(this, new OrganizerItemCreatedEventArgs(name, result));
+        }
+
+        private void InvokeItemContainerCurrentContent(IEnumerable<IOrganizerItem> items)
+        {
+            ItemContainerCurrentContent?.Invoke(this, new ItemContainerCurrentContentEventArgs<IOrganizerItem>(items));
+        }
+
+        private void InvokeItemContainerContentChanged(IOrganizerItem item, ItemContainerContentChangedEventArgs<IOrganizerItem>.ChangeType type, ItemContainerContentChangedEventArgs<IOrganizerItem>.ResultType result)
+        {
+            ItemContainerContentChanged?.Invoke(this, new ItemContainerContentChangedEventArgs<IOrganizerItem>(item, type, result));
+        }
 
         public void CreateCategory(string name)
         {
-            throw new NotImplementedException();
+            Task.Run(() =>
+            {
+                if (!NamingRules.IsValidName(name))
+                {
+                    InvokeOrganizerItemCreated(name, OrganizerItemCreatedEventArgs.ResultType.InvalidName);
+                    return;
+                }
+                bool isUnique = false;
+                IOrganizerItem item = null;
+                lock (Lock)
+                {
+                    isUnique = CanHaveItemWithName(name);
+                    if (isUnique)
+                        item = GetCategory(Query.CreateCategory(Connection, name, null), this);
+                }
+                if (isUnique)
+                {
+                    InvokeOrganizerItemCreated(name, OrganizerItemCreatedEventArgs.ResultType.Success);
+                    InvokeItemContainerContentChanged(item, ItemContainerContentChangedEventArgs<IOrganizerItem>.ChangeType.ItemAdded, ItemContainerContentChangedEventArgs<IOrganizerItem>.ResultType.Success);
+                }
+                else
+                    InvokeOrganizerItemCreated(name, OrganizerItemCreatedEventArgs.ResultType.DuplicateName);
+            });
         }
 
         public void CreateDocument(string name)
         {
-            throw new NotImplementedException();
+            Task.Run(() =>
+            {
+                if (!NamingRules.IsValidName(name))
+                {
+                    InvokeOrganizerItemCreated(name, OrganizerItemCreatedEventArgs.ResultType.InvalidName);
+                    return;
+                }
+                bool isUnique = false;
+                IOrganizerItem item = null;
+                lock (Lock)
+                {
+                    isUnique = CanHaveItemWithName(name);
+                    if (isUnique)
+                        item = GetDocument(Query.CreateDocument(Connection, name, null), this);
+                }
+                if (isUnique)
+                {
+                    InvokeOrganizerItemCreated(name, OrganizerItemCreatedEventArgs.ResultType.Success);
+                    InvokeItemContainerContentChanged(item, ItemContainerContentChangedEventArgs<IOrganizerItem>.ChangeType.ItemAdded, ItemContainerContentChangedEventArgs<IOrganizerItem>.ResultType.Success);
+                }
+                else
+                    InvokeOrganizerItemCreated(name, OrganizerItemCreatedEventArgs.ResultType.DuplicateName);
+            });
         }
 
-        public void RequestOrganizerItemsContainerCurrentContent()
+        public void RequestItemContainerCurrentContent()
         {
-            throw new NotImplementedException();
+            Task.Run(() =>
+            {
+                List<IOrganizerItem> items = new List<IOrganizerItem>();
+                lock (Lock)
+                {
+                    foreach (int id in Query.GetCategoriesInOrganizer(Connection))
+                        items.Add(GetCategory(id, this));
+                    foreach (int id in Query.GetDocumentsInOrganizer(Connection))
+                        items.Add(GetDocument(id, this));
+                }
+                InvokeItemContainerCurrentContent(items);
+            });
         }
 
         public void MakeParentOf(IOrganizerItem item)
+        {
+            if (item is not IOrganizerItem itemTyped || item is not Item itemBase)
+                throw new ArgumentTypeException(nameof(item), "Unsupported item type.");
+
+            Task.Run(() =>
+            {
+                bool isUnique = false;
+                lock (Lock)
+                {
+                    isUnique = CanBeParentOf(itemTyped);
+                    if (isUnique)
+                        itemBase.SetParent(this);
+                }
+                InvokeItemContainerContentChanged(item, ItemContainerContentChangedEventArgs<IOrganizerItem>.ChangeType.ItemAdded, isUnique ? ItemContainerContentChangedEventArgs<IOrganizerItem>.ResultType.Success : ItemContainerContentChangedEventArgs<IOrganizerItem>.ResultType.DuplicateItem);
+            });
+        }
+
+        public IReference DecodeReference(string reference)
         {
             throw new NotImplementedException();
         }
@@ -222,19 +312,36 @@ namespace DMOrganizerModel.Implementation.Model
         }
         #endregion
 
-        public bool CanBeParentOf(IOrganizerItem item)
+        private bool CanBeParentOf(IOrganizerItem item)
         {
-            throw new NotImplementedException();
+            if (item is not INamedItemBase itemTyped)
+                throw new ArgumentTypeException(nameof(item), "Unsupported item type.");
+
+            return CanHaveItemWithName(itemTyped.GetName());
         }
 
         public bool CanHaveItemWithName(string name)
         {
-            throw new NotImplementedException();
+            return !Query.HasNameInOrganizer(Connection, name);
         }
 
-        public void OnItemRemoved(IOrganizerItem item)
+        private bool HasItem(IOrganizerItem item)
         {
-            throw new NotImplementedException();
+            if (item is not Item)
+                throw new ArgumentTypeException(nameof(item), "Invalid item type.");
+
+            return (item is Document doc && Query.OrganizerHasDocument(Connection, doc.ItemID)) ||
+                   (item is Category cat && Query.OrganizerHasCategory(Connection, cat.ItemID));
+        }
+
+        public void OnItemRemoved(IItem item)
+        {
+            if (item is not IOrganizerItem itemTyped)
+                throw new ArgumentTypeException(nameof(item), "Invalid item type");
+            else if (!HasItem(itemTyped))
+                throw new ArgumentException("This container does not have such item.", nameof(item));
+
+            InvokeItemContainerContentChanged(itemTyped, ItemContainerContentChangedEventArgs<IOrganizerItem>.ChangeType.ItemRemoved, ItemContainerContentChangedEventArgs<IOrganizerItem>.ResultType.Success);
         }
     }
 }
