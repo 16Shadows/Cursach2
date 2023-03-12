@@ -11,7 +11,7 @@ using DMOrganizerModel.Implementation.Items;
 
 namespace DMOrganizerModel.Implementation.Model
 {
-    internal sealed class Organizer : IOrganizer
+    internal sealed class Organizer : IOrganizer, IItemContainerBaseTyped<IOrganizerItem>
     {
         private class NoCaseCollation : SQLiteFunction
         {
@@ -21,38 +21,10 @@ namespace DMOrganizerModel.Implementation.Model
             }
         }
 
-        #region IOrganizer
-        public event TypedEventHandler<IOrganizer, OrganizerItemCreatedEventArgs>? OrganizerItemCreated;
-        public event TypedEventHandler<IContainerItem<IOrganizerItem>, ItemsContainerCurrentContentEventArgs<IOrganizerItem>>? ItemsContainerCurrentContent;
-        public event TypedEventHandler<IContainerItem<IOrganizerItem>, ItemsContainerContentChangedEventArgs<IOrganizerItem>>? ItemsContainerContentChanged;
-
-        public void CreateCategory(string name)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void CreateDocument(string name)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void RequestOrganizerItemsContainerCurrentContent()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void MakeParentOf(IOrganizerItem item)
-        {
-            throw new NotImplementedException();
-        }
-        #endregion
-
         public string Path { get; }
         public SyncronizedSQLiteConnection Connection { get; }
         private SQLiteConnection RawConnection { get; }
         private object Lock { get; }
-        private Dictionary<int, WeakReference<Category>> CategoriesCache { get; }
-        private Dictionary<int, WeakReference<Section>> SectionsCache { get; }
 
         public Organizer(string path)
         {
@@ -183,6 +155,36 @@ namespace DMOrganizerModel.Implementation.Model
                 RawConnection.Close();
         }
 
+        #region IOrganizer
+        public event TypedEventHandler<IOrganizer, OrganizerItemCreatedEventArgs>? OrganizerItemCreated;
+        public event TypedEventHandler<IItemContainer<IOrganizerItem>, ItemsContainerCurrentContentEventArgs<IOrganizerItem>>? ItemsContainerCurrentContent;
+        public event TypedEventHandler<IItemContainer<IOrganizerItem>, ItemsContainerContentChangedEventArgs<IOrganizerItem>>? ItemsContainerContentChanged;
+
+        public void CreateCategory(string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void CreateDocument(string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RequestOrganizerItemsContainerCurrentContent()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void MakeParentOf(IOrganizerItem item)
+        {
+            throw new NotImplementedException();
+        }
+        #endregion
+
+        #region Caching
+        private Dictionary<int, WeakReference<Category>> CategoriesCache { get; }
+        private Dictionary<int, WeakReference<Section>> SectionsCache { get; }
+
         public Category GetCategory(int id, IItemContainerBase parent)
         {
             lock (Lock)
@@ -217,6 +219,22 @@ namespace DMOrganizerModel.Implementation.Model
                 SectionsCache[id] = new WeakReference<Section>(document);
                 return document;
             }
+        }
+        #endregion
+
+        public bool CanBeParentOf(IOrganizerItem item)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool CanHaveItemWithName(string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void OnItemRemoved(IOrganizerItem item)
+        {
+            throw new NotImplementedException();
         }
     }
 }

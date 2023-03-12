@@ -2,8 +2,8 @@
 using DMOrganizerModel.Implementation.Utility;
 using DMOrganizerModel.Interface;
 using DMOrganizerModel.Interface.Items;
+using System;
 using System.Collections.Generic;
-using System.Reflection.PortableExecutable;
 using System.Threading.Tasks;
 
 namespace DMOrganizerModel.Implementation.Items
@@ -12,13 +12,13 @@ namespace DMOrganizerModel.Implementation.Items
     /// A generic implementation of container item
     /// </summary>
     /// <typeparam name="ContentType">The type of items container within</typeparam>
-    internal abstract class ContainerItem<ContentType> : Item, IContainerItem<ContentType>, IItemContainerBaseTyped<ContentType> where ContentType : IItem
+    internal abstract class ContainerItem<ContentType> : Item, IItemContainerBaseTyped<ContentType> where ContentType : IItem
     {
         protected ContainerItem(int itemID, IItemContainerBase parent, Organizer organizer) : base(itemID, parent, organizer) {}
 
         #region IItemsContainer
-        public event TypedEventHandler<IContainerItem<ContentType>, ItemsContainerCurrentContentEventArgs<ContentType>>? ItemsContainerCurrentContent;
-        public event TypedEventHandler<IContainerItem<ContentType>, ItemsContainerContentChangedEventArgs<ContentType>>? ItemsContainerContentChanged;
+        public event TypedEventHandler<IItemContainer<ContentType>, ItemsContainerCurrentContentEventArgs<ContentType>>? ItemsContainerCurrentContent;
+        public event TypedEventHandler<IItemContainer<ContentType>, ItemsContainerContentChangedEventArgs<ContentType>>? ItemsContainerContentChanged;
 
         protected void InvokeItemsContainerCurrentContent(IEnumerable<ContentType> items)
         {
@@ -63,8 +63,19 @@ namespace DMOrganizerModel.Implementation.Items
         #region IItemsContainerBase
         public virtual bool CanBeParentOf(ContentType item) => true;
         public virtual bool CanHaveItemWithName(string name) => true;
+        public abstract bool HasItem(ContentType item);
         #endregion
 
         protected abstract IEnumerable<ContentType> GetContent();
+
+        public void OnItemRemoved(IItem item)
+        {
+            if (item is not ContentType itemTyped)
+                throw new ArgumentTypeException(nameof(item), "Invalid item type");
+            else if (!HasItem(itemTyped))
+                throw new ArgumentException("This container does not have such item.", nameof(item));
+
+            InvokeItemsContainerContentChanged(itemTyped, ItemsContainerContentChangedEventArgs<ContentType>.ChangeType.ItemRemoved, ItemsContainerContentChangedEventArgs<ContentType>.ResultType.Success);
+        }
     }
 }

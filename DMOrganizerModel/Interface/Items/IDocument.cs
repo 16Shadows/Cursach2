@@ -86,7 +86,7 @@ namespace DMOrganizerModel.Interface.Items
     /// <summary>
     /// An interface representing a document entity
     /// </summary>
-    public interface IDocument : ISection
+    public interface IDocument : ISection, IOrganizerItem
     {
         /// <summary>
         /// Is invoked when a request to this document's tags is complete.

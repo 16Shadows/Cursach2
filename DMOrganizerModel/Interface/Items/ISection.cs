@@ -55,7 +55,7 @@ namespace DMOrganizerModel.Interface.Items
     /// <summary>
     /// A document representing a document section entity
     /// </summary>
-    public interface ISection : INamedItem, IContainerItem<ISection>
+    public interface ISection : INamedItem, IItemContainer<ISection>
     {
         /// <summary>
         /// Is invoked when the content of this section changes.

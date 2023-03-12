@@ -21,6 +21,7 @@ namespace DMOrganizerModel.Implementation.Items
 
         public virtual void DeleteItem()
         {
+            Parent.OnItemRemoved(this);
             IsDeleted = true;
         }
         #endregion
@@ -62,6 +63,7 @@ namespace DMOrganizerModel.Implementation.Items
 
         public virtual void SetParent(IItemContainerBase parent)
         {
+            Parent.OnItemRemoved(this);
             Parent = parent;
         }
     }

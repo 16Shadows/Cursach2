@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DMOrganizerModel.Implementation.Items
 {
-    internal abstract class NamedContainerItem<ContentType> : ContainerItem<ContentType>, INamedItem where ContentType : IItem
+    internal abstract class NamedContainerItem<ContentType> : ContainerItem<ContentType>, INamedItem, INamedItemBase where ContentType : IItem
     {
         protected NamedContainerItem(int itemID, IItemContainerBase parent, Organizer organizer) : base(itemID, parent, organizer) {}
 

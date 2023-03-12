@@ -66,5 +66,10 @@ namespace DMOrganizerModel.Implementation.Items
         {
             base.SetParent(parent);
         }
+
+        public override bool HasItem(ISection item)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

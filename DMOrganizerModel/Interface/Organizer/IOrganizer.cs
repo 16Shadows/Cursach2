@@ -1,6 +1,5 @@
 ﻿using DMOrganizerModel.Interface.Items;
 using System;
-using System.Collections.Generic;
 
 namespace DMOrganizerModel.Interface.Organizer
 {
@@ -32,7 +31,7 @@ namespace DMOrganizerModel.Interface.Organizer
         }
     }
 
-    public interface IOrganizer : IContainerItem<IOrganizerItem>
+    public interface IOrganizer : IItemContainer<IOrganizerItem>
     {
         /// <summary>
         /// Is invoked when a create operation is completed

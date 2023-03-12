@@ -33,7 +33,7 @@ namespace DMOrganizerModel.Interface.Items
     /// <summary>
     /// An interface representing a category entity
     /// </summary>
-    public interface ICategory : IOrganizerItem, IContainerItem<IOrganizerItem>
+    public interface ICategory : IOrganizerItem, IItemContainer<IOrganizerItem>
     {
         event TypedEventHandler<ICategory, CategoryItemCreatedEventArgs> CategoryItemCreated;
 

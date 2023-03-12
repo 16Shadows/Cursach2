@@ -79,17 +79,17 @@ namespace DMOrganizerModel.Interface.Items
         }
     }
 
-    public interface IContainerItem<ContentType> where ContentType : IItem
+    public interface IItemContainer<ContentType> where ContentType : IItem
     {
         /// <summary>
         /// Is invoked when a request for this item's current content is complete.
         /// </summary>
-        event TypedEventHandler<IContainerItem<ContentType>, ItemsContainerCurrentContentEventArgs<ContentType>> ItemsContainerCurrentContent;
+        event TypedEventHandler<IItemContainer<ContentType>, ItemsContainerCurrentContentEventArgs<ContentType>> ItemsContainerCurrentContent;
         
         /// <summary>
         /// Is invoked when an item is added to or removed from this item.
         /// </summary>
-        event TypedEventHandler<IContainerItem<ContentType>, ItemsContainerContentChangedEventArgs<ContentType>> ItemsContainerContentChanged;
+        event TypedEventHandler<IItemContainer<ContentType>, ItemsContainerContentChangedEventArgs<ContentType>> ItemsContainerContentChanged;
 
         /// <summary>
         /// Requests item's current content.
