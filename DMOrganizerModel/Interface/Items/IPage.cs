@@ -2,22 +2,27 @@
 
 namespace DMOrganizerModel.Interface.Items
 {
+
     /// <summary>
     /// Page - container for object_containers. Part of book.
     /// </summary>
-    public interface IPage: IItem, IItemContainer<IObjectContainer>
+    public interface IPage : IItem, IItemContainer<IObjectContainer>
     {
-        // position in book(int), editMode - true/false
+        // position in book(int)
 
-        //create container
+        //create container, event-IItemContainer
+        //remove container (not deleting its content, but deleting set-bond) event-IItemContainer
         //request page containers (IContainerItem)
-        
-        bool EditMode { get; set; }
 
-        void RemoveContainer(IObjectContainer container); // args?
-        void AddContainer(IObjectContainer container);
-        void ChangePagePosition(int newPosition);
+
+        /// <summary>
+        /// Creates empty container on page with default size and position.
+        /// </summary>
+        void AddContainer();
+
+        /// <summary>
+        /// Returns current page position in parent book.
+        /// </summary>
         void RequestPagePosition();
-        void ChangeEditMode(bool newEditMode); //event what mode now
     }
 }
