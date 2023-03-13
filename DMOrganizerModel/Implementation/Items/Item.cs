@@ -3,6 +3,7 @@ using DMOrganizerModel.Implementation.Model;
 using DMOrganizerModel.Interface;
 using DMOrganizerModel.Interface.Items;
 using System;
+using System.Threading.Tasks;
 
 namespace DMOrganizerModel.Implementation.Items
 {
@@ -27,14 +28,21 @@ namespace DMOrganizerModel.Implementation.Items
 
         public void DeleteItem()
         {
-            if (DeleteItemInternal())
+            CheckDeleted();
+            Task.Run(() =>
             {
-                InvokeItemDeleted(ItemDeletedResult.Success);
-                Parent.OnItemRemoved(this);
-                IsDeleted = true;
-            }
-            else
-                InvokeItemDeleted(ItemDeletedResult.AlreadyDeleted);
+                bool deleted = false;
+                lock(Lock)
+                {
+                    deleted = DeleteItemInternal();
+                    if (deleted)
+                    {
+                        Parent.OnItemRemoved(this);
+                        IsDeleted = true;
+                    }
+                }
+                InvokeItemDeleted(deleted ? ItemDeletedResult.Success : ItemDeletedResult.AlreadyDeleted);
+            });
         }
         #endregion
 
@@ -77,7 +85,16 @@ namespace DMOrganizerModel.Implementation.Items
         {
             SetParentInternal(parent);
             Parent.OnItemRemoved(this);
+            if (Parent is IItem oldItem)
+                oldItem.ItemDeleted.Unsubscribe(ParentDeleted);
             Parent = parent;
+            if (Parent is IItem newItem)
+                newItem.ItemDeleted.Subscribe(ParentDeleted);
+        }
+
+        private void ParentDeleted(IItem sender, ItemDeletedResult result)
+        {
+            IsDeleted = true;
         }
 
         /// <summary>
