@@ -16,6 +16,7 @@ namespace MVVMToolbox
         public ViewModelBase(IContext context, IServiceProvider serviceProvider)
         {
             Context = context ?? throw new ArgumentNullException(nameof(context));
+            ServiceProvider = serviceProvider;
         }
 
         public void Load()

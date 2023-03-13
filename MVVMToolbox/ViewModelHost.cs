@@ -1,4 +1,6 @@
-﻿namespace MVVMToolbox
+﻿using System;
+
+namespace MVVMToolbox
 {
     public class ViewModelHost : ViewModelBase
     {
@@ -19,7 +21,7 @@
             }
         }
 
-        public ViewModelHost(IContext context, ViewModelBase? startingViewModel) : base(context)
+        public ViewModelHost(IContext context, IServiceProvider serviceProvider, ViewModelBase? startingViewModel) : base(context, serviceProvider)
         {
             m_ActiveViewModel = startingViewModel;
         }

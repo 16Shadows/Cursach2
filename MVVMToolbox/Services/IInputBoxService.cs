@@ -5,9 +5,8 @@ namespace MVVMToolbox.Services
     /// <summary>
     /// Provides a way to ask the user for input in a message-box style way
     /// </summary>
-    public interface IInputBoxService
+    public interface IInputBoxService<Scenarios> where Scenarios : Enum
     {
-        void Show(Enum scenario);
-        Enum GetSupportedScenarios();
+        object Show(Scenarios scenario);
     }
 }
