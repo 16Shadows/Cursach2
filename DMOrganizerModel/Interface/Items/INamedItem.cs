@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CSToolbox;
+using System;
 
 namespace DMOrganizerModel.Interface.Items
 {
@@ -57,7 +58,7 @@ namespace DMOrganizerModel.Interface.Items
         /// <summary>
         /// Is invoked when the either ChangeItemName or RequestItemNameUpdate is completed.
         /// </summary>
-        event TypedEventHandler<INamedItem, NamedItemNameChangedEventArgs> ItemNameChanged;
+        WeakEvent<INamedItem, NamedItemNameChangedEventArgs> ItemNameChanged { get; }
 
         /// <summary>
         /// Requests a name update for this item, causing ItemNameChanged event.

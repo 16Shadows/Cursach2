@@ -1,4 +1,5 @@
-﻿using DMOrganizerModel.Interface.References;
+﻿using CSToolbox;
+using DMOrganizerModel.Interface.References;
 using System;
 
 namespace DMOrganizerModel.Interface.Items
@@ -61,9 +62,9 @@ namespace DMOrganizerModel.Interface.Items
         /// <summary>
         /// Is invoked when the content of this section changes.
         /// </summary>
-        event TypedEventHandler<ISection, SectionContentChangedEventArgs> SectionContentChanged;
+        WeakEvent<ISection, SectionContentChangedEventArgs> SectionContentChanged { get; }
 
-        event TypedEventHandler<ISection, SectionItemCreatedEventArgs> SectionItemCreated;
+        WeakEvent<ISection, SectionItemCreatedEventArgs> SectionItemCreated { get; }
 
         /// <summary>
         /// Requests a content update for this section

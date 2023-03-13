@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CSToolbox;
+using System;
  
 namespace DMOrganizerModel.Interface.Items
 {
@@ -35,7 +36,7 @@ namespace DMOrganizerModel.Interface.Items
     /// </summary>
     public interface ICategory : IOrganizerItem, IItemContainer<IOrganizerItem>
     {
-        event TypedEventHandler<ICategory, CategoryItemCreatedEventArgs> CategoryItemCreated;
+        WeakEvent<ICategory, CategoryItemCreatedEventArgs> CategoryItemCreated { get; }
 
         /// <summary>
         /// Creates a category in the category

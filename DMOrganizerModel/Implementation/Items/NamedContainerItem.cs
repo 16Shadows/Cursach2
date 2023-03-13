@@ -1,4 +1,5 @@
-﻿using DMOrganizerModel.Implementation.Model;
+﻿using CSToolbox;
+using DMOrganizerModel.Implementation.Model;
 using DMOrganizerModel.Implementation.Utility;
 using DMOrganizerModel.Interface;
 using DMOrganizerModel.Interface.Items;
@@ -11,10 +12,11 @@ namespace DMOrganizerModel.Implementation.Items
         protected NamedContainerItem(int itemID, IItemContainerBase parent, Organizer organizer) : base(itemID, parent, organizer) {}
 
         #region INamedItem
-        public event TypedEventHandler<INamedItem, NamedItemNameChangedEventArgs>? ItemNameChanged;
+        public WeakEvent<INamedItem, NamedItemNameChangedEventArgs> ItemNameChanged { get; } = new();
+
         protected void InvokeItemNameChanged(string newName, NamedItemNameChangedEventArgs.ResultType result)
         {
-            ItemNameChanged?.Invoke(this, new NamedItemNameChangedEventArgs(newName, result));
+            ItemNameChanged.Invoke(this, new NamedItemNameChangedEventArgs(newName, result));
         }
 
         public void ChangeItemName(string newName)

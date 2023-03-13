@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CSToolbox;
+using System;
 
 namespace DMOrganizerModel.Interface.Items
 {
@@ -19,7 +20,7 @@ namespace DMOrganizerModel.Interface.Items
         /// <summary>
         /// Is invoked when the DeleteItem is completed
         /// </summary>
-        event TypedEventHandler<IItem, ItemDeletedResult> ItemDeleted;
+        WeakEvent<IItem, ItemDeletedResult> ItemDeleted { get; }
 
         /// <summary>
         /// Deletes the assosiated entity

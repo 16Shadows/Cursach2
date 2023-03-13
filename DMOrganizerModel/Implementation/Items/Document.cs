@@ -1,6 +1,6 @@
-﻿using DMOrganizerModel.Implementation.Model;
+﻿using CSToolbox;
+using DMOrganizerModel.Implementation.Model;
 using DMOrganizerModel.Implementation.Utility;
-using DMOrganizerModel.Interface;
 using DMOrganizerModel.Interface.Items;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -12,17 +12,17 @@ namespace DMOrganizerModel.Implementation.Items
         public Document(int itemID, IItemContainerBase parent, Organizer organizer) : base(itemID, parent, organizer) {}
 
         #region IDocument
-        public event TypedEventHandler<IDocument, DocumentCurrentTagsEventArgs>? DocumentCurrentTags;
-        public event TypedEventHandler<IDocument, DocumentTagsChangedEventArgs>? DocumentTagsChanged;
+        public WeakEvent<IDocument, DocumentCurrentTagsEventArgs> DocumentCurrentTags { get; } = new();
+        public WeakEvent<IDocument, DocumentTagsChangedEventArgs> DocumentTagsChanged { get; } = new();
 
         private void InvokeDocumentCurrentTags(IEnumerable<string> items)
-        {
-            DocumentCurrentTags?.Invoke(this, new DocumentCurrentTagsEventArgs(items));
+        { 
+            DocumentCurrentTags.Invoke(this, new DocumentCurrentTagsEventArgs(items));
         }
 
         private void InvokeDocumentTagsChanged(string tag, DocumentTagsChangedEventArgs.ChangeType type, DocumentTagsChangedEventArgs.ResultType result)
         {
-            DocumentTagsChanged?.Invoke(this, new DocumentTagsChangedEventArgs(tag, type, result));
+            DocumentTagsChanged.Invoke(this, new DocumentTagsChangedEventArgs(tag, type, result));
         }
 
         public void AddDocumentTag(string tag)

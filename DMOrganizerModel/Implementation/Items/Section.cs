@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using DMOrganizerModel.Implementation.Model;
 using DMOrganizerModel.Interface.References;
 using DMOrganizerModel.Implementation.References;
+using CSToolbox;
 
 namespace DMOrganizerModel.Implementation.Items
 {
@@ -14,17 +15,17 @@ namespace DMOrganizerModel.Implementation.Items
         public Section(int itemID, IItemContainerBase parent, Organizer organizer) : base(itemID, parent, organizer) {}
 
         #region ISection
-        public event TypedEventHandler<ISection, SectionContentChangedEventArgs>? SectionContentChanged;
-        public event TypedEventHandler<ISection, SectionItemCreatedEventArgs>? SectionItemCreated;
+        public WeakEvent<ISection, SectionContentChangedEventArgs> SectionContentChanged { get; } = new();
+        public WeakEvent<ISection, SectionItemCreatedEventArgs> SectionItemCreated { get; } = new();
 
         protected void InvokeSectionContentChanged(string content, bool requested)
         {
-            SectionContentChanged?.Invoke(this, new SectionContentChangedEventArgs(content, requested));
+            SectionContentChanged.Invoke(this, new SectionContentChangedEventArgs(content, requested));
         }
 
         protected void InvokeSectionItemCreated(string name, SectionItemCreatedEventArgs.ResultType result)
         {
-            SectionItemCreated?.Invoke(this, new SectionItemCreatedEventArgs(name, result));
+            SectionItemCreated.Invoke(this, new SectionItemCreatedEventArgs(name, result));
         }
 
         public void CreateSection(string name)

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CSToolbox;
+using System;
 using System.Collections.Generic;
 
 namespace DMOrganizerModel.Interface.Items
@@ -95,12 +96,12 @@ namespace DMOrganizerModel.Interface.Items
         /// <summary>
         /// Is invoked when a request to this document's tags is complete.
         /// </summary>
-        event TypedEventHandler<IDocument, DocumentCurrentTagsEventArgs> DocumentCurrentTags;
+        WeakEvent<IDocument, DocumentCurrentTagsEventArgs> DocumentCurrentTags { get; }
 
         /// <summary>
         /// Is invoked when a tag is added to or removed from this document.
         /// </summary>
-        event TypedEventHandler<IDocument, DocumentTagsChangedEventArgs> DocumentTagsChanged;
+        WeakEvent<IDocument, DocumentTagsChangedEventArgs> DocumentTagsChanged { get; }
 
 
         /// <summary>

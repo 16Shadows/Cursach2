@@ -1,6 +1,6 @@
-﻿using DMOrganizerModel.Implementation.Model;
+﻿using CSToolbox;
+using DMOrganizerModel.Implementation.Model;
 using DMOrganizerModel.Implementation.Utility;
-using DMOrganizerModel.Interface;
 using DMOrganizerModel.Interface.Items;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -12,11 +12,11 @@ namespace DMOrganizerModel.Implementation.Items
         public Category(int itemID, IItemContainerBase parent, Organizer organizer) : base(itemID, parent, organizer) {}
 
         #region ICategory
-        public event TypedEventHandler<ICategory, CategoryItemCreatedEventArgs>? CategoryItemCreated;
+        public WeakEvent<ICategory, CategoryItemCreatedEventArgs> CategoryItemCreated { get; } = new();
 
         private void InvokeCategoryItemCreated(string name, CategoryItemCreatedEventArgs.ResultType result)
         {
-            CategoryItemCreated?.Invoke(this, new CategoryItemCreatedEventArgs(name, result));
+            CategoryItemCreated.Invoke(this, new CategoryItemCreatedEventArgs(name, result));
         }
 
         public void CreateCategory(string name)

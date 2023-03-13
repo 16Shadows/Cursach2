@@ -1,4 +1,5 @@
-﻿using DMOrganizerModel.Implementation.Model;
+﻿using CSToolbox;
+using DMOrganizerModel.Implementation.Model;
 using DMOrganizerModel.Interface;
 using DMOrganizerModel.Interface.Items;
 using System;
@@ -17,11 +18,11 @@ namespace DMOrganizerModel.Implementation.Items
         }
 
         #region IItem
-        public event TypedEventHandler<IItem, ItemDeletedResult>? ItemDeleted;
+        public WeakEvent<IItem, ItemDeletedResult> ItemDeleted { get; } = new();
 
         protected void InvokeItemDeleted(ItemDeletedResult result)
         {
-            ItemDeleted?.Invoke(this, result);
+            ItemDeleted.Invoke(this, result);
         }
 
         public void DeleteItem()
