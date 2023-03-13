@@ -11,8 +11,9 @@ namespace MVVMToolbox
         private int HostsCount { get; set;}
 
         protected IContext Context { get; }
+        protected IServiceProvider ServiceProvider { get; }
 
-        public ViewModelBase(IContext context)
+        public ViewModelBase(IContext context, IServiceProvider serviceProvider)
         {
             Context = context ?? throw new ArgumentNullException(nameof(context));
         }
