@@ -161,6 +161,7 @@ namespace DMOrganizerModel.Implementation.Model
                 );
                 CREATE TABLE IF NOT EXISTS ""Page"" (
 	                ""ID""	INTEGER NOT NULL UNIQUE,
+                    ""Position""	INTEGER NOT NULL UNIQUE,
 	                ""ID_Parent_Book""	INTEGER NOT NULL,
 	                PRIMARY KEY(""ID"" AUTOINCREMENT),
 	                FOREIGN KEY(""ID_Parent_Book"") REFERENCES ""Book""(""ID"") ON DELETE CASCADE

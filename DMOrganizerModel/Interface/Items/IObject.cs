@@ -8,5 +8,8 @@ namespace DMOrganizerModel.Interface.Items
     public interface IObject: IItem, IItemContainer<IReferenceable>
     {
         // link to object
+        // request link (IItemContainer)
+
+        void UpdateContent(IReferenceable newLink); //event iitemcontainer
     }
 }

@@ -13,8 +13,14 @@ namespace DMOrganizerModel.Interface.Items
     {
         //Name, ID of parent category
 
-        // create page
-        //change pages order
-        //
+
+        // create page (page will delete itself)
+        // change pages order ?
+        // change book name (INamedItem)
+        // request book name (INamedItem)
+        // request book pages (IContainerItem)
+        // content change ivents (IContainerItem)
+        void AddPage(IPage page);
+        void RemovePage(IPage page);
     }
 }

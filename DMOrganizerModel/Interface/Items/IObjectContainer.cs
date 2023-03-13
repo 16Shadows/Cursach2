@@ -10,8 +10,12 @@ namespace DMOrganizerModel.Interface.Items
         //has minimum (will set) size and maximum (page size)
         //Type(int), Height(int), Width(int), CoordX(int), CoordY(int)
 
-        //create child-object (with + button maybe)
+        //create child-object (with "+" button maybe)
         //update coordinates X, Y
         //update height, width
+        void RequestViewInfo(); //type, height, width, coordX,Y
+        void UpdateCoordinates(int newX, int newY);
+        void UpdateSize(int newWidth, int newHeight);
+        void UpdateContent(IObject obj); //args?
     }
 }
