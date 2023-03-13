@@ -1,4 +1,5 @@
-﻿using DMOrganizerModel.Implementation.Model;
+﻿using CSToolbox;
+using DMOrganizerModel.Implementation.Model;
 using DMOrganizerModel.Implementation.Utility;
 using DMOrganizerModel.Interface;
 using DMOrganizerModel.Interface.Items;
@@ -17,8 +18,8 @@ namespace DMOrganizerModel.Implementation.Items
         protected ContainerItem(int itemID, IItemContainerBase parent, Organizer organizer) : base(itemID, parent, organizer) {}
 
         #region IItemsContainer
-        public event TypedEventHandler<IItemContainer<ContentType>, ItemContainerCurrentContentEventArgs<ContentType>>? ItemContainerCurrentContent;
-        public event TypedEventHandler<IItemContainer<ContentType>, ItemContainerContentChangedEventArgs<ContentType>>? ItemContainerContentChanged;
+        public WeakEvent<IItemContainer<ContentType>, ItemContainerCurrentContentEventArgs<ContentType>> ItemContainerCurrentContent { get; } = new();
+        public WeakEvent<IItemContainer<ContentType>, ItemContainerContentChangedEventArgs<ContentType>> ItemContainerContentChanged { get; } = new();
 
         protected void InvokeItemContainerCurrentContent(IEnumerable<ContentType> items)
         {

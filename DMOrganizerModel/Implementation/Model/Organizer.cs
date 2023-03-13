@@ -10,6 +10,7 @@ using DMOrganizerModel.Implementation.Items;
 using DMOrganizerModel.Interface.References;
 using System.Threading.Tasks;
 using System.Net.Mime;
+using CSToolbox;
 
 namespace DMOrganizerModel.Implementation.Model
 {
@@ -233,9 +234,9 @@ namespace DMOrganizerModel.Implementation.Model
         }
 
         #region IOrganizer
-        public event TypedEventHandler<IOrganizer, OrganizerItemCreatedEventArgs>? OrganizerItemCreated;
-        public event TypedEventHandler<IItemContainer<IOrganizerItem>, ItemContainerCurrentContentEventArgs<IOrganizerItem>>? ItemContainerCurrentContent;
-        public event TypedEventHandler<IItemContainer<IOrganizerItem>, ItemContainerContentChangedEventArgs<IOrganizerItem>>? ItemContainerContentChanged;
+        public WeakEvent<IOrganizer, OrganizerItemCreatedEventArgs> OrganizerItemCreated { get; } = new();
+        public WeakEvent<IItemContainer<IOrganizerItem>, ItemContainerCurrentContentEventArgs<IOrganizerItem>> ItemContainerCurrentContent { get; } = new();
+        public WeakEvent<IItemContainer<IOrganizerItem>, ItemContainerContentChangedEventArgs<IOrganizerItem>> ItemContainerContentChanged { get; } = new();
         
         private void InvokeOrganizerItemCreated(string name, OrganizerItemCreatedEventArgs.ResultType result)
         {

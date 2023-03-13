@@ -1,4 +1,5 @@
-﻿using DMOrganizerModel.Interface.Items;
+﻿using CSToolbox;
+using DMOrganizerModel.Interface.Items;
 using DMOrganizerModel.Interface.References;
 using System;
 
@@ -37,7 +38,7 @@ namespace DMOrganizerModel.Interface.Organizer
         /// <summary>
         /// Is invoked when a create operation is completed
         /// </summary>
-        event TypedEventHandler<IOrganizer, OrganizerItemCreatedEventArgs> OrganizerItemCreated;
+        WeakEvent<IOrganizer, OrganizerItemCreatedEventArgs> OrganizerItemCreated { get; }
 
         /// <summary>
         /// Creates a category in the organizer
