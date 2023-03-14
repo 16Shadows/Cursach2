@@ -1,4 +1,4 @@
-﻿using DMOrganizerModel.Implementation.Model;
+﻿using DMOrganizerModel.Implementation.Organizer;
 using DMOrganizerModel.Interface.Items;
 using System;
 using System.Collections.Generic;
@@ -11,7 +11,7 @@ namespace DMOrganizerModel.Implementation.Items
     internal class BookPage: NamedContainerItem<IObjectContainer>, IPage
     {
         // IPage
-        public BookPage(int itemID, IItemContainerBase parent, Organizer organizer) : base(itemID, parent, organizer) { }
+        public BookPage(int itemID, IItemContainerBase parent, Organizer.Organizer organizer) : base(itemID, parent, organizer) { }
 
         public void AddContainer()
         {

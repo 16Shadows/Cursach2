@@ -1,5 +1,5 @@
 ﻿using CSToolbox;
-using DMOrganizerModel.Implementation.Model;
+using DMOrganizerModel.Implementation.Organizer;
 using DMOrganizerModel.Implementation.Utility;
 using DMOrganizerModel.Interface;
 using DMOrganizerModel.Interface.Items;
@@ -14,7 +14,7 @@ namespace DMOrganizerModel.Implementation.Items
     internal class Book : NamedContainerItem<IPage>, IBook
     {
         //IBook
-        public Book(int itemID, IItemContainerBase parent, Organizer organizer) : base(itemID, parent, organizer) {}
+        public Book(int itemID, IItemContainerBase parent, Organizer.Organizer organizer) : base(itemID, parent, organizer) {}
         
         // maybe need to remove at all                      !!!!!
         public WeakEvent<IBook, BookItemCreatedEventArgs> BookItemCreated { get; } = new();

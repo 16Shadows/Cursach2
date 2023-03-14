@@ -6,7 +6,7 @@ namespace DMOrganizerModel.Interface.Items
     /// <summary>
     /// Page - container for object_containers. Part of book.
     /// </summary>
-    public interface IPage : IItem, IItemContainer<IObjectContainer>
+    public interface IPage : IOrganizerItem, IItemContainer<IObjectContainer>
     {
         // position in book(int)
 
