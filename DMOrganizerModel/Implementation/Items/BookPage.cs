@@ -9,7 +9,7 @@ using DMOrganizerModel.Implementation.Utility;
 
 namespace DMOrganizerModel.Implementation.Items
 {
-    internal class BookPage : NamedContainerItem<IObjectContainer>, IPage
+    internal class BookPage : ContainerItem<IObjectContainer>, IPage
     {
         // IPage
         public BookPage(int itemID, IItemContainerBase parent, Organizer organizer) : base(itemID, parent, organizer) { }
@@ -20,7 +20,7 @@ namespace DMOrganizerModel.Implementation.Items
             Task.Run(() =>
             {
                 //haspage check проверить позицию, что есть такая страница в книге, айди не важен
-                int currPageID = Query.GetPageIDByPosition(Organizer.Connection, ItemID, oldPosition);
+                //int currPageID = Query.GetPageIDByPosition(Organizer.Connection, ItemID, oldPosition);
                 Query.SetPagePosition(Organizer.Connection, ItemID, oldPosition, newPosition);
                 InvokeItemContainerContentChanged()
             });
@@ -52,6 +52,36 @@ namespace DMOrganizerModel.Implementation.Items
         }
 
         public void RequestPagePosition()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override string GetName()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void SetName(string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override bool HasItem(IObjectContainer item)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override IEnumerable<IObjectContainer> GetContent()
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override void SetParentInternal(IItemContainerBase parent)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override bool DeleteItemInternal()
         {
             throw new NotImplementedException();
         }

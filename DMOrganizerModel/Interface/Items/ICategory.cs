@@ -51,5 +51,12 @@ namespace DMOrganizerModel.Interface.Items
         /// <param name="name">The name of the category</param>
         /// <exception cref="InvalidOperationException">Can be thrown if the ICategory has already been deleted</exception>
         void CreateDocument(string name);
+
+        /// <summary>
+        /// Creates a book in the category
+        /// </summary>
+        /// <param name="name">The name of book</param> 
+        /// <exception cref="InvalidOperationException">Can be thrown if the ICategory has already been deleted</exception>
+        void CreateBook(string name);
     }
 }

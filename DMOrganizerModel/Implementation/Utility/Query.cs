@@ -324,10 +324,27 @@ namespace DMOrganizerModel.Implementation.Utility
             connection.Read(con =>
             {
                 using SQLiteCommand cmd = con.CreateCommand();
-                cmd.CommandText = $"(SELECT ID FROM Category WHERE Title=$title AND Parent={categoryID})" +
-                                  " UNION ALL " +
-                                  $"(SELECT Section.ID FROM (Document INNER JOIN Section ON Document.SectionID=Section.ID) WHERE Section.Title=$title AND Document.CategoryID={categoryID})";
-                cmd.Parameters.AddWithValue("$title", name);
+                cmd.CommandText = @"SELECT ID FROM Category WHERE Title=@Name AND Parent=@CategoryID
+
+                                    UNION ALL 
+
+                                    SELECT Section.ID 
+                                    FROM (Document INNER JOIN Section ON Document.SectionID=Section.ID) 
+                                    WHERE Section.Title=@Name
+                                    AND Document.CategoryID=@CategoryID
+
+                                    UNION ALL
+
+                                    SELECT Book.ID 
+                                    FROM Book
+                                    WHERE Book.Title IS @Name
+                                    AND Book.ID_Parent_Category=@CategoryID;";
+                cmd.Parameters.AddWithValue("@Name", name);
+                cmd.Parameters.AddWithValue("@CategoryID", categoryID);
+                //cmd.CommandText = $"(SELECT ID FROM Category WHERE Title=$title AND Parent={categoryID})" +
+                //                  " UNION ALL " +
+                //                  $"(SELECT Section.ID FROM (Document INNER JOIN Section ON Document.SectionID=Section.ID) WHERE Section.Title=$title AND Document.CategoryID={categoryID})";
+                //cmd.Parameters.AddWithValue("$title", name);
                 success = cmd.ExecuteScalar() != null;
             });
             return success;
@@ -384,6 +401,24 @@ namespace DMOrganizerModel.Implementation.Utility
             return res;
         }
 
+        //get books' ids in category
+        public static List<int> GetBooksInCategory(SyncronizedSQLiteConnection connection, int categoryID)
+        {
+            List<int> res = new List<int>();
+            connection.Read(con =>
+            {
+                using SQLiteCommand cmd = con.CreateCommand();
+                cmd.CommandText = @"SELECT Book.ID 
+                                    FROM Book 
+                                    WHERE Book.ID_Parent_Category = @ParentCategoryID;";
+                cmd.Parameters.AddWithValue("@ParentCategoryID", categoryID);
+                using SQLiteDataReader reader = cmd.ExecuteReader();
+                while (reader.Read())
+                    res.Add(reader.GetInt32(0));
+            });
+            return res;
+        }
+
         public static bool CategoryHasDocument(SyncronizedSQLiteConnection connection, int documentID, int categoryID)
         {
             bool success = false;
@@ -406,6 +441,25 @@ namespace DMOrganizerModel.Implementation.Utility
                 success = cmd.ExecuteNonQuery() > 0;
             });
             return success;
+        }
+
+        //checks if category has Book 
+        public static bool CategoryHasBook(SyncronizedSQLiteConnection connection, int categoryID, int bookID)
+        {
+            int result = -1;
+            connection.Read(con =>
+            {
+                using SQLiteCommand cmd = con.CreateCommand();
+                cmd.CommandText = @"SELECT Book.ID
+                                    FROM Category
+                                    WHERE Book.ID_Parent_Category is @CategoryParentID 
+                                    AND Page.ID is @BookID;";
+                cmd.Parameters.AddWithValue("@CategoryParentID", categoryID);
+                cmd.Parameters.AddWithValue("@BookID", bookID);
+                result = (int)cmd.ExecuteScalar();
+            }
+            );
+            return result > 0;
         }
 
         public static bool SetCategoryParent(SyncronizedSQLiteConnection connection, int categoryID, int? parentID)
@@ -587,12 +641,6 @@ namespace DMOrganizerModel.Implementation.Utility
             return res;
         }
 
-        public static int GetPageIDByPosition(SyncronizedSQLiteConnection connection, int bookID, int position)
-        {
-            int result = -1;
-
-        }
-
         //check if book has item <IPage> a
         public static bool BookHasPage(SyncronizedSQLiteConnection connection, int bookID, int pageID)
         {
@@ -604,6 +652,8 @@ namespace DMOrganizerModel.Implementation.Utility
                                     FROM Page
                                     WHERE Page.ID_Parent_Book is @BookParentID 
                                     AND Page.ID is @PageID;";
+                cmd.Parameters.AddWithValue("@BookParentID", bookID);
+                cmd.Parameters.AddWithValue("@PageID", pageID);
                 result = (int)cmd.ExecuteScalar();
             }
             );
@@ -648,7 +698,12 @@ namespace DMOrganizerModel.Implementation.Utility
         #endregion
 
         #region Page
-        // PAGE
+        //create page
+        //get page position
+        //get page content
+        //has container, has item
+        
+
         //get pages maximum position to add new page at the end, if no pages returns 0
         public static int MaxPagePosition(SyncronizedSQLiteConnection connection, int parentBookID)
         {
@@ -746,4 +801,10 @@ namespace DMOrganizerModel.Implementation.Utility
         }
         #endregion
     }
+    #region ObjectContainer
+    // create object container
+    //delete object container
+    // set parent
+
+    #endregion
 }
