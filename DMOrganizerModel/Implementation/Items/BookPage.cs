@@ -16,13 +16,14 @@ namespace DMOrganizerModel.Implementation.Items
 
         public void ChangePagePosition(int bookID, int oldPosition, int newPosition)
         {
+            throw new NotImplementedException();
             CheckDeleted();
             Task.Run(() =>
             {
                 //haspage check проверить позицию, что есть такая страница в книге, айди не важен
                 //int currPageID = Query.GetPageIDByPosition(Organizer.Connection, ItemID, oldPosition);
                 Query.SetPagePosition(Organizer.Connection, ItemID, oldPosition, newPosition);
-                InvokeItemContainerContentChanged()
+                //InvokeItemContainerContentChanged();
             });
 
         }
@@ -51,29 +52,23 @@ namespace DMOrganizerModel.Implementation.Items
 
         }
 
+        //request page position no matter in what book it is, just by id
         public void RequestPagePosition()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override string GetName()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void SetName(string name)
         {
             throw new NotImplementedException();
         }
 
         protected override bool HasItem(IObjectContainer item)
         {
-            throw new NotImplementedException();
+            return item is ObjectContainer cont && Query.PageHasContainer(Organizer.Connection, ItemID, cont.ItemID);
         }
 
         protected override IEnumerable<IObjectContainer> GetContent()
         {
-            throw new NotImplementedException();
+            List<IObjectContainer> result = new List<IObjectContainer>();
+            foreach (int containerID in Query.GetPageContent(Organizer.Connection, ItemID))
+                result.Add(Organizer.GetObjectContainer(containerID, this));
+            return result;
         }
 
         protected override void SetParentInternal(IItemContainerBase parent)

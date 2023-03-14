@@ -90,15 +90,15 @@ namespace DMOrganizerModel.Implementation.Items
 
         protected override bool HasItem(IPage item) //checks if has page with some ID in it
         {
-            if (item is not Item)
-                throw new ArgumentTypeException(nameof(item), "Invalid item type.");
-            return item is BookPage page && Query.BookHasPage(Organizer.Connection, ItemID, page.ItemID);
+           return item is BookPage page && Query.BookHasPage(Organizer.Connection, ItemID, page.ItemID);
         }
 
         // Need to overwrite
         protected override void SetParentInternal(IItemContainerBase parent)
         {
-            Query.SetBookParent(Organizer.Connection, ItemID);
+            if (parent is null) Query.SetBookParent(Organizer.Connection, ItemID);
+            else if (parent is not Category) throw new ArgumentTypeException(nameof(parent), "Unsupported book parent type.");
+            else Query.SetBookParent(Organizer.Connection, ItemID, (parent as Category).ItemID);
         }
 
         protected override bool DeleteItemInternal()

@@ -352,6 +352,8 @@ namespace DMOrganizerModel.Implementation.Organizers
         private Dictionary<int, WeakReference<Section>> SectionsCache { get; }
         private Dictionary<int, WeakReference<BookPage>> PagesCache { get; }
         private Dictionary<int, WeakReference<Book>> BooksCache { get; }
+        private Dictionary<int, WeakReference<ObjectContainer>> ObjectContainersCache { get; }
+        private Dictionary<int, WeakReference<ContainerObject>> ContainerObjectsCache { get; }
 
         public Category GetCategory(int id, IItemContainerBase parent)
         {
@@ -411,6 +413,28 @@ namespace DMOrganizerModel.Implementation.Organizers
                 book = new Book(id, parent, this);
                 BooksCache[id] = new WeakReference<Book>(book);
                 return book;
+            }
+        }
+        public ObjectContainer GetObjectContainer(int id, IItemContainerBase parent)
+        {
+            lock (Lock)
+            {
+                if (ObjectContainersCache.TryGetValue(id, out WeakReference<ObjectContainer> weakRef) && weakRef.TryGetTarget(out ObjectContainer cont))
+                    return cont;
+                cont = new ObjectContainer(id, parent, this);
+                ObjectContainersCache[id] = new WeakReference<ObjectContainer>(cont);
+                return cont;
+            }
+        }
+        public ContainerObject GetContainerObject(int id, IItemContainerBase parent)
+        {
+            lock (Lock)
+            {
+                if (ContainerObjectsCache.TryGetValue(id, out WeakReference<ContainerObject> weakRef) && weakRef.TryGetTarget(out ContainerObject obj))
+                    return obj;
+                obj = new ContainerObject(id, parent, this);
+                ContainerObjectsCache[id] = new WeakReference<ContainerObject>(obj);
+                return obj;
             }
         }
         #endregion

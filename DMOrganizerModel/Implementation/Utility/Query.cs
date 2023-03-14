@@ -699,10 +699,77 @@ namespace DMOrganizerModel.Implementation.Utility
 
         #region Page
         //create page
-        //get page position
+        public static int CreatePage(SyncronizedSQLiteConnection connection, int parentID, int position)
+        {
+            int res = -1;
+            connection.Write(con =>
+            {
+                using SQLiteCommand cmd = con.CreateCommand();
+
+                cmd.CommandText = @"INSERT INTO Page (Position, ID_Parent_Book) 
+                                            VALUES (@PagePosition, @BookParentID);";
+                cmd.Parameters.AddWithValue("@PagePosition", position);
+                cmd.Parameters.AddWithValue("@BookParentID", parentID);
+                res = (int)cmd.ExecuteScalar();
+            });
+            return res;
+        }
+        //get page position by id
+        public static int GetPagePosition(SyncronizedSQLiteConnection connection, int pageID)
+        {
+            int result = -1;
+            connection.Read(con =>
+            {
+                using SQLiteCommand cmd = con.CreateCommand();
+                cmd.CommandText = @"SELECT Page.Position
+                                    FROM Page
+                                    WHERE Page.ID is @PageID;";
+                cmd.Parameters.AddWithValue("@PageID", pageID);
+                using SQLiteDataReader reader = cmd.ExecuteReader();
+                if (reader.Read())
+                { result = reader.GetInt32(0); }
+            });
+            return result;
+        }
+
         //get page content
-        //has container, has item
+        public static List<int> GetPageContent(SyncronizedSQLiteConnection connection, int pageID)
+        {
+            List<int> res = new List<int>();
+            connection.Read(con =>
+            {
+                using SQLiteCommand cmd = con.CreateCommand();
+                cmd.CommandText = @"SELECT Container.ID
+                    FROM Container, Set_Page_Containers
+                    WHERE Set_Page_Containers.ID_Container = Container.ID
+                    AND Set_Page_Containers.ID_Page is @PageID;";
+                cmd.Parameters.AddWithValue("@PageID", pageID);
+                using SQLiteDataReader reader = cmd.ExecuteReader();
+                while (reader.Read())
+                    res.Add(reader.GetInt32(0));
+            });
+            return res;
+        }
         
+        //page has container, has item
+        public static bool PageHasContainer(SyncronizedSQLiteConnection connection, int pageID, int containerID)
+        {
+            int result = -1;
+            connection.Read(con =>
+            {
+                using SQLiteCommand cmd = con.CreateCommand();
+                cmd.CommandText = @"SELECT Container.ID
+                                    FROM Container, Set_Page_Containers
+                                    WHERE Set_Page_Containers.ID_Page = @PageID
+                                    AND
+                                    Set_Page_Containers.ID_Container = @ContainerID;";
+                cmd.Parameters.AddWithValue("@ContainerID", containerID);
+                cmd.Parameters.AddWithValue("@PageID", pageID);
+                result = (int)cmd.ExecuteScalar();
+            }
+            );
+            return result > 0;
+        }
 
         //get pages maximum position to add new page at the end, if no pages returns 0
         public static int MaxPagePosition(SyncronizedSQLiteConnection connection, int parentBookID)
