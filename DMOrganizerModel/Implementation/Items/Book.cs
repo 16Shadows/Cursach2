@@ -1,7 +1,6 @@
 ﻿using CSToolbox;
-using DMOrganizerModel.Implementation.Model;
 using DMOrganizerModel.Implementation.Utility;
-using DMOrganizerModel.Interface;
+using DMOrganizerModel.Implementation.Organizers;
 using DMOrganizerModel.Interface.Items;
 using System;
 using System.Collections.Generic;
@@ -33,7 +32,7 @@ namespace DMOrganizerModel.Implementation.Items
                 int availablePosition = Query.MaxPagePosition(Organizer.Connection, ItemID) + 1;
                 //InvokeBookItemCreated()
                 int newPageID = Query.CreatePadeInBook(Organizer.Connection, ItemID, availablePosition);
-                IOrganizerItem item = null;
+                IItem item = null;
                 item = Organizer.GetPage(newPageID, this);
                 //InvokeItemContainerContentChanged()
 

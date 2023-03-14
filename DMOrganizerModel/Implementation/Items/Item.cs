@@ -1,5 +1,5 @@
 ﻿using CSToolbox;
-using DMOrganizerModel.Implementation.Organizer;
+using DMOrganizerModel.Implementation.Organizers;
 using DMOrganizerModel.Interface;
 using DMOrganizerModel.Interface.Items;
 using System;
@@ -9,7 +9,7 @@ namespace DMOrganizerModel.Implementation.Items
 {
     internal abstract class Item : IItem
     {
-        public Item(int itemID, IItemContainerBase parent, Organizer.Organizer organizer)
+        public Item(int itemID, IItemContainerBase parent, Organizer organizer)
         {
             Organizer = organizer ?? throw new ArgumentNullException(nameof(organizer));
             Parent = parent ?? throw new ArgumentNullException(nameof(organizer));
@@ -54,7 +54,7 @@ namespace DMOrganizerModel.Implementation.Items
         /// <summary>
         /// The organizer this item belongs to
         /// </summary>
-        protected Organizer.Organizer Organizer { get; }
+        protected Organizer Organizer { get; }
 
         /// <summary>
         /// The parent of this item

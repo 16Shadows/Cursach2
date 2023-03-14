@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 using CSToolbox;
 using System.Windows.Controls;
 
-namespace DMOrganizerModel.Implementation.Organizer
+namespace DMOrganizerModel.Implementation.Organizers
 {
     internal sealed class Organizer : IOrganizer, IItemContainerBase
     {
@@ -40,6 +40,7 @@ namespace DMOrganizerModel.Implementation.Organizer
 
             CategoriesCache = new Dictionary<int, WeakReference<Category>>();
             SectionsCache = new Dictionary<int, WeakReference<Section>>();
+            PagesCache = new Dictionary<int, WeakReference<BookPage>>();
 
             try
             {

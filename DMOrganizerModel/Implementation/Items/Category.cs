@@ -1,5 +1,5 @@
 ﻿using CSToolbox;
-using DMOrganizerModel.Implementation.Organizer;
+using DMOrganizerModel.Implementation.Organizers;
 using DMOrganizerModel.Implementation.Utility;
 using DMOrganizerModel.Interface.Items;
 using System.Collections.Generic;
@@ -9,7 +9,7 @@ namespace DMOrganizerModel.Implementation.Items
 {
     internal sealed class Category : NamedContainerItem<IOrganizerItem>, ICategory
     {
-        public Category(int itemID, IItemContainerBase parent, Organizer.Organizer organizer) : base(itemID, parent, organizer) {}
+        public Category(int itemID, IItemContainerBase parent, Organizer organizer) : base(itemID, parent, organizer) {}
 
         #region ICategory
         public WeakEvent<ICategory, CategoryItemCreatedEventArgs> CategoryItemCreated { get; } = new();

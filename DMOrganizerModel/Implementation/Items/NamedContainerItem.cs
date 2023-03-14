@@ -1,5 +1,5 @@
 ﻿using CSToolbox;
-using DMOrganizerModel.Implementation.Organizer;
+using DMOrganizerModel.Implementation.Organizers;
 using DMOrganizerModel.Implementation.Utility;
 using DMOrganizerModel.Interface;
 using DMOrganizerModel.Interface.Items;
@@ -9,7 +9,7 @@ namespace DMOrganizerModel.Implementation.Items
 {
     internal abstract class NamedContainerItem<ContentType> : ContainerItem<ContentType>, INamedItem, INamedItemBase where ContentType : IItem
     {
-        protected NamedContainerItem(int itemID, IItemContainerBase parent, Organizer.Organizer organizer) : base(itemID, parent, organizer) {}
+        protected NamedContainerItem(int itemID, IItemContainerBase parent, Organizer organizer) : base(itemID, parent, organizer) {}
 
         #region INamedItem
         public WeakEvent<INamedItem, NamedItemNameChangedEventArgs> ItemNameChanged { get; } = new();

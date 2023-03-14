@@ -1,5 +1,5 @@
 ﻿using CSToolbox;
-using DMOrganizerModel.Implementation.Organizer;
+using DMOrganizerModel.Implementation.Organizers;
 using DMOrganizerModel.Implementation.Utility;
 using DMOrganizerModel.Interface;
 using DMOrganizerModel.Interface.Items;
@@ -15,7 +15,7 @@ namespace DMOrganizerModel.Implementation.Items
     /// <typeparam name="ContentType">The type of items container within</typeparam>
     internal abstract class ContainerItem<ContentType> : Item, IItemContainer<ContentType>, IItemContainerBase where ContentType : IItem
     {
-        protected ContainerItem(int itemID, IItemContainerBase parent, Organizer.Organizer organizer) : base(itemID, parent, organizer) {}
+        protected ContainerItem(int itemID, IItemContainerBase parent, Organizer organizer) : base(itemID, parent, organizer) {}
 
         #region IItemsContainer
         public WeakEvent<IItemContainer<ContentType>, ItemContainerCurrentContentEventArgs<ContentType>> ItemContainerCurrentContent { get; } = new();
@@ -41,7 +41,7 @@ namespace DMOrganizerModel.Implementation.Items
                 bool isUnique = false;
                 lock (Lock)
                 {
-                    isUnique = CanBeParentOf(itemTyped);
+                    isUnique = CanBeParentOf(item);
                     if (isUnique)
                         itemBase.SetParent(this);
                 }
