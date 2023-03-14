@@ -11,6 +11,7 @@ using DMOrganizerModel.Interface.References;
 using System.Threading.Tasks;
 using System.Net.Mime;
 using CSToolbox;
+using System.Windows.Controls;
 
 namespace DMOrganizerModel.Implementation.Model
 {
@@ -350,6 +351,7 @@ namespace DMOrganizerModel.Implementation.Model
         #region Caching
         private Dictionary<int, WeakReference<Category>> CategoriesCache { get; }
         private Dictionary<int, WeakReference<Section>> SectionsCache { get; }
+        private Dictionary<int, WeakReference<BookPage>> PagesCache { get; }
 
         public Category GetCategory(int id, IItemContainerBase parent)
         {
@@ -384,6 +386,19 @@ namespace DMOrganizerModel.Implementation.Model
                 document = new Document(id, parent, this);
                 SectionsCache[id] = new WeakReference<Section>(document);
                 return document;
+            }
+        }
+
+        // caching func for pages
+        public BookPage GetPage(int id, IItemContainerBase parent)
+        {
+            lock (Lock)
+            {
+                if (PagesCache.TryGetValue(id, out WeakReference<BookPage> weakRef) && weakRef.TryGetTarget(out BookPage page))
+                    return page;
+                page = new BookPage(id, parent, this);
+                PagesCache[id] = new WeakReference<BookPage>(page);
+                return page;
             }
         }
         #endregion

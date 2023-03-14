@@ -1,5 +1,13 @@
 ﻿using System.Data.SQLite;
 using System.Collections.Generic;
+using System.Xml.Linq;
+using DMOrganizerModel.Interface.Items;
+using DMOrganizerModel.Implementation.Items;
+using System.Security.Cryptography;
+using System.Reflection.PortableExecutable;
+using static System.Data.Entity.Infrastructure.Design.Executor;
+using System.Net;
+using System.Windows.Controls.Primitives;
 
 namespace DMOrganizerModel.Implementation.Utility
 {
@@ -452,5 +460,260 @@ namespace DMOrganizerModel.Implementation.Utility
             return success;
         }
         #endregion
+
+        #region Book
+        //create empty book with parent
+        public static int CreateBook(SyncronizedSQLiteConnection connection, string name, int parentID)
+        {
+            int res = -1;
+            connection.Write(con =>
+            {
+                using SQLiteCommand cmd = con.CreateCommand();
+
+                cmd.CommandText = @"INSERT INTO Book (Title, ID_Parent_Category) 
+                                            VALUES (@BookName, @BookParentID);";
+
+                cmd.Parameters.AddWithValue("@BookName", name);
+                cmd.Parameters.AddWithValue("@BookParentID", parentID);
+                res = (int)cmd.ExecuteScalar(); //res = null при ошибке или ID созданной книги
+            });
+            return res;
+        }
+
+        //create book at root (parent is Organizer, not Category type)
+        public static int CreateBook(SyncronizedSQLiteConnection connection, string name)
+        {
+            int res = -1;
+            connection.Write(con =>
+            {
+                using SQLiteCommand cmd = con.CreateCommand();
+
+                cmd.CommandText = @"INSERT INTO Book (Title, ID_Parent_Category) 
+                                            VALUES (@BookName, NULL);";
+
+                cmd.Parameters.AddWithValue("@BookName", name);
+                res = (int)cmd.ExecuteScalar();
+            });
+            return res;
+        }
+
+        //delete book
+        public static bool DeleteBook(SyncronizedSQLiteConnection connection, int bookID)
+        {
+            int result = -1;
+            connection.Write(con =>
+            {
+                using SQLiteCommand cmd = con.CreateCommand();
+
+                cmd.CommandText = @"DELETE FROM Book
+                                    WHERE ID is @BookID;";
+                cmd.Parameters.AddWithValue("@BookID", bookID);
+                result = cmd.ExecuteNonQuery();
+            });
+            return result > 0;
+        }
+
+        //add page in the end or in position
+        public static int CreatePadeInBook(SyncronizedSQLiteConnection connection, int bookID, int pagePosition)
+        {
+            int res = -1;
+            connection.Write(con =>
+            {
+                using SQLiteCommand cmd = con.CreateCommand();
+
+                cmd.CommandText = @"INSERT INTO Page (Position, ID_Parent_Book) 
+                                            VALUES (@Position, @BookParentID);"
+                ;
+
+                cmd.Parameters.AddWithValue("@Position", pagePosition);
+                cmd.Parameters.AddWithValue("@BookParentID", bookID);
+                res = (int)cmd.ExecuteScalar(); //new page's id
+            });
+            return res;
+        }
+
+        //get book name - return string
+        public static string GetBookName(SyncronizedSQLiteConnection connection, int bookID)
+        {
+            string result = null;
+            connection.Read(con =>
+            {
+                using SQLiteCommand cmd = con.CreateCommand();
+                cmd.CommandText = @"SELECT Book.Title
+                                    FROM Book
+                                    WHERE Book.ID is @BookID;";
+                cmd.Parameters.AddWithValue("@BookID", bookID);
+                using SQLiteDataReader reader = cmd.ExecuteReader();
+                if (reader.Read())
+                    { result = reader.GetString(0); }
+                else result = null;
+            });
+            return result;
+        }
+        //set book name
+        public static bool SetBookName(SyncronizedSQLiteConnection connection, int bookID, string bookName)
+        {
+            int result = -1;
+            
+            connection.Read(con =>
+            {
+                using SQLiteCommand cmd = con.CreateCommand();
+                cmd.CommandText = @"UPDATE Book 
+                                    SET Title = @NewName 
+                                    WHERE Book.ID is @BookID;";
+                cmd.Parameters.AddWithValue("@NewName", bookName);
+                cmd.Parameters.AddWithValue("@BookID", bookID);
+                result = cmd.ExecuteNonQuery();
+            }
+            );
+            return result > 0;
+        }
+        //get book content - return IEnumerable<IPage>, ID's of pages
+        public static List<int> GetBookContent(SyncronizedSQLiteConnection connection, int bookID)
+        {
+            List<int> res = new List<int>();
+            connection.Read(con =>
+            {
+                using SQLiteCommand cmd = con.CreateCommand();
+                cmd.CommandText = @"SELECT Page.ID 
+                                    FROM Page 
+                                    WHERE Page.ID_Parent_Book = @ParentBookID;";
+                cmd.Parameters.AddWithValue("@ParentBookID", bookID);
+                using SQLiteDataReader reader = cmd.ExecuteReader();
+                while (reader.Read())
+                    res.Add(reader.GetInt32(0));
+            });
+            return res;
+        }
+
+        //check if book has item <IPage> a
+        public static bool BookHasPage(SyncronizedSQLiteConnection connection, int bookID, int pageID)
+        {
+            int result = -1;
+            connection.Read(con =>
+            {
+                using SQLiteCommand cmd = con.CreateCommand();
+                cmd.CommandText = @"SELECT Page.ID
+                                    FROM Page
+                                    WHERE Page.ID_Parent_Book is @BookParentID 
+                                    AND Page.ID is @PageID;";
+                result = (int)cmd.ExecuteScalar();
+            }
+            );
+            return result > 0;
+        }
+
+        //set this book's parent with category-parent
+        public static bool SetBookParent(SyncronizedSQLiteConnection connection, int bookID, int parentID)
+        {
+            int result = -1;
+            connection.Write(con =>
+            {
+                using SQLiteCommand cmd = con.CreateCommand();
+
+                cmd.CommandText = @"UPDATE Book 
+                                    SET ID_Parent_Category = @BookParentID 
+                                    WHERE Book.ID is @BookID;";
+
+                cmd.Parameters.AddWithValue("@BookParentID", parentID);
+                cmd.Parameters.AddWithValue("@BookID", bookID);
+                result = cmd.ExecuteNonQuery();
+            });
+            return result > 0;
+        }
+
+        //set root as book's parent (parent is Organizer, not Category type)
+        public static bool SetBookParent(SyncronizedSQLiteConnection connection, int bookID)
+        {
+            int result = -1;
+            connection.Write(con =>
+            {
+                using SQLiteCommand cmd = con.CreateCommand();
+
+                cmd.CommandText = @"UPDATE Book 
+                                    SET ID_Parent_Category = NULL 
+                                    WHERE Book.ID is @BookID;";
+                cmd.Parameters.AddWithValue("@BookID", bookID);
+                result = cmd.ExecuteNonQuery();
+            });
+            return result > 0;
+        }
+        #endregion
+
+
+        // PAGE
+        //get pages maximum position to add new page at the end, if no pages returns 0
+        public static int MaxPagePosition(SyncronizedSQLiteConnection connection, int parentBookID)
+        {
+            int result = 0;
+            connection.Read(con =>
+            {
+                using SQLiteCommand cmd = con.CreateCommand();
+                cmd.CommandText = @"SELECT MAX(Page.Position) 
+                                    FROM Page 
+                                    WHERE Page.ID_Parent_Book is @ParentBookID;";
+                
+                cmd.Parameters.AddWithValue("@ParentBookID", parentBookID);
+                using SQLiteDataReader reader = cmd.ExecuteReader();
+                if (reader.Read())
+                { result = reader.GetInt32(0); }
+                else result = 0;
+            });
+            return result;
+        }
+
+        //change page position arg-old and new position
+        public static bool SetPagePosition(SyncronizedSQLiteConnection connection, int oldPosition, int newPosition)
+        {
+            int result = -1;
+            connection.Write(con =>
+            {
+                using SQLiteCommand cmd = con.CreateCommand();
+
+                cmd.CommandText = @"UPDATE Page 
+                                    SET Position = @NewPosition 
+                                    WHERE Page.Position is @OldPosition;";
+                cmd.Parameters.AddWithValue("@NewPosition", newPosition);
+                cmd.Parameters.AddWithValue("@OldPosition", oldPosition);
+                result = cmd.ExecuteNonQuery();
+            });
+            return result > 0;
+        }
+
+        //remove page
+        public static bool DeletePage(SyncronizedSQLiteConnection connection, int pageID)
+        {
+            int result = -1;
+            connection.Write(con =>
+            {
+                using SQLiteCommand cmd = con.CreateCommand();
+
+                cmd.CommandText = @"DELETE FROM Page
+                                    WHERE ID is @PageID;";
+                cmd.Parameters.AddWithValue("@PageID", pageID);
+                result = cmd.ExecuteNonQuery();
+            });
+            return result > 0;
+        }
+
+        //set book as this page's parent
+        public static bool SetPageParent(SyncronizedSQLiteConnection connection, int pageID, int parentID)
+        {
+            int result = -1;
+            connection.Write(con =>
+            {
+                using SQLiteCommand cmd = con.CreateCommand();
+
+                cmd.CommandText = @"UPDATE Page 
+                                    SET ID_Parent_Book = @ParentID 
+                                    WHERE Page.ID is @PageID;";
+
+                cmd.Parameters.AddWithValue("@ParentID", parentID);
+                cmd.Parameters.AddWithValue("@PageID", pageID);
+                result = cmd.ExecuteNonQuery();
+            });
+            return result > 0;
+
+        }
     }
 }

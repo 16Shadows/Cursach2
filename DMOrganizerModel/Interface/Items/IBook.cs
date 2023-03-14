@@ -7,35 +7,34 @@ using System.Threading.Tasks;
 
 namespace DMOrganizerModel.Interface.Items
 {
-    public class BookItemChangedEventArgs : EventArgs
+    public class BookItemCreatedEventArgs : EventArgs
     {
-        public enum OperationType
+        public enum ResultType
         {
             /// <summary>
-            /// Page created and added
+            /// Successfully created
             /// </summary>
-            PageAdded,
+            Success,
 
             /// <summary>
-            /// Page removed and deleted
+            /// Some kind of failure
             /// </summary>
-            PageRemoved
+            Failure
         }
         // position of new or deleted page
         public int Position { get; }
-        public OperationType Operation {get;}
+        public ResultType Result { get; }
 
-        public BookItemChangedEventArgs(int position, OperationType operation)
+        public BookItemCreatedEventArgs(int position, ResultType result)
         {
             Position = position;
-            Operation = operation;
+            Result = result;
         }
     }
-
     /// <summary>
     /// Book, container for pages.
     /// </summary>
-    public interface IBook : INamedItem, IItemContainer<IPage>
+    public interface IBook : IOrganizerItem, IItemContainer<IPage>
     {
         //Name, ID of parent category
 
@@ -46,8 +45,7 @@ namespace DMOrganizerModel.Interface.Items
         // request book name (INamedItem)
         // request book pages (IContainerItem)
         // content change ivents (IContainerItem)
-        
-        WeakEvent<IBook, BookItemChangedEventArgs> BookItemChanged { get; }
+        WeakEvent<IBook, BookItemCreatedEventArgs> BookItemCreated { get; }
 
         //Need BookItemChangedEventArgs
         /// <summary>
@@ -72,6 +70,8 @@ namespace DMOrganizerModel.Interface.Items
         /// <summary>
         /// Changes position of child page, affecting db info and view. Need to change all other pages' positions.
         /// </summary>
-        void ChangePagePosition();
+        /// /// <param name="oldPosition">What page we're moving</param>
+        /// /// <param name="newPosition">To what position we're moving</param>
+        void ChangePagePosition(int oldPosition, int newPosition);
     }
 }

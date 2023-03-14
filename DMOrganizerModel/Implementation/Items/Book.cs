@@ -1,4 +1,7 @@
-﻿using DMOrganizerModel.Interface;
+﻿using CSToolbox;
+using DMOrganizerModel.Implementation.Model;
+using DMOrganizerModel.Implementation.Utility;
+using DMOrganizerModel.Interface;
 using DMOrganizerModel.Interface.Items;
 using System;
 using System.Collections.Generic;
@@ -8,93 +11,84 @@ using System.Threading.Tasks;
 
 namespace DMOrganizerModel.Implementation.Items
 {
-    internal class Book : IBook, INamedItem, IItemContainer<IPage>
+    internal class Book : NamedContainerItem<IPage>, IBook
     {
-        event TypedEventHandler<INamedItem, NamedItemNameChangedEventArgs> INamedItem.ItemNameChanged
-        {
-            add
-            {
-                throw new NotImplementedException();
-            }
+        //IBook
+        public Book(int itemID, IItemContainerBase parent, Organizer organizer) : base(itemID, parent, organizer) {}
+        
+        // maybe need to remove at all                      !!!!!
+        public WeakEvent<IBook, BookItemCreatedEventArgs> BookItemCreated { get; } = new();
 
-            remove
-            {
-                throw new NotImplementedException();
-            }
+        private void InvokeBookItemCreated(int ID, BookItemCreatedEventArgs.ResultType result)
+        {
+            BookItemCreated.Invoke(this, new BookItemCreatedEventArgs(ID, result));
         }
 
-        event TypedEventHandler<IItem, ItemDeletedResult> IItem.ItemDeleted
+        public void AddPage()
         {
-            add
+            //check what last page position is, add page at last+1 position, if none - will be first page
+            CheckDeleted();
+            Task.Run(() =>
             {
-                throw new NotImplementedException();
-            }
+                int availablePosition = Query.MaxPagePosition(Organizer.Connection, ItemID) + 1;
+                //InvokeBookItemCreated()
+                int newPageID = Query.CreatePadeInBook(Organizer.Connection, ItemID, availablePosition);
+                IOrganizerItem item = null;
+                item = Organizer.GetPage(newPageID, this);
+                //InvokeItemContainerContentChanged()
 
-            remove
-            {
-                throw new NotImplementedException();
-            }
+            });
         }
 
-        event TypedEventHandler<IItemContainer<IPage>, ItemContainerCurrentContentEventArgs<IPage>> IItemContainer<IPage>.ItemContainerCurrentContent
+        public void AddPage(int position)
         {
-            add
-            {
-                throw new NotImplementedException();
-            }
-
-            remove
-            {
-                throw new NotImplementedException();
-            }
+            //check how many pages, if it is last or bigger - add at last,
+            //if in middle - move all other pages(from end to avoid non-unique positions) +1 and add this page
+            throw new NotImplementedException();
         }
 
-        event TypedEventHandler<IItemContainer<IPage>, ItemContainerContentChangedEventArgs<IPage>> IItemContainer<IPage>.ItemContainerContentChanged
-        {
-            add
-            {
-                throw new NotImplementedException();
-            }
-
-            remove
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        void IBook.AddPage()
+        public void ChangePagePosition(int oldPosition, int newPosition)
         {
             throw new NotImplementedException();
         }
 
-        void INamedItem.ChangeItemName(string newName)
+        public override string GetName()
         {
             throw new NotImplementedException();
         }
 
-        void IItem.DeleteItem()
+        public void RemovePage(int position)
         {
             throw new NotImplementedException();
         }
 
-        void IItemContainer<IPage>.MakeParentOf(IPage item)
+        //INamedContainerItem
+        public override void SetName(string name)
         {
             throw new NotImplementedException();
         }
 
-        void IBook.RemovePage()
+        protected override IEnumerable<IPage> GetContent()
         {
             throw new NotImplementedException();
         }
 
-        void IItemContainer<IPage>.RequestItemContainerCurrentContent()
+        protected override bool HasItem(IPage item) //checks if has page with some ID in it
         {
             throw new NotImplementedException();
         }
 
-        void INamedItem.RequestItemNameUpdate()
+        // Need to overwrite
+        protected override void SetParentInternal(IItemContainerBase parent)
         {
             throw new NotImplementedException();
         }
+
+        protected override bool DeleteItemInternal()
+        {
+            throw new NotImplementedException();
+        }
+
+        //
     }
 }
