@@ -8,6 +8,7 @@ using System.Reflection.PortableExecutable;
 using static System.Data.Entity.Infrastructure.Design.Executor;
 using System.Net;
 using System.Windows.Controls.Primitives;
+using System.Windows.Controls;
 
 namespace DMOrganizerModel.Implementation.Utility
 {
@@ -586,6 +587,12 @@ namespace DMOrganizerModel.Implementation.Utility
             return res;
         }
 
+        public static int GetPageIDByPosition(SyncronizedSQLiteConnection connection, int bookID, int position)
+        {
+            int result = -1;
+
+        }
+
         //check if book has item <IPage> a
         public static bool BookHasPage(SyncronizedSQLiteConnection connection, int bookID, int pageID)
         {
@@ -640,7 +647,7 @@ namespace DMOrganizerModel.Implementation.Utility
         }
         #endregion
 
-
+        #region Page
         // PAGE
         //get pages maximum position to add new page at the end, if no pages returns 0
         public static int MaxPagePosition(SyncronizedSQLiteConnection connection, int parentBookID)
@@ -663,7 +670,7 @@ namespace DMOrganizerModel.Implementation.Utility
         }
 
         //change page position arg-old and new position
-        public static bool SetPagePosition(SyncronizedSQLiteConnection connection, int oldPosition, int newPosition)
+        public static bool SetPagePosition(SyncronizedSQLiteConnection connection, int bookID, int oldPosition, int newPosition)
         {
             int result = -1;
             connection.Write(con =>
@@ -672,9 +679,11 @@ namespace DMOrganizerModel.Implementation.Utility
 
                 cmd.CommandText = @"UPDATE Page 
                                     SET Position = @NewPosition 
-                                    WHERE Page.Position is @OldPosition;";
+                                    WHERE Page.Position is @OldPosition
+                                    AND Page.ID_Parent_Book is @BookID;";
                 cmd.Parameters.AddWithValue("@NewPosition", newPosition);
                 cmd.Parameters.AddWithValue("@OldPosition", oldPosition);
+                cmd.Parameters.AddWithValue("@BookID", bookID);
                 result = cmd.ExecuteNonQuery();
             });
             return result > 0;
@@ -715,5 +724,26 @@ namespace DMOrganizerModel.Implementation.Utility
             return result > 0;
 
         }
+
+        //get pages to change positions - return List<int>, old positions of pages
+        public static List<int> GetPagesPositionsToChange(SyncronizedSQLiteConnection connection, int bookID, int borderPosition)
+        {
+            List<int> res = new List<int>();
+            connection.Read(con =>
+            {
+                using SQLiteCommand cmd = con.CreateCommand();
+                cmd.CommandText = @"SELECT Page.Position 
+                                    FROM Page 
+                                    WHERE Page.ID_Parent_Book = @ParentBookID
+                                    AND Page.ID >= @BorderPagePos;";
+                cmd.Parameters.AddWithValue("@ParentBookID", bookID);
+                cmd.Parameters.AddWithValue("@BorderPagePos", borderPosition);
+                using SQLiteDataReader reader = cmd.ExecuteReader();
+                while (reader.Read())
+                    res.Add(reader.GetInt32(0));
+            });
+            return res;
+        }
+        #endregion
     }
 }
