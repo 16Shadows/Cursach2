@@ -3,7 +3,7 @@ using DMOrganizerModel.Interface;
 using DMOrganizerModel.Interface.Items;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using DMOrganizerModel.Implementation.Model;
+using DMOrganizerModel.Implementation.Organizer;
 using DMOrganizerModel.Interface.References;
 using DMOrganizerModel.Implementation.References;
 using CSToolbox;
@@ -12,7 +12,7 @@ namespace DMOrganizerModel.Implementation.Items
 {
     internal class Section : NamedContainerItem<ISection>, ISection, IReferenceableBase
     {
-        public Section(int itemID, IItemContainerBase parent, Organizer organizer) : base(itemID, parent, organizer) {}
+        public Section(int itemID, IItemContainerBase parent, Organizer.Organizer organizer) : base(itemID, parent, organizer) {}
 
         #region ISection
         public WeakEvent<ISection, SectionContentChangedEventArgs> SectionContentChanged { get; } = new();
