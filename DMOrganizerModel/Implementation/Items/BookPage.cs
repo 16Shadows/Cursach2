@@ -1,5 +1,5 @@
-﻿using DMOrganizerModel.Implementation.Organizer;
-using DMOrganizerModel.Interface.Items;
+﻿using DMOrganizerModel.Interface.Items;
+using DMOrganizerModel.Implementation.Organizers;
 using System;
 using System.Collections.Generic;
 using System.Linq;

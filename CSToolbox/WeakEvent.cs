@@ -70,8 +70,6 @@ namespace CSToolbox
 
     public sealed class WeakEvent<Arg1>
     {
-        public delegate void CallType(Arg1 arg1);
-
         private WeakEvent Event { get; } = new();
 
         public void Invoke(Arg1 arg1) => Event.Invoke(new object[] {arg1});
@@ -88,13 +86,13 @@ namespace CSToolbox
             return this;
         }
 
-        public WeakEvent<Arg1> Subscribe(CallType target)
+        public WeakEvent<Arg1> Subscribe(WeakAction<Arg1>.CallType target)
         {
             Event.Subscribe(target);
             return this;
         }
 
-        public WeakEvent<Arg1> Unsubscribe(CallType target)
+        public WeakEvent<Arg1> Unsubscribe(WeakAction<Arg1>.CallType target)
         {
             Event.Unsubscribe(target);
             return this;
@@ -106,8 +104,6 @@ namespace CSToolbox
 
     public sealed class WeakEvent<Arg1, Arg2>
     {
-        public delegate void CallType(Arg1 arg1, Arg2 arg2);
-
         private WeakEvent Event { get; } = new();
 
         public void Invoke(Arg1 arg1, Arg2 arg2) => Event.Invoke(new object[] {arg1, arg2});
@@ -124,13 +120,13 @@ namespace CSToolbox
             return this;
         }
 
-        public WeakEvent<Arg1, Arg2> Subscribe(CallType target)
+        public WeakEvent<Arg1, Arg2> Subscribe(WeakAction<Arg1, Arg2>.CallType target)
         {
             Event.Subscribe(target);
             return this;
         }
 
-        public WeakEvent<Arg1, Arg2> Unsubscribe(CallType target)
+        public WeakEvent<Arg1, Arg2> Unsubscribe(WeakAction<Arg1, Arg2>.CallType target)
         {
             Event.Unsubscribe(target);
             return this;
