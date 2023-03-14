@@ -4,16 +4,14 @@ using System.Collections.Generic;
 
 using DMOrganizerModel.Interface.Organizer;
 using DMOrganizerModel.Implementation.Utility;
-using DMOrganizerModel.Interface;
 using DMOrganizerModel.Interface.Items;
 using DMOrganizerModel.Implementation.Items;
 using DMOrganizerModel.Interface.References;
 using System.Threading.Tasks;
-using System.Net.Mime;
 using CSToolbox;
 using System.Windows.Controls;
 
-namespace DMOrganizerModel.Implementation.Model
+namespace DMOrganizerModel.Implementation.Organizer
 {
     internal sealed class Organizer : IOrganizer, IItemContainerBase
     {

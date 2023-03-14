@@ -1,5 +1,5 @@
 ﻿using CSToolbox;
-using DMOrganizerModel.Implementation.Model;
+using DMOrganizerModel.Implementation.Organizer;
 using DMOrganizerModel.Implementation.Utility;
 using DMOrganizerModel.Interface;
 using DMOrganizerModel.Interface.Items;
@@ -15,7 +15,7 @@ namespace DMOrganizerModel.Implementation.Items
     /// <typeparam name="ContentType">The type of items container within</typeparam>
     internal abstract class ContainerItem<ContentType> : Item, IItemContainer<ContentType>, IItemContainerBase where ContentType : IItem
     {
-        protected ContainerItem(int itemID, IItemContainerBase parent, Organizer organizer) : base(itemID, parent, organizer) {}
+        protected ContainerItem(int itemID, IItemContainerBase parent, Organizer.Organizer organizer) : base(itemID, parent, organizer) {}
 
         #region IItemsContainer
         public WeakEvent<IItemContainer<ContentType>, ItemContainerCurrentContentEventArgs<ContentType>> ItemContainerCurrentContent { get; } = new();
@@ -33,7 +33,7 @@ namespace DMOrganizerModel.Implementation.Items
 
         public void MakeParentOf(ContentType item)
         {
-            if (item is not ContentType itemTyped || item is not Item itemBase)
+            if (item is not Item itemBase)
                 throw new ArgumentTypeException(nameof(item), "Unsupported item type.");
 
             Task.Run(() =>
