@@ -930,6 +930,20 @@ namespace DMOrganizerModel.Implementation.Utility
             return res;
         }
         //delete object container
+        public static bool DeleteObjectContainer(SyncronizedSQLiteConnection connection, int pageID)
+        {
+            int result = -1;
+            connection.Write(con =>
+            {
+                using SQLiteCommand cmd = con.CreateCommand();
+
+                cmd.CommandText = @"DELETE FROM Page
+                                    WHERE ID is @PageID;";
+                cmd.Parameters.AddWithValue("@PageID", pageID);
+                result = cmd.ExecuteNonQuery();
+            });
+            return result > 0;
+        }
         // set parent
         public static bool SetObjectContainerParent(SyncronizedSQLiteConnection connection, int pageParentID, int containerID)
         {
@@ -948,6 +962,143 @@ namespace DMOrganizerModel.Implementation.Utility
             return result > 0;
         }
 
+        //get content
+        public static List<int> GetContainerContent(SyncronizedSQLiteConnection connection, int containerID)
+        {
+            List<int> res = new List<int>();
+            connection.Read(con =>
+            {
+                using SQLiteCommand cmd = con.CreateCommand();
+                cmd.CommandText = @"SELECT ID_Object
+                                    FROM  Set_Container_Objects
+                                    WHERE Set_Container_Objects.ID_Container is @ContainerID;";
+                cmd.Parameters.AddWithValue("@ContainerID", containerID);
+                using SQLiteDataReader reader = cmd.ExecuteReader();
+                while (reader.Read())
+                    res.Add(reader.GetInt32(0));
+            });
+            return res;
+        }
+        //get view info (width, height, x, y)
+        public static List<int> GetContainerViewInfo(SyncronizedSQLiteConnection connection, int containerID)
+        {
+            List<int> res = new List<int>(4);
+            connection.Read(con =>
+            {
+                using SQLiteCommand cmd = con.CreateCommand();
+                cmd.CommandText = @"SELECT Container.Width, Container.Height, Container.CoordinateX, Container.CoordinateY
+                                    FROM  Container
+                                    WHERE Container.ID is @ContainerID;";
+                cmd.Parameters.AddWithValue("@ContainerID", containerID);
+                using SQLiteDataReader reader = cmd.ExecuteReader();
+                reader.Read();
+                res[0] = reader.GetInt32(0);
+                res[1] = reader.GetInt32(1);
+                res[2] = reader.GetInt32(2);
+                res[3] = reader.GetInt32(3);
+            });
+            return res;
+        }
+
+        //set coords
+        public static bool SetContainerCoordinates(SyncronizedSQLiteConnection connection, int containerID, int newX, int newY)
+        {
+            int result = -1;
+
+            connection.Read(con =>
+            {
+                using SQLiteCommand cmd = con.CreateCommand();
+                cmd.CommandText = @"UPDATE Container
+                                    SET CoordinateX = @NewX, CoordinateY = @NewY
+                                    WHERE Container.ID is @ContainerID;";
+                cmd.Parameters.AddWithValue("@NewX", newX);
+                cmd.Parameters.AddWithValue("@NewY", newY);
+                cmd.Parameters.AddWithValue("@ContainerID", containerID);
+                result = cmd.ExecuteNonQuery();
+            }
+            );
+            return result > 0;
+        }
+        //set size
+        public static bool SetContainerSize(SyncronizedSQLiteConnection connection, int containerID, int newWidth, int newHeight)
+        {
+            int result = -1;
+
+            connection.Read(con =>
+            {
+                using SQLiteCommand cmd = con.CreateCommand();
+                cmd.CommandText = @"UPDATE Container
+                                    SET Width = @NewWidth, Height = @NewHeight
+                                    WHERE Container.ID is @ContainerID;";
+                cmd.Parameters.AddWithValue("@NewWidth", newWidth);
+                cmd.Parameters.AddWithValue("@NewHeight", newHeight);
+                cmd.Parameters.AddWithValue("@ContainerID", containerID);
+                result = cmd.ExecuteNonQuery();
+            }
+            );
+            return result > 0;
+        }
+        //has item
+        public static bool ContainerHasObject(SyncronizedSQLiteConnection connection, int containerID, int objectID)
+        {
+            int result = -1;
+            connection.Read(con =>
+            {
+                using SQLiteCommand cmd = con.CreateCommand();
+                cmd.CommandText = @"SELECT ID_Object
+                                    FROM Set_Container_Objects
+                                    WHERE Set_Container_Objects.ID_Container = @ContainerID
+									AND Set_Container_Objects.ID_Object = @ObjectID;";
+                cmd.Parameters.AddWithValue("@ContainerID", containerID);
+                cmd.Parameters.AddWithValue("@ObjectID", objectID);
+                result = (int)cmd.ExecuteScalar();
+            }
+            );
+            return result > 0;
+        }
+        //set parent of this container
+        public static bool SetContainerParent(SyncronizedSQLiteConnection connection, int parentID, int containerID)
+        {
+            int result = -1;
+            connection.Write(con =>
+            {
+                using SQLiteCommand cmd = con.CreateCommand();
+
+                cmd.CommandText = @"UPDATE Set_Page_Containers 
+                                    SET ID_Page = @ParentID 
+                                    WHERE ID_Container is @ContainerID;";
+
+                cmd.Parameters.AddWithValue("@ParentID", parentID);
+                cmd.Parameters.AddWithValue("@ContainerID", containerID);
+                result = cmd.ExecuteNonQuery();
+            });
+            return result > 0;
+        }
+        #endregion
+
+        #region Object
+        // create object
+        public static int CreateObject(SyncronizedSQLiteConnection connection, int type)
+        {
+            int res = -1;
+            connection.Write(con =>
+            {
+                using SQLiteCommand cmd = con.CreateCommand();
+
+                cmd.CommandText = @"INSERT INTO Object (Type) 
+                                            VALUES (@Type);";
+
+                cmd.Parameters.AddWithValue("@Type", type);
+                res = (int)cmd.ExecuteScalar();
+            });
+            return res;
+        }
+        // delete object
+        //set object parent
+        //set new link update content
+        //get content
+        //has item
+        //set parent of object
         #endregion
     }
 

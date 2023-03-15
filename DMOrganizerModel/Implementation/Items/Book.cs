@@ -31,19 +31,18 @@ namespace DMOrganizerModel.Implementation.Items
             Task.Run(() =>
             {
                 IPage item = null;
+                int newPageID;
+                int availablePosition = Query.MaxPagePosition(Organizer.Connection, ItemID) + 1;
                 lock (Lock)
                 {
-                    int availablePosition = Query.MaxPagePosition(Organizer.Connection, ItemID) + 1;
-
-                    int newPageID = Query.CreatePadeInBook(Organizer.Connection, ItemID, availablePosition);
-                    if (newPageID != -1)
-                    {
-                        item = Organizer.GetPage(newPageID, this); //caching object
-                        // telling everyone that page is added
-                        InvokeItemContainerContentChanged(item, ItemContainerContentChangedEventArgs<IPage>.ChangeType.ItemAdded, ItemContainerContentChangedEventArgs<IPage>.ResultType.Success);
-                        InvokeBookItemCreated(newPageID, BookItemCreatedEventArgs.ResultType.Success);
-                    }
-                    else InvokeBookItemCreated(newPageID, BookItemCreatedEventArgs.ResultType.Failure);
+                    newPageID = Query.CreatePadeInBook(Organizer.Connection, ItemID, availablePosition);
+                }
+                if (newPageID != -1)
+                {
+                    item = Organizer.GetPage(newPageID, this); //caching object
+                    // telling everyone that page is added
+                    InvokeItemContainerContentChanged(item, ItemContainerContentChangedEventArgs<IPage>.ChangeType.ItemAdded, ItemContainerContentChangedEventArgs<IPage>.ResultType.Success);
+                    InvokeBookItemCreated(newPageID, BookItemCreatedEventArgs.ResultType.Success);
                 }
             });
         }

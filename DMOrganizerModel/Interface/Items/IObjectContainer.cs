@@ -118,14 +118,15 @@ namespace DMOrganizerModel.Interface.Items
         void UpdateSize(int newWidth, int newHeight); //need to remember about min and max size
 
         /// <summary>
-        /// Set new existing object to container.
+        /// Set new object instead of old.
         /// </summary>
-        /// <param name="obj">Objet to display in container.</param>
-        void UpdateContent(IObject obj); //args?                                    !!!
+        /// <param name="oldObjectID">Old object ID</param>
+        /// <param name="newObjectID">New object ID</param>
+        void UpdateContent(int oldObjectID, int newObjectID);
 
         /// <summary>
         /// Creates new object in container.
         /// </summary>
-        void CreateObject();
+        void AddObject();
     }
 }

@@ -7,23 +7,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CSToolbox.Weak;
 
 namespace DMOrganizerModel.Implementation.Items
 {
-    internal class ContainerObject : ContainerItem<IObject>, IObject
+    internal class ContainerObject : ContainerItem<IReferenceable>, IObject
     {
-        public ContainerObject(int itemID, IItemContainerBase parent, Organizer organizer) : base(itemID, parent, organizer){}
-
         // check if all child-objects are valid and can be displayed            !!!
         // (if link to item is not valid or item was deleted - show error) 
-        WeakEvent<IItemContainer<IReferenceable>, ItemContainerCurrentContentEventArgs<IReferenceable>> IItemContainer<IReferenceable>.ItemContainerCurrentContent => throw new NotImplementedException();
+        public ContainerObject(int itemID, IItemContainerBase parent, Organizer organizer) : base(itemID, parent, organizer){}
 
-        WeakEvent<IItemContainer<IReferenceable>, ItemContainerContentChangedEventArgs<IReferenceable>> IItemContainer<IReferenceable>.ItemContainerContentChanged => throw new NotImplementedException();
+        public WeakEvent<IItemContainer<IReferenceable>, ItemContainerCurrentContentEventArgs<IReferenceable>> ItemContainerCurrentContent { get; } = new();
 
-        public void MakeParentOf(IReferenceable item)
-        {
-            throw new NotImplementedException();
-        }
+        public WeakEvent<IItemContainer<IReferenceable>, ItemContainerContentChangedEventArgs<IReferenceable>> ItemContainerContentChanged { get; } = new();
 
         public void UpdateContent(IReferenceable newLink)
         {
@@ -35,12 +31,12 @@ namespace DMOrganizerModel.Implementation.Items
             throw new NotImplementedException();
         }
 
-        protected override IEnumerable<IObject> GetContent()
+        protected override IEnumerable<IReferenceable> GetContent()
         {
             throw new NotImplementedException();
         }
 
-        protected override bool HasItem(IObject item)
+        protected override bool HasItem(IReferenceable item)
         {
             throw new NotImplementedException();
         }
@@ -49,5 +45,6 @@ namespace DMOrganizerModel.Implementation.Items
         {
             throw new NotImplementedException();
         }
+
     }
 }

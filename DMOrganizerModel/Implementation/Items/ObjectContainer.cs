@@ -14,13 +14,24 @@ namespace DMOrganizerModel.Implementation.Items
     {
         public ObjectContainer(int itemID, IItemContainerBase parent, Organizer organizer) : base(itemID, parent, organizer) {}
 
-        WeakEvent<IObjectContainer, ObjectContainerUpdatePositionEventArgs> IObjectContainer.ObjectContainerUpdatedPosition => throw new NotImplementedException();
+        public WeakEvent<IObjectContainer, ObjectContainerUpdatePositionEventArgs> ObjectContainerUpdatedPosition { get; } = new();
+        private void InvokeObjectContainerUpdatedPosition(int coordX, int coordY, ObjectContainerUpdatePositionEventArgs.ResultType result)
+        {
+            ObjectContainerUpdatedPosition.Invoke(this, new ObjectContainerUpdatePositionEventArgs(coordX, coordY, result));
+        }
 
-        WeakEvent<IObjectContainer, ObjectContainerUpdateSizeEventArgs> IObjectContainer.ObjectContainerUpdatedSize => throw new NotImplementedException();
+        public WeakEvent<IObjectContainer, ObjectContainerUpdateSizeEventArgs> ObjectContainerUpdatedSize { get; } = new();
+        private void InvokeBookItemCreated(int width, int height, ObjectContainerUpdateSizeEventArgs.ResultType result)
+        {
+            ObjectContainerUpdatedSize.Invoke(this, new ObjectContainerUpdateSizeEventArgs(width, height, result));
+        }
+        public WeakEvent<IObjectContainer, ObjectContainerViewInfoEventArgs> ObjectContainerViewInfo { get; } = new();
+        private void InvokeBookItemCreated(int width, int height, int coordX, int coordY)
+        {
+            ObjectContainerViewInfo.Invoke(this, new ObjectContainerViewInfoEventArgs(width, height, coordX, coordY));
+        }
 
-        WeakEvent<IObjectContainer, ObjectContainerViewInfoEventArgs> IObjectContainer.ObjectContainerViewInfo => throw new NotImplementedException();
-
-        public void CreateObject()
+        public void AddObject()
         {
             throw new NotImplementedException();
         }
@@ -30,7 +41,7 @@ namespace DMOrganizerModel.Implementation.Items
             throw new NotImplementedException();
         }
 
-        public void UpdateContent(IObject obj)
+        public void UpdateContent(int oldObjectID, int newObjectID)
         {
             throw new NotImplementedException();
         }

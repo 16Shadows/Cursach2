@@ -1,4 +1,5 @@
 ﻿using DMOrganizerModel.Interface.References;
+using CSToolbox.Weak;
 
 namespace DMOrganizerModel.Interface.Items
 {
@@ -18,6 +19,6 @@ namespace DMOrganizerModel.Interface.Items
         /// Sets content to object with new link.
         /// </summary>
         /// <param name="newLink">Link to object that will be displayed and stored.</param>
-        void UpdateContent(IReferenceable newLink); //event iitemcontainer
+        void UpdateContent(IReference newLink); //event iitemcontainer
     }
 }
