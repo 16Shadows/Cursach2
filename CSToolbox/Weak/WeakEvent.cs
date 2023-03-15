@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace CSToolbox
+namespace CSToolbox.Weak
 {
     /// <summary>
     /// A weak event implementation
@@ -63,16 +63,16 @@ namespace CSToolbox
         }
         public WeakEvent Unsubscribe(Delegate target) => Unsubscribe(new WeakDelegate(target));
 
-        public static WeakEvent operator+(WeakEvent weakEvent, WeakDelegate target) => weakEvent.Subscribe(target);
+        public static WeakEvent operator +(WeakEvent weakEvent, WeakDelegate target) => weakEvent.Subscribe(target);
 
-        public static WeakEvent operator-(WeakEvent weakEvent, WeakDelegate target) => weakEvent.Unsubscribe(target);
+        public static WeakEvent operator -(WeakEvent weakEvent, WeakDelegate target) => weakEvent.Unsubscribe(target);
     }
 
     public sealed class WeakEvent<Arg1>
     {
         private WeakEvent Event { get; } = new();
 
-        public void Invoke(Arg1 arg1) => Event.Invoke(new object[] {arg1});
+        public void Invoke(Arg1 arg1) => Event.Invoke(new object[] { arg1 });
 
         public WeakEvent<Arg1> Subscribe(WeakAction<Arg1> target)
         {
@@ -98,15 +98,15 @@ namespace CSToolbox
             return this;
         }
 
-        public static WeakEvent<Arg1> operator+(WeakEvent<Arg1> weakEvent, WeakAction<Arg1> target) => weakEvent.Subscribe(target);
-        public static WeakEvent<Arg1> operator-(WeakEvent<Arg1> weakEvent, WeakAction<Arg1> target) => weakEvent.Unsubscribe(target);
+        public static WeakEvent<Arg1> operator +(WeakEvent<Arg1> weakEvent, WeakAction<Arg1> target) => weakEvent.Subscribe(target);
+        public static WeakEvent<Arg1> operator -(WeakEvent<Arg1> weakEvent, WeakAction<Arg1> target) => weakEvent.Unsubscribe(target);
     }
 
     public sealed class WeakEvent<Arg1, Arg2>
     {
         private WeakEvent Event { get; } = new();
 
-        public void Invoke(Arg1 arg1, Arg2 arg2) => Event.Invoke(new object[] {arg1, arg2});
+        public void Invoke(Arg1 arg1, Arg2 arg2) => Event.Invoke(new object[] { arg1, arg2 });
 
         public WeakEvent<Arg1, Arg2> Subscribe(WeakAction<Arg1, Arg2> target)
         {
@@ -132,7 +132,7 @@ namespace CSToolbox
             return this;
         }
 
-        public static WeakEvent<Arg1, Arg2> operator+(WeakEvent<Arg1, Arg2> weakEvent, WeakAction<Arg1, Arg2> target) => weakEvent.Subscribe(target);
-        public static WeakEvent<Arg1, Arg2> operator-(WeakEvent<Arg1, Arg2> weakEvent, WeakAction<Arg1, Arg2> target) => weakEvent.Unsubscribe(target);
+        public static WeakEvent<Arg1, Arg2> operator +(WeakEvent<Arg1, Arg2> weakEvent, WeakAction<Arg1, Arg2> target) => weakEvent.Subscribe(target);
+        public static WeakEvent<Arg1, Arg2> operator -(WeakEvent<Arg1, Arg2> weakEvent, WeakAction<Arg1, Arg2> target) => weakEvent.Unsubscribe(target);
     }
 }

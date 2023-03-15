@@ -1,4 +1,4 @@
-﻿using CSToolbox;
+﻿using CSToolbox.Weak;
 using System;
 
 namespace DMOrganizerModel.Interface.Items

@@ -8,8 +8,7 @@ using DMOrganizerModel.Interface.Items;
 using DMOrganizerModel.Implementation.Items;
 using DMOrganizerModel.Interface.References;
 using System.Threading.Tasks;
-using CSToolbox;
-using System.Windows.Controls;
+using CSToolbox.Weak;
 
 namespace DMOrganizerModel.Implementation.Organizers
 {
@@ -37,10 +36,6 @@ namespace DMOrganizerModel.Implementation.Organizers
                 DataSource = path,
                 ForeignKeys = true
             }.ToString());
-
-            CategoriesCache = new Dictionary<int, WeakReference<Category>>();
-            SectionsCache = new Dictionary<int, WeakReference<Section>>();
-            PagesCache = new Dictionary<int, WeakReference<BookPage>>();
 
             try
             {
@@ -229,8 +224,7 @@ namespace DMOrganizerModel.Implementation.Organizers
 
         ~Organizer()
         {
-            if (RawConnection != null)
-                RawConnection.Close();
+            RawConnection?.Close();
         }
 
         #region IOrganizer
@@ -348,95 +342,20 @@ namespace DMOrganizerModel.Implementation.Organizers
         #endregion
 
         #region Caching
-        private Dictionary<int, WeakReference<Category>> CategoriesCache { get; }
-        private Dictionary<int, WeakReference<Section>> SectionsCache { get; }
-        private Dictionary<int, WeakReference<BookPage>> PagesCache { get; }
-        private Dictionary<int, WeakReference<Book>> BooksCache { get; }
-        private Dictionary<int, WeakReference<ObjectContainer>> ObjectContainersCache { get; }
-        private Dictionary<int, WeakReference<ContainerObject>> ContainerObjectsCache { get; }
+        private ConcurrentWeakCache<int, Category> CategoriesCache { get; } = new(_ => throw new InvalidOperationException("Cannot create parentless item."));
+        private ConcurrentWeakCache<int, Section> SectionsCache { get; } = new(_ => throw new InvalidOperationException("Cannot create parentless item."));
+        private ConcurrentWeakCache<int, BookPage> PagesCache { get; } = new(_ => throw new InvalidOperationException("Cannot create parentless item."));
+        private ConcurrentWeakCache<int, Book> BooksCache { get; } = new(_ => throw new InvalidOperationException("Cannot create parentless item."));
 
-        public Category GetCategory(int id, IItemContainerBase parent)
-        {
-            lock (Lock)
-            {
-                if (CategoriesCache.TryGetValue(id, out WeakReference<Category> weakRef) && weakRef.TryGetTarget(out Category category))
-                    return category;
-                category = new Category(id, parent, this);
-                CategoriesCache[id] = new WeakReference<Category>(category);
-                return category;
-            }
-        }
+        public Category GetCategory(int id, IItemContainerBase parent) => CategoriesCache.GetValue(id, id => new Category(id, parent, this));
 
-        public Section GetSection(int id, IItemContainerBase parent)
-        {
-            lock (Lock)
-            {
-                if (SectionsCache.TryGetValue(id, out WeakReference<Section> weakRef) && weakRef.TryGetTarget(out Section section))
-                    return section;
-                section = new Section(id, parent, this);
-                SectionsCache[id] = new WeakReference<Section>(section);
-                return section;
-            }
-        }
+        public Section GetSection(int id, IItemContainerBase parent) => SectionsCache.GetValue(id, id => new Section(id, parent, this));
 
-        public Document GetDocument(int id, IItemContainerBase parent)
-        {
-            lock (Lock)
-            {
-                if (SectionsCache.TryGetValue(id, out WeakReference<Section> weakRef) && weakRef.TryGetTarget(out Section section) && section is Document document)
-                    return document;
-                document = new Document(id, parent, this);
-                SectionsCache[id] = new WeakReference<Section>(document);
-                return document;
-            }
-        }
+        public Document GetDocument(int id, IItemContainerBase parent) => (Document)SectionsCache.GetValue(id, id => new Document(id, parent, this));
 
-        // caching func for pages
-        public BookPage GetPage(int id, IItemContainerBase parent)
-        {
-            lock (Lock)
-            {
-                if (PagesCache.TryGetValue(id, out WeakReference<BookPage> weakRef) && weakRef.TryGetTarget(out BookPage page))
-                    return page;
-                page = new BookPage(id, parent, this);
-                PagesCache[id] = new WeakReference<BookPage>(page);
-                return page;
-            }
-        }
+        public BookPage GetPage(int id, IItemContainerBase parent) => PagesCache.GetValue(id, id => new BookPage(id, parent, this));
 
-        public Book GetBook(int id, IItemContainerBase parent)
-        {
-            lock (Lock)
-            {
-                if (BooksCache.TryGetValue(id, out WeakReference<Book> weakRef) && weakRef.TryGetTarget(out Book book))
-                    return book;
-                book = new Book(id, parent, this);
-                BooksCache[id] = new WeakReference<Book>(book);
-                return book;
-            }
-        }
-        public ObjectContainer GetObjectContainer(int id, IItemContainerBase parent)
-        {
-            lock (Lock)
-            {
-                if (ObjectContainersCache.TryGetValue(id, out WeakReference<ObjectContainer> weakRef) && weakRef.TryGetTarget(out ObjectContainer cont))
-                    return cont;
-                cont = new ObjectContainer(id, parent, this);
-                ObjectContainersCache[id] = new WeakReference<ObjectContainer>(cont);
-                return cont;
-            }
-        }
-        public ContainerObject GetContainerObject(int id, IItemContainerBase parent)
-        {
-            lock (Lock)
-            {
-                if (ContainerObjectsCache.TryGetValue(id, out WeakReference<ContainerObject> weakRef) && weakRef.TryGetTarget(out ContainerObject obj))
-                    return obj;
-                obj = new ContainerObject(id, parent, this);
-                ContainerObjectsCache[id] = new WeakReference<ContainerObject>(obj);
-                return obj;
-            }
-        }
+        public Book GetBook(int id, IItemContainerBase parent) => BooksCache.GetValue(id, id => new Book(id, parent, this));
         #endregion
 
         private bool CanBeParentOf(IOrganizerItem item)
