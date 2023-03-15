@@ -300,6 +300,32 @@ namespace DMOrganizerModel.Implementation.Organizers
                     InvokeOrganizerItemCreated(name, OrganizerItemCreatedEventArgs.ResultType.DuplicateName);
             });
         }
+        public void CreateBook(string name)
+        {
+            Task.Run(() =>
+            {
+                if (!NamingRules.IsValidName(name))
+                {
+                    InvokeOrganizerItemCreated(name, OrganizerItemCreatedEventArgs.ResultType.InvalidName);
+                    return;
+                }
+                bool isUnique = false;
+                IOrganizerItem item = null;
+                lock (Lock)
+                {
+                    isUnique = CanHaveItemWithName(name);
+                    if (isUnique)
+                        item = GetBook(Query.CreateBook(Connection, name), this);
+                }
+                if (isUnique)
+                {
+                    InvokeOrganizerItemCreated(name, OrganizerItemCreatedEventArgs.ResultType.Success);
+                    InvokeItemContainerContentChanged(item, ItemContainerContentChangedEventArgs<IOrganizerItem>.ChangeType.ItemAdded, ItemContainerContentChangedEventArgs<IOrganizerItem>.ResultType.Success);
+                }
+                else
+                    InvokeOrganizerItemCreated(name, OrganizerItemCreatedEventArgs.ResultType.DuplicateName);
+            });
+        }
 
         public void RequestItemContainerCurrentContent()
         {
@@ -312,6 +338,8 @@ namespace DMOrganizerModel.Implementation.Organizers
                         items.Add(GetCategory(id, this));
                     foreach (int id in Query.GetDocumentsInOrganizer(Connection))
                         items.Add(GetDocument(id, this));
+                    foreach (int id in Query.GetBooksInOrganizer(Connection))
+                        items.Add(GetBook(id, this));
                 }
                 InvokeItemContainerCurrentContent(items);
             });
@@ -381,7 +409,8 @@ namespace DMOrganizerModel.Implementation.Organizers
                 throw new ArgumentTypeException(nameof(item), "Invalid item type.");
 
             return (item is Document doc && Query.OrganizerHasDocument(Connection, doc.ItemID)) ||
-                   (item is Category cat && Query.OrganizerHasCategory(Connection, cat.ItemID));
+                   (item is Category cat && Query.OrganizerHasCategory(Connection, cat.ItemID)) ||
+                   (item is Book book && Query.OrganizerHasBook(Connection, book.ItemID));
         }
 
         public void OnItemRemoved(IItem item)
