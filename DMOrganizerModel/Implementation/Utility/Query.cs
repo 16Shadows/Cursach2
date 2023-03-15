@@ -1078,17 +1078,17 @@ namespace DMOrganizerModel.Implementation.Utility
 
         #region Object
         // create object
-        public static int CreateObject(SyncronizedSQLiteConnection connection, int type)
+        public static int CreateObject(SyncronizedSQLiteConnection connection, string link)
         {
             int res = -1;
             connection.Write(con =>
             {
                 using SQLiteCommand cmd = con.CreateCommand();
 
-                cmd.CommandText = @"INSERT INTO Object (Type) 
-                                            VALUES (@Type);";
+                cmd.CommandText = @"INSERT INTO Object (Link_To_Object) 
+                                            VALUES (@Link);";
 
-                cmd.Parameters.AddWithValue("@Type", type);
+                cmd.Parameters.AddWithValue("@Link", link);
                 res = (int)cmd.ExecuteScalar();
             });
             return res;

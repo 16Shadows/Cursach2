@@ -21,16 +21,11 @@ namespace DMOrganizerModel.Implementation.Items
 
         public WeakEvent<IItemContainer<IReferenceable>, ItemContainerContentChangedEventArgs<IReferenceable>> ItemContainerContentChanged { get; } = new();
 
-        public void UpdateContent(IReferenceable newLink)
+        public void UpdateContent(IReference newLink)
         {
             throw new NotImplementedException();
         }
-
-        protected override bool DeleteItemInternal()
-        {
-            throw new NotImplementedException();
-        }
-
+       
         protected override IEnumerable<IReferenceable> GetContent()
         {
             throw new NotImplementedException();
@@ -42,6 +37,10 @@ namespace DMOrganizerModel.Implementation.Items
         }
 
         protected override void SetParentInternal(IItemContainerBase parent)
+        {
+            throw new NotImplementedException();
+        }
+        protected override bool DeleteItemInternal()
         {
             throw new NotImplementedException();
         }

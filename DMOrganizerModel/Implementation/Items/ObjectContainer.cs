@@ -1,12 +1,15 @@
 ﻿using CSToolbox;
 using CSToolbox.Weak;
 using DMOrganizerModel.Implementation.Organizers;
+using DMOrganizerModel.Implementation.Utility;
 using DMOrganizerModel.Interface.Items;
+using DMOrganizerModel.Interface.References;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media.Animation;
 
 namespace DMOrganizerModel.Implementation.Items
 {
@@ -21,24 +24,41 @@ namespace DMOrganizerModel.Implementation.Items
         }
 
         public WeakEvent<IObjectContainer, ObjectContainerUpdateSizeEventArgs> ObjectContainerUpdatedSize { get; } = new();
-        private void InvokeBookItemCreated(int width, int height, ObjectContainerUpdateSizeEventArgs.ResultType result)
+        private void InvokeObjectContainerUpdatedSize(int width, int height, ObjectContainerUpdateSizeEventArgs.ResultType result)
         {
             ObjectContainerUpdatedSize.Invoke(this, new ObjectContainerUpdateSizeEventArgs(width, height, result));
         }
         public WeakEvent<IObjectContainer, ObjectContainerViewInfoEventArgs> ObjectContainerViewInfo { get; } = new();
-        private void InvokeBookItemCreated(int width, int height, int coordX, int coordY)
+        private void InvokeObjectContainerViewInfo(int width, int height, int coordX, int coordY)
         {
             ObjectContainerViewInfo.Invoke(this, new ObjectContainerViewInfoEventArgs(width, height, coordX, coordY));
         }
 
-        public void AddObject()
+        public void AddObject(IReferenceable obj)
         {
-            throw new NotImplementedException();
+            CheckDeleted();
+            Task.Run(() =>
+            {
+                IObject item = null;
+                int newObjectID;
+                string link = obj.GetReference().Encode();
+                lock (Lock)
+                {
+                    newObjectID = Query.CreateObject(Organizer.Connection, link);
+                }
+                if (newObjectID != -1)
+                {
+                    item = Organizer.GetObject(newObjectID, this); //caching object
+                    // telling everyone that object is added
+                    InvokeItemContainerContentChanged(item, ItemContainerContentChangedEventArgs<IObject>.ChangeType.ItemAdded, ItemContainerContentChangedEventArgs<IObject>.ResultType.Success);
+                }
+            });
         }
 
         public void RequestContainerViewInfo()
         {
-            throw new NotImplementedException();
+            List<int> info = Query.GetContainerViewInfo(Organizer.Connection, ItemID);
+
         }
 
         public void UpdateContent(int oldObjectID, int newObjectID)
