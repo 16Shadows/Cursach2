@@ -13,7 +13,17 @@ namespace DMOrganizerViewModel
 
         public OrganizerViewModel(IContext context, IServiceProvider serviceProvider, IOrganizer organizer) : base(context, serviceProvider, organizer)
         {
-            Organizer = organizer;
+            Organizer = organizer ?? throw new ArgumentNullException(nameof(organizer));
+        }
+
+        protected override ViewModelBase CreateViewModel(IOrganizerItem item)
+        {
+            if (item is ICategory category)
+                return new CategoryViewModel(Context, ServiceProvider, category);
+            else if (item is IDocument document)
+                return new DocumentViewModel(Context, ServiceProvider, document);
+            else
+                throw new ArgumentException("Unsupported item type", nameof(item));
         }
     }
 }

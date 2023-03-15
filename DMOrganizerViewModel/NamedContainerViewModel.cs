@@ -3,18 +3,19 @@ using CSToolbox.Weak;
 using DMOrganizerModel.Interface.Items;
 using MVVMToolbox;
 using System;
+using System.Threading;
 
 namespace DMOrganizerViewModel
 {
-    public class NamedContainerViewModel<ContentType> : ContainerViewModel<ContentType> where ContentType : IItem
+    public abstract class NamedContainerViewModel<ContentType> : ContainerViewModel<ContentType> where ContentType : IItem
     {
-        public LazyProperty<string?> Name;
+        public LazyProperty<string?> Name { get; }
 
         protected INamedItem Item { get; }
 
         protected NamedContainerViewModel(IContext context, IServiceProvider serviceProvider, INamedItem item, IItemContainer<ContentType> container) : base(context, serviceProvider, container)
         {
-            Item = item;
+            Item = item ?? throw new ArgumentNullException(nameof(item));
 
             Name = new LazyProperty<string?>(p =>
             {
