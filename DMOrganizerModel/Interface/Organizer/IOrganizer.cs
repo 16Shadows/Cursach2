@@ -1,4 +1,4 @@
-﻿using CSToolbox;
+﻿using CSToolbox.Weak;
 using DMOrganizerModel.Interface.Items;
 using DMOrganizerModel.Interface.References;
 using System;

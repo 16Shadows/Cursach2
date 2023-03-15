@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using DMOrganizerModel.Implementation.Organizers;
 using DMOrganizerModel.Interface.References;
 using DMOrganizerModel.Implementation.References;
-using CSToolbox;
+using CSToolbox.Weak;
 
 namespace DMOrganizerModel.Implementation.Items
 {

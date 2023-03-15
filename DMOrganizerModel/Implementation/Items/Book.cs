@@ -1,5 +1,4 @@
-﻿using CSToolbox;
-using DMOrganizerModel.Implementation.Utility;
+﻿using DMOrganizerModel.Implementation.Utility;
 using DMOrganizerModel.Implementation.Organizers;
 using DMOrganizerModel.Interface.Items;
 using System;
@@ -9,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Runtime.CompilerServices;
+using CSToolbox.Weak;
 
 namespace DMOrganizerModel.Implementation.Items
 {
