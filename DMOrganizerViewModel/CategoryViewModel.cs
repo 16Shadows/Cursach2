@@ -2,7 +2,7 @@ using DMOrganizerModel.Interface.Items;
 using MVVMToolbox;
 using System;
 
-namespace DMOrganizerViewModel
+namespace DMOrganizerViewModel.Test
 {
     public class CategoryViewModel : NamedContainerViewModel<IOrganizerItem>
     {

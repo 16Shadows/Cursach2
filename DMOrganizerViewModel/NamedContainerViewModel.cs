@@ -1,43 +1,36 @@
 ﻿using CSToolbox;
+using CSToolbox.Weak;
 using DMOrganizerModel.Interface.Items;
 using MVVMToolbox;
 using System;
-using System.Collections.ObjectModel;
 
 namespace DMOrganizerViewModel
 {
-    public class NamedContainerViewModel<ContentType> : NamedItemViewModel where ContentType : IItem
+    public class NamedContainerViewModel<ContentType> : ContainerViewModel<ContentType> where ContentType : IItem
     {
-        public ReadOnlyLazyProperty<ObservableCollection<ContentType>?> Items;
+        public LazyProperty<string?> Name;
 
-        protected IItemContainer<ContentType> Container { get; }
+        protected INamedItem Item { get; }
 
-        protected NamedContainerViewModel(IContext context, IServiceProvider serviceProvider, INamedItem namedContainer, IItemContainer<ContentType> container) : base(context, serviceProvider, namedContainer)
+        protected NamedContainerViewModel(IContext context, IServiceProvider serviceProvider, INamedItem item, IItemContainer<ContentType> container) : base(context, serviceProvider, container)
         {
-            Container = container;
+            Item = item;
 
-            Items = new ReadOnlyLazyProperty<ObservableCollection<ContentType>?>(p =>
+            Name = new LazyProperty<string?>(p =>
             {
-                /*
-                    WeakAction will hold a weak reference to the temporary class on which the lambda will be invokeds
-                    So unless we hold the actual lambda (and thus its temporary class), it may get GC-ed.
-                */
-                WeakAction<IItemContainer<ContentType>, ItemContainerCurrentContentEventArgs<ContentType>>.CallType handler = (_, e) => Context.Invoke(() => p.Value = new ObservableCollection<ContentType>(e.Content));
-                Container.ItemContainerCurrentContent.Subscribe( handler );
-                Container.RequestItemContainerCurrentContent();
+                WeakAction<INamedItem, NamedItemNameChangedEventArgs>.CallType handler = (_, e) => Context.Invoke(() => p.Value = e.Name);
+                Item.ItemNameChanged.Subscribe( handler );
+                Item.RequestItemNameUpdate();
             });
 
-            Container.ItemContainerContentChanged.Subscribe(ItemContainer_ItemContainerContentChanged);
+            Item.ItemNameChanged.Subscribe(NamedItem_ItemNameChanged);
         }
 
-        private void ItemContainer_ItemContainerContentChanged(IItemContainer<ContentType> sender, ItemContainerContentChangedEventArgs<ContentType> e)
+        private void NamedItem_ItemNameChanged(INamedItem sender, NamedItemNameChangedEventArgs e)
         {
-            if (!e.HasChanged || Items.Value == null)
+            if (!e.HasChanged)
                 return;
-            else if (e.Type == ItemContainerContentChangedEventArgs<ContentType>.ChangeType.ItemAdded)
-                Context.Invoke(() => Items.Value.Add(e.Item));
-            else
-                Context.Invoke(() => Items.Value.Remove(e.Item));
+            Context.Invoke(() => Name.Value = e.Name);
         }
     }
 }
