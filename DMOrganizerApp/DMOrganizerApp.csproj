@@ -18,13 +18,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="Resources\CollapsedCategoryIcon.png" />
-    <Resource Include="Resources\DocumentIcon.png" />
-    <Resource Include="Resources\ExpandedCategoryIcon.png" />
+    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.117" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.Data.SQLite" Version="1.0.117" />
+    <Resource Include="Resources\CollapsedCategoryIcon.png" />
+    <Resource Include="Resources\DocumentIcon.png" />
+    <Resource Include="Resources\ExpandedCategoryIcon.png" />
   </ItemGroup>
 
   <ItemGroup>
