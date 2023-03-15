@@ -9,7 +9,7 @@ namespace DMOrganizerViewModel
 {
     public class ContainerViewModel<ContentType> : ViewModelBase where ContentType : IItem
     {
-        public ReadOnlyLazyProperty<ObservableCollection<ContentType>?> Items;
+        public ReadOnlyLazyProperty<ObservableCollection<ContentType>?> Items { get; }
 
         protected IItemContainer<ContentType> Container { get; }
 
