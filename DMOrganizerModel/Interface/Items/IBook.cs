@@ -59,19 +59,5 @@ namespace DMOrganizerModel.Interface.Items
         /// </summary>
         /// <param name="position">Position for page in book</param>
         void AddPage(int position);
-
-        //Need BookItemChangedEventArgs
-        /// <summary>
-        /// Removes page from book by position, deleting it and its content. Need to change all other pages' positions.
-        /// </summary>
-        void RemovePage(int position); //args?              надо ли это?
-
-        //Need BookItemChangedEventArgs
-        /// <summary>
-        /// Changes position of child page, affecting db info and view. Need to change all other pages' positions.
-        /// </summary>
-        /// /// <param name="oldPosition">What page we're moving</param>
-        /// /// <param name="newPosition">To what position we're moving</param>
-        void ChangePagePosition(int oldPosition, int newPosition);
     }
 }

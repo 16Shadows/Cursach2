@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Controls;
+using System.Runtime.CompilerServices;
 
 namespace DMOrganizerModel.Implementation.Items
 {
@@ -30,11 +32,14 @@ namespace DMOrganizerModel.Implementation.Items
             Task.Run(() =>
             {
                 int availablePosition = Query.MaxPagePosition(Organizer.Connection, ItemID) + 1;
-                //InvokeBookItemCreated()
-                int newPageID = Query.CreatePadeInBook(Organizer.Connection, ItemID, availablePosition);
-                IItem item = null;
-                item = Organizer.GetPage(newPageID, this);
-                //InvokeItemContainerContentChanged()
+                IPage item = null;
+                lock (Lock)
+                {
+                    int newPageID = Query.CreatePadeInBook(Organizer.Connection, ItemID, availablePosition);
+                    item = Organizer.GetPage(newPageID, this); //caching object
+                }
+                // telling everyone that page is added
+                InvokeItemContainerContentChanged(item, ItemContainerContentChangedEventArgs<IPage>.ChangeType.ItemAdded, ItemContainerContentChangedEventArgs<IPage>.ResultType.Success);
 
             });
         }
@@ -43,51 +48,62 @@ namespace DMOrganizerModel.Implementation.Items
         {
             //check how many pages, if it is last or bigger - add at last,
             //if in middle - move all other pages(from end to avoid non-unique positions) +1 and add this page
-            throw new NotImplementedException();
-        }
+            CheckDeleted();
+            Task.Run(() =>
+            {
+                throw new NotImplementedException();
+                lock (Lock) 
+                { 
 
-        public void ChangePagePosition(int oldPosition, int newPosition)
-        {
-            throw new NotImplementedException();
+                }
+                //InvokeBookItemCreated()
+                int newPageID = Query.CreatePadeInBook(Organizer.Connection, ItemID, position);
+                IPage item = null;
+                item = Organizer.GetPage(newPageID, this); //caching object
+
+                // telling everyone that page is added
+                InvokeItemContainerContentChanged(item, ItemContainerContentChangedEventArgs<IPage>.ChangeType.ItemAdded, ItemContainerContentChangedEventArgs<IPage>.ResultType.Success);
+
+            });
         }
 
         public override string GetName()
         {
-            throw new NotImplementedException();
+            return Query.GetBookName(Organizer.Connection, ItemID);
         }
 
-        public void RemovePage(int position)
-        {
-            throw new NotImplementedException();
-        }
-
-        //INamedContainerItem
+        //INamedContainerItem        
         public override void SetName(string name)
         {
-            throw new NotImplementedException();
+            _ = Query.SetBookName(Organizer.Connection, ItemID, name); // _ is to discard useless variable
         }
 
         protected override IEnumerable<IPage> GetContent()
         {
-            throw new NotImplementedException();
+            //get pages from database and checks in page's cache 
+            List<IPage> result = new List<IPage>();
+            foreach (int pageID in Query.GetBookContent(Organizer.Connection, ItemID))
+                result.Add(Organizer.GetPage(pageID, this));
+
+            return result;
         }
 
         protected override bool HasItem(IPage item) //checks if has page with some ID in it
         {
-            throw new NotImplementedException();
+            if (item is not Item)
+                throw new ArgumentTypeException(nameof(item), "Invalid item type.");
+            return item is BookPage page && Query.BookHasPage(Organizer.Connection, ItemID, page.ItemID);
         }
 
         // Need to overwrite
         protected override void SetParentInternal(IItemContainerBase parent)
         {
-            throw new NotImplementedException();
+            Query.SetBookParent(Organizer.Connection, ItemID);
         }
 
         protected override bool DeleteItemInternal()
         {
-            throw new NotImplementedException();
+            return Query.DeleteBook(Organizer.Connection, ItemID);
         }
-
-        //
     }
 }
