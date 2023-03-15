@@ -33,11 +33,6 @@ namespace DMOrganizerModel.Implementation.Items
             throw new NotImplementedException();
         }
 
-        public void ChangePagePosition(int oldPosition, int newPosition)
-        {
-            throw new NotImplementedException();
-        }
-
         public void MovePagesToInsertPage(int BookID, int position)
         {
             //get all page's positions that we need to change (>= position)
@@ -53,9 +48,9 @@ namespace DMOrganizerModel.Implementation.Items
         }
 
         //request page position no matter in what book it is, just by id
-        public void RequestPagePosition()
+        public int RequestPagePosition()
         {
-            throw new NotImplementedException();
+            return Query.GetPagePosition(Organizer.Connection, ItemID);
         }
 
         protected override bool HasItem(IObjectContainer item)
@@ -73,12 +68,13 @@ namespace DMOrganizerModel.Implementation.Items
 
         protected override void SetParentInternal(IItemContainerBase parent)
         {
-            throw new NotImplementedException();
+            if (parent is not Book) throw new ArgumentTypeException(nameof(parent), "Unsupported page parent type.");
+            else Query.SetPageParent(Organizer.Connection, ItemID, (parent as Book).ItemID);
         }
 
         protected override bool DeleteItemInternal()
         {
-            throw new NotImplementedException();
+            return Query.DeletePage(Organizer.Connection, ItemID);
         }
     }
 }

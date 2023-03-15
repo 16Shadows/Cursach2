@@ -535,7 +535,7 @@ namespace DMOrganizerModel.Implementation.Utility
             return res;
         }
 
-        //create book at root (parent is Organizer, not Category type)
+        //create empty book at root (parent is Organizer, not Category type)
         public static int CreateBook(SyncronizedSQLiteConnection connection, string name)
         {
             int res = -1;
@@ -869,7 +869,24 @@ namespace DMOrganizerModel.Implementation.Utility
         #endregion
     }
     #region ObjectContainer
+
     // create object container
+    public static int CreateObjectContainer(SyncronizedSQLiteConnection connection, string name, int parentID)
+    {
+        int res = -1;
+        connection.Write(con =>
+        {
+            using SQLiteCommand cmd = con.CreateCommand();
+
+            cmd.CommandText = @"INSERT INTO Continer (Title, ID_Parent_Category) 
+                                            VALUES (@BookName, @BookParentID);";
+
+            cmd.Parameters.AddWithValue("@BookName", name);
+            cmd.Parameters.AddWithValue("@BookParentID", parentID);
+            res = (int)cmd.ExecuteScalar(); //res = null при ошибке или ID созданной книги
+        });
+        return res;
+    }
     //delete object container
     // set parent
 

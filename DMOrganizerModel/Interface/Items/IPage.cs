@@ -23,7 +23,7 @@ namespace DMOrganizerModel.Interface.Items
         /// <summary>
         /// Returns current page position in parent book.
         /// </summary>
-        void RequestPagePosition();
+        int RequestPagePosition();
 
         //Need BookItemChangedEventArgs             ?????
         /// <summary>
@@ -31,6 +31,6 @@ namespace DMOrganizerModel.Interface.Items
         /// </summary>
         /// /// <param name="oldPosition">What page we're moving</param>
         /// /// <param name="newPosition">To what position we're moving</param>
-        void ChangePagePosition(int oldPosition, int newPosition);
+        void ChangePagePosition(int bookID, int oldPosition, int newPosition);
     }
 }

@@ -93,7 +93,6 @@ namespace DMOrganizerModel.Implementation.Items
            return item is BookPage page && Query.BookHasPage(Organizer.Connection, ItemID, page.ItemID);
         }
 
-        // Need to overwrite
         protected override void SetParentInternal(IItemContainerBase parent)
         {
             if (parent is null) Query.SetBookParent(Organizer.Connection, ItemID);
