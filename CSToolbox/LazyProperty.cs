@@ -114,7 +114,7 @@ namespace CSToolbox
             {
                 if (!m_Loaded)
                 {
-                    lock (m_Value)
+                    lock (WeakPropertyChanged)
                     {
                         if (!m_Loaded)
                         {
@@ -130,7 +130,7 @@ namespace CSToolbox
             {
                 if (m_Loaded)
                     throw new InvalidOperationException();
-                lock (m_Value)
+                lock (WeakPropertyChanged)
                 {
                     if (!m_Loaded)
                     {
