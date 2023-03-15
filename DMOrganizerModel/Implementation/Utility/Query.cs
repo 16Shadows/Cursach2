@@ -1,14 +1,5 @@
 ﻿using System.Data.SQLite;
 using System.Collections.Generic;
-using System.Xml.Linq;
-using DMOrganizerModel.Interface.Items;
-using DMOrganizerModel.Implementation.Items;
-using System.Security.Cryptography;
-using System.Reflection.PortableExecutable;
-using static System.Data.Entity.Infrastructure.Design.Executor;
-using System.Net;
-using System.Windows.Controls.Primitives;
-using System.Windows.Controls;
 
 namespace DMOrganizerModel.Implementation.Utility
 {

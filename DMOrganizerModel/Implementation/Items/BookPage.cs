@@ -2,11 +2,8 @@
 using DMOrganizerModel.Implementation.Organizers;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using DMOrganizerModel.Implementation.Utility;
-using System.Windows.Controls;
 
 namespace DMOrganizerModel.Implementation.Items
 {
