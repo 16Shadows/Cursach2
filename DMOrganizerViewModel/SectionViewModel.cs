@@ -1,4 +1,5 @@
 ﻿using CSToolbox;
+using CSToolbox.Weak;
 using DMOrganizerModel.Interface.Items;
 using MVVMToolbox;
 using System;
@@ -13,7 +14,7 @@ namespace DMOrganizerViewModel
 
         public SectionViewModel(IContext context, IServiceProvider serviceProvider, ISection section) : base(context, serviceProvider, section, section)
         {
-            Section = section;
+            Section = section ?? throw new ArgumentNullException(nameof(section));
 
             Content = new LazyProperty<string>(p =>
             {
@@ -31,5 +32,7 @@ namespace DMOrganizerViewModel
                 return;
             Context.Invoke(() => Content.Value = e.Content);
         }
+
+        protected override ViewModelBase CreateViewModel(ISection item) => new SectionViewModel(Context, ServiceProvider, item);
     }
 }

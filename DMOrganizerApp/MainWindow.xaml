@@ -5,14 +5,14 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DMOrganizerApp"
         xmlns:views="clr-namespace:DMOrganizerApp.Views"
-        xmlns:viewModels="clr-namespace:DMOrganizerApp.ViewModels"
+        xmlns:vm="clr-namespace:DMOrganizerViewModel;assembly=DMOrganizerViewModel"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="{Binding ActiveOrganizerName}" Height="450" Width="800">
     <Grid>
-        <ContentControl x:Name="Window" Content="{Binding ActiveViewModel}">
+        <ContentControl Content="{Binding ActiveViewModel}">
             <ContentControl.Resources>
-                <DataTemplate DataType="{x:Type viewModels:OrganizerViewModel}">
-                    <views:OrganizerView/>
+                <DataTemplate DataType="{x:Type vm:OrganizerViewModel}">
+                    <views:OrganizerView />
                 </DataTemplate>
             </ContentControl.Resources>
         </ContentControl>

@@ -10,4 +10,19 @@
     <ProjectReference Include="..\MVVMToolbox\MVVMToolbox.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Update="Resources\CommonLocale.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>CommonLocale.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Resources\CommonLocale.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>CommonLocale.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
 </Project>

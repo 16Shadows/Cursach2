@@ -215,7 +215,7 @@ namespace DMOrganizerModel.Implementation.Organizers
                 ";
                 command.ExecuteNonQuery();
             }
-            finally
+            catch
             {
                 RawConnection.Close();
             }

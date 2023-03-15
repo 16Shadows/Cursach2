@@ -1,4 +1,5 @@
 ﻿using CSToolbox;
+using CSToolbox.Weak;
 using DMOrganizerModel.Interface.Items;
 using MVVMToolbox;
 using System;
@@ -14,7 +15,7 @@ namespace DMOrganizerViewModel
 
         public DocumentViewModel(IContext context, IServiceProvider serviceProvider, IDocument document) : base(context, serviceProvider, document)
         {
-            Document = document;
+            Document = document ?? throw new ArgumentNullException(nameof(document));
 
             Tags = new ReadOnlyLazyProperty<ObservableCollection<string>>(p =>
             {
