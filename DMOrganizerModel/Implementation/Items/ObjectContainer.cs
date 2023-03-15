@@ -1,4 +1,5 @@
 ﻿using CSToolbox;
+using CSToolbox.Weak;
 using DMOrganizerModel.Implementation.Organizers;
 using DMOrganizerModel.Interface.Items;
 using System;
@@ -13,11 +14,11 @@ namespace DMOrganizerModel.Implementation.Items
     {
         public ObjectContainer(int itemID, IItemContainerBase parent, Organizer organizer) : base(itemID, parent, organizer) {}
 
-        public WeakEvent<IObjectContainer, ObjectContainerUpdatePositionEventArgs> ObjectContainerUpdatedPosition => throw new NotImplementedException();
+        WeakEvent<IObjectContainer, ObjectContainerUpdatePositionEventArgs> IObjectContainer.ObjectContainerUpdatedPosition => throw new NotImplementedException();
 
-        public WeakEvent<IObjectContainer, ObjectContainerUpdateSizeEventArgs> ObjectContainerUpdatedSize => throw new NotImplementedException();
+        WeakEvent<IObjectContainer, ObjectContainerUpdateSizeEventArgs> IObjectContainer.ObjectContainerUpdatedSize => throw new NotImplementedException();
 
-        public WeakEvent<IObjectContainer, ObjectContainerViewInfoEventArgs> ObjectContainerViewInfo => throw new NotImplementedException();
+        WeakEvent<IObjectContainer, ObjectContainerViewInfoEventArgs> IObjectContainer.ObjectContainerViewInfo => throw new NotImplementedException();
 
         public void CreateObject()
         {

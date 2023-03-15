@@ -21,15 +21,27 @@ namespace DMOrganizerModel.Implementation.Utility
             connection.Read(con =>
             {
                 using SQLiteCommand cmd = con.CreateCommand();
-                cmd.CommandText = $"(SELECT ID FROM Category WHERE Title=$title AND Parent=NULL)" +
-                                  " UNION ALL " +
-                                  $"(SELECT Section.ID FROM (Document INNER JOIN Section ON Document.SectionID=Section.ID) WHERE Section.Title=$title AND Document.CategoryID=NULL)";
+                cmd.CommandText = @"SELECT ID FROM Category WHERE Title = @Name AND Parent is NULL
+
+                                    UNION ALL
+
+                                    SELECT Section.ID
+                                    FROM(Document INNER JOIN Section ON Document.SectionID= Section.ID)
+                                    WHERE Section.Title=@Name
+                                    AND Document.CategoryID is NULL
+
+                                    UNION ALL
+
+                                    SELECT Book.ID
+                                    FROM Book
+                                    WHERE Book.Title IS @Name
+                                    AND Book.ID_Parent_Category is NULL;";
                 cmd.Parameters.AddWithValue("$title", name);
                 success = cmd.ExecuteScalar() != null;
             });
             return success;
         }
-
+        
         public static bool OrganizerHasDocument(SyncronizedSQLiteConnection connection, int documentID)
         {
             bool success = false;
@@ -49,6 +61,21 @@ namespace DMOrganizerModel.Implementation.Utility
             {
                 using SQLiteCommand cmd = con.CreateCommand();
                 cmd.CommandText = $"SELECT ID FROM Category WHERE ID={categoryID} AND Parent=NULL";
+                success = cmd.ExecuteNonQuery() > 0;
+            });
+            return success;
+        }
+        public static bool OrganizerHasBook(SyncronizedSQLiteConnection connection, int bookID)
+        {
+            bool success = false;
+            connection.Read(con =>
+            {
+                using SQLiteCommand cmd = con.CreateCommand();
+                cmd.CommandText = @"SELECT ID 
+                                    FROM Book 
+                                    WHERE ID is @BookID 
+                                    AND ID_Parent_Category IS NULL;";
+                cmd.Parameters.AddWithValue("@BookID", bookID);
                 success = cmd.ExecuteNonQuery() > 0;
             });
             return success;
@@ -75,6 +102,22 @@ namespace DMOrganizerModel.Implementation.Utility
             {
                 using SQLiteCommand cmd = con.CreateCommand();
                 cmd.CommandText = $"SELECT ID FROM Category WHERE Parent=NULL";
+                using SQLiteDataReader reader = cmd.ExecuteReader();
+                while (reader.Read())
+                    res.Add(reader.GetInt32(0));
+            });
+            return res;
+        }
+
+        public static List<int> GetBooksInOrganizer(SyncronizedSQLiteConnection connection)
+        {
+            List<int> res = new List<int>();
+            connection.Read(con =>
+            {
+                using SQLiteCommand cmd = con.CreateCommand();
+                cmd.CommandText = @"SELECT ID 
+                                    FROM Book
+                                    WHERE ID_Parent_Category IS NULL;";
                 using SQLiteDataReader reader = cmd.ExecuteReader();
                 while (reader.Read())
                     res.Add(reader.GetInt32(0));
@@ -867,28 +910,45 @@ namespace DMOrganizerModel.Implementation.Utility
             return res;
         }
         #endregion
-    }
-    #region ObjectContainer
 
-    // create object container
-    public static int CreateObjectContainer(SyncronizedSQLiteConnection connection, string name, int parentID)
-    {
-        int res = -1;
-        connection.Write(con =>
+        #region ObjectContainer
+
+        // create object container
+        public static int CreateObjectContainer(SyncronizedSQLiteConnection connection, int type)
         {
-            using SQLiteCommand cmd = con.CreateCommand();
+            int res = -1;
+            connection.Write(con =>
+            {
+                using SQLiteCommand cmd = con.CreateCommand();
 
-            cmd.CommandText = @"INSERT INTO Continer (Title, ID_Parent_Category) 
-                                            VALUES (@BookName, @BookParentID);";
+                cmd.CommandText = @"INSERT INTO Continer (Type) 
+                                            VALUES (@Type);";
 
-            cmd.Parameters.AddWithValue("@BookName", name);
-            cmd.Parameters.AddWithValue("@BookParentID", parentID);
-            res = (int)cmd.ExecuteScalar(); //res = null при ошибке или ID созданной книги
-        });
-        return res;
+                cmd.Parameters.AddWithValue("@Type", type);
+                res = (int)cmd.ExecuteScalar();
+            });
+            return res;
+        }
+        //delete object container
+        // set parent
+        public static bool SetObjectContainerParent(SyncronizedSQLiteConnection connection, int pageParentID, int containerID)
+        {
+            int result = -1;
+            connection.Write(con =>
+            {
+                using SQLiteCommand cmd = con.CreateCommand();
+
+                cmd.CommandText = @"INSERT INTO Set_Page_Containers (ID_Page, ID_Container) 
+                                    VALUES (@PageID, @ContainerID);";
+
+                cmd.Parameters.AddWithValue("@PageID", pageParentID);
+                cmd.Parameters.AddWithValue("@ContainerID", containerID);
+                result = cmd.ExecuteNonQuery();
+            });
+            return result > 0;
+        }
+
+        #endregion
     }
-    //delete object container
-    // set parent
 
-    #endregion
 }

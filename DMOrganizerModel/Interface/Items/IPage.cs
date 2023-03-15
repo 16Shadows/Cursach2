@@ -18,7 +18,7 @@ namespace DMOrganizerModel.Interface.Items
         /// <summary>
         /// Creates empty container on page with default size and position.
         /// </summary>
-        void AddContainer();
+        void AddContainer(int type);
 
         /// <summary>
         /// Returns current page position in parent book.

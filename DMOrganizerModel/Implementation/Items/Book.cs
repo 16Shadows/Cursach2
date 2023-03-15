@@ -16,8 +16,7 @@ namespace DMOrganizerModel.Implementation.Items
     {
         //IBook
         public Book(int itemID, IItemContainerBase parent, Organizer organizer) : base(itemID, parent, organizer) {}
-        
-        // maybe need to remove at all                      !!!!!
+
         public WeakEvent<IBook, BookItemCreatedEventArgs> BookItemCreated { get; } = new();
 
         private void InvokeBookItemCreated(int ID, BookItemCreatedEventArgs.ResultType result)
@@ -31,16 +30,21 @@ namespace DMOrganizerModel.Implementation.Items
             CheckDeleted();
             Task.Run(() =>
             {
-                int availablePosition = Query.MaxPagePosition(Organizer.Connection, ItemID) + 1;
                 IPage item = null;
                 lock (Lock)
                 {
-                    int newPageID = Query.CreatePadeInBook(Organizer.Connection, ItemID, availablePosition);
-                    item = Organizer.GetPage(newPageID, this); //caching object
-                }
-                // telling everyone that page is added
-                InvokeItemContainerContentChanged(item, ItemContainerContentChangedEventArgs<IPage>.ChangeType.ItemAdded, ItemContainerContentChangedEventArgs<IPage>.ResultType.Success);
+                    int availablePosition = Query.MaxPagePosition(Organizer.Connection, ItemID) + 1;
 
+                    int newPageID = Query.CreatePadeInBook(Organizer.Connection, ItemID, availablePosition);
+                    if (newPageID != -1)
+                    {
+                        item = Organizer.GetPage(newPageID, this); //caching object
+                        // telling everyone that page is added
+                        InvokeItemContainerContentChanged(item, ItemContainerContentChangedEventArgs<IPage>.ChangeType.ItemAdded, ItemContainerContentChangedEventArgs<IPage>.ResultType.Success);
+                        InvokeBookItemCreated(newPageID, BookItemCreatedEventArgs.ResultType.Success);
+                    }
+                    else InvokeBookItemCreated(newPageID, BookItemCreatedEventArgs.ResultType.Failure);
+                }
             });
         }
 

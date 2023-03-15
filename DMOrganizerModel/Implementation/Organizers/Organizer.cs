@@ -346,6 +346,8 @@ namespace DMOrganizerModel.Implementation.Organizers
         private ConcurrentWeakCache<int, Section> SectionsCache { get; } = new(_ => throw new InvalidOperationException("Cannot create parentless item."));
         private ConcurrentWeakCache<int, BookPage> PagesCache { get; } = new(_ => throw new InvalidOperationException("Cannot create parentless item."));
         private ConcurrentWeakCache<int, Book> BooksCache { get; } = new(_ => throw new InvalidOperationException("Cannot create parentless item."));
+        private ConcurrentWeakCache<int, ObjectContainer> ObjectContainerCache { get; } = new(_ => throw new InvalidOperationException("Cannot create parentless item."));
+        private ConcurrentWeakCache<int, ContainerObject> ContainerObjectCache { get; } = new(_ => throw new InvalidOperationException("Cannot create parentless item."));
 
         public Category GetCategory(int id, IItemContainerBase parent) => CategoriesCache.GetValue(id, id => new Category(id, parent, this));
 
@@ -356,6 +358,8 @@ namespace DMOrganizerModel.Implementation.Organizers
         public BookPage GetPage(int id, IItemContainerBase parent) => PagesCache.GetValue(id, id => new BookPage(id, parent, this));
 
         public Book GetBook(int id, IItemContainerBase parent) => BooksCache.GetValue(id, id => new Book(id, parent, this));
+        public ObjectContainer GetObjectContainer(int id, IItemContainerBase parent) => ObjectContainerCache.GetValue(id, id => new ObjectContainer(id, parent, this));
+        public ContainerObject GetObject(int id, IItemContainerBase parent) => ContainerObjectCache.GetValue(id, id => new ContainerObject(id, parent, this));
         #endregion
 
         private bool CanBeParentOf(IOrganizerItem item)

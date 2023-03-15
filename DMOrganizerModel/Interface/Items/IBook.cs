@@ -31,6 +31,7 @@ namespace DMOrganizerModel.Interface.Items
             Result = result;
         }
     }
+
     /// <summary>
     /// Book, container for pages.
     /// </summary>
@@ -45,6 +46,7 @@ namespace DMOrganizerModel.Interface.Items
         // request book name (INamedItem)
         // request book pages (IContainerItem)
         // content change ivents (IContainerItem)
+
         WeakEvent<IBook, BookItemCreatedEventArgs> BookItemCreated { get; }
 
         //Need BookItemChangedEventArgs

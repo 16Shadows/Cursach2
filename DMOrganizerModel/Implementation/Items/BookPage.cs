@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DMOrganizerModel.Implementation.Utility;
+using System.Windows.Controls;
 
 namespace DMOrganizerModel.Implementation.Items
 {
@@ -28,23 +29,38 @@ namespace DMOrganizerModel.Implementation.Items
 
         }
 
-        public void AddContainer()
+        public void AddContainer(int containerType = 1)
         {
-            throw new NotImplementedException();
+            containerType = 1; //other types not implemented yet
+            IObjectContainer item = null;
+            lock (Lock)
+            {
+                //create container
+                int newContID = Query.CreateObjectContainer(Organizer.Connection, containerType);
+                item = Organizer.GetObjectContainer(newContID, this);
+                //set this page as parent (M:M bond)
+                if (newContID != -1)
+                {
+                    Query.SetObjectContainerParent(Organizer.Connection, ItemID, newContID);
+                    InvokeItemContainerContentChanged(item, ItemContainerContentChangedEventArgs<IObjectContainer>.ChangeType.ItemAdded, ItemContainerContentChangedEventArgs<IObjectContainer>.ResultType.Success);
+                }
+            }
         }
 
         public void MovePagesToInsertPage(int BookID, int position)
         {
-            //get all page's positions that we need to change (>= position)
-            List<int> changePositions = Query.GetPagesPositionsToChange(Organizer.Connection, ItemID, position);
-            changePositions.Sort();
-            changePositions.Reverse();
-            //changing positions from end to avoid unique pos exception
-            for (int i = changePositions.Count; i < changePositions.Count; i++)
+            lock (Lock)
             {
-                ChangePagePosition(ItemID, changePositions[i], changePositions[i] + 1);
+                //get all page's positions that we need to change (>= position)
+                List<int> changePositions = Query.GetPagesPositionsToChange(Organizer.Connection, ItemID, position);
+                changePositions.Sort();
+                changePositions.Reverse();
+                //changing positions from end to avoid unique pos exception
+                for (int i = changePositions.Count; i < changePositions.Count; i++)
+                {
+                    ChangePagePosition(ItemID, changePositions[i], changePositions[i] + 1);
+                }
             }
-
         }
 
         //request page position no matter in what book it is, just by id
