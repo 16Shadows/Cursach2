@@ -42,7 +42,6 @@ namespace CSToolbox
                         {
                             m_Loader(this);
                             m_Loader = null;
-                            m_Loaded = true;
                         }
                     }
                 }
