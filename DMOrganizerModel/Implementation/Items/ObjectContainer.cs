@@ -60,8 +60,6 @@ namespace DMOrganizerModel.Implementation.Items
             InvokeObjectContainerViewInfo(info[0], info[1], info[2], info[3]);
         }
 
-
-
         public void UpdateCoordinates(int newX, int newY)
         {
             int oldX = Query.GetContainerViewInfo(Organizer.Connection, ItemID)[2];

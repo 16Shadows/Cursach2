@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CSToolbox.Weak;
+using System.Net.Mime;
 
 namespace DMOrganizerModel.Implementation.Items
 {

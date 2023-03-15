@@ -66,7 +66,7 @@ namespace DMOrganizerModel.Implementation.Items
             CheckDeleted();
             Task.Run(() =>
             {
-                // lock problems                                                                    !!!
+                // lock problems , need to make lock somehow                                                                   !!!
                 
                 //get all page's positions that we need to change (> position)
                 List<int> changePositions = Query.GetPagesPositionsToChange(Organizer.Connection, ItemID, position);

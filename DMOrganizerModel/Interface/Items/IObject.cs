@@ -20,5 +20,6 @@ namespace DMOrganizerModel.Interface.Items
         /// </summary>
         /// <param name="newLink">Link to object that will be displayed and stored.</param>
         void UpdateContent(IReference newLink); //event iitemcontainer
+        void SetLink(IReference link);
     }
 }

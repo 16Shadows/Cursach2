@@ -1,6 +1,7 @@
 ﻿using System.Data.SQLite;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System;
 
 namespace DMOrganizerModel.Implementation.Utility
 {
@@ -854,8 +855,13 @@ namespace DMOrganizerModel.Implementation.Utility
             {
                 using SQLiteCommand cmd = con.CreateCommand();
 
-                cmd.CommandText = @"DELETE FROM Page
-                                    WHERE ID is @PageID;";
+                cmd.CommandText = @"BEGIN TRANSACTION;
+                                    DELETE FROM Set_Page_Containers
+                                    WHERE Set_Page_Containers.ID_Page IS @PageID;
+                                    
+                                    DELETE FROM Page
+                                    WHERE Page.ID IS @PageID;
+                                    COMMIT;";
                 cmd.Parameters.AddWithValue("@PageID", pageID);
                 result = cmd.ExecuteNonQuery();
             });
@@ -922,16 +928,21 @@ namespace DMOrganizerModel.Implementation.Utility
             return res;
         }
         //delete object container
-        public static bool DeleteObjectContainer(SyncronizedSQLiteConnection connection, int pageID)
+        public static bool DeleteObjectContainer(SyncronizedSQLiteConnection connection, int containerID)
         {
             int result = -1;
             connection.Write(con =>
             {
                 using SQLiteCommand cmd = con.CreateCommand();
 
-                cmd.CommandText = @"DELETE FROM Page
-                                    WHERE ID is @PageID;";
-                cmd.Parameters.AddWithValue("@PageID", pageID);
+                cmd.CommandText = @"BEGIN TRANSACTION;
+                                    DELETE FROM Set_Page_Containers
+                                    WHERE Set_Page_Containers.ID_Container IS @ContainerID;
+                                    
+                                    DELETE FROM Container
+                                    WHERE Container.ID IS @ContainerID;
+                                    COMMIT;";
+                cmd.Parameters.AddWithValue("@ContainerID", containerID);
                 result = cmd.ExecuteNonQuery();
             });
             return result > 0;
@@ -1056,9 +1067,8 @@ namespace DMOrganizerModel.Implementation.Utility
             {
                 using SQLiteCommand cmd = con.CreateCommand();
 
-                cmd.CommandText = @"UPDATE Set_Page_Containers 
-                                    SET ID_Page = @ParentID 
-                                    WHERE ID_Container is @ContainerID;";
+                cmd.CommandText = @"INSERT INTO Set_Page_Containers (ID_Page, ID_Container) 
+                                    VALUES (@ParentID, @ContainerID);";
 
                 cmd.Parameters.AddWithValue("@ParentID", parentID);
                 cmd.Parameters.AddWithValue("@ContainerID", containerID);
@@ -1120,8 +1130,56 @@ namespace DMOrganizerModel.Implementation.Utility
             return res;
         }
         // delete object
+        public static bool DeleteContainerObject(SyncronizedSQLiteConnection connection, int objectID)
+        {
+            int result = -1;
+            connection.Write(con =>
+            {
+                using SQLiteCommand cmd = con.CreateCommand();
+
+                cmd.CommandText = @"DELETE FROM Object
+                                    WHERE ID is @ObjectID;";
+                cmd.Parameters.AddWithValue("@ObjectID", objectID);
+                result = cmd.ExecuteNonQuery();
+            });
+            return result > 0;
+        }
         //set object parent
-        //set new link update content
+        public static bool SetObjectParent(SyncronizedSQLiteConnection connection, int parentID, int objectID)
+        {
+            int result = -1;
+            connection.Write(con =>
+            {
+                using SQLiteCommand cmd = con.CreateCommand();
+
+                cmd.CommandText = @"INSERT INTO Set_Container_Objects (ID_Container, ID_Object) 
+                                    VALUES (@ContainerID, @ObjectID);";
+
+                cmd.Parameters.AddWithValue("@ParentID", parentID);
+                cmd.Parameters.AddWithValue("@ObjectID", objectID);
+                result = cmd.ExecuteNonQuery();
+            });
+            return result > 0;
+        }
+        //set new link
+        public static bool SetObjectLink(SyncronizedSQLiteConnection connection, int objectID, string link)
+        {
+            int result = -1;
+            connection.Write(con =>
+            {
+                using SQLiteCommand cmd = con.CreateCommand();
+
+                cmd.CommandText = @"UPDATE Object
+                                    SET Link_To_Object = @Link
+                                    WHERE Object.ID is @ObjectID;";
+
+                cmd.Parameters.AddWithValue("@Link", link);
+                cmd.Parameters.AddWithValue("@ObjectID", objectID);
+                result = cmd.ExecuteNonQuery();
+            });
+            return result > 0;
+        }
+
         //get content
         //has item
         //set parent of object
