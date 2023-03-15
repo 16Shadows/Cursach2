@@ -36,7 +36,7 @@ namespace CSToolbox
             {
                 if (!m_Loaded)
                 {
-                    lock (m_Value)
+                    lock (WeakPropertyChanged)
                     {
                         if (!m_Loaded)
                         {
@@ -55,7 +55,7 @@ namespace CSToolbox
 
                 if (!m_Loaded)
                 {
-                    lock (m_Value)
+                    lock (WeakPropertyChanged)
                     {
                         if (!m_Loaded)
                         {
@@ -120,7 +120,6 @@ namespace CSToolbox
                         {
                             m_Loader(this);
                             m_Loader = null;
-                            m_Loaded = true;
                         }
                     }
                 }
