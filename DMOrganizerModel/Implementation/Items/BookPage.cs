@@ -4,13 +4,14 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using DMOrganizerModel.Implementation.Utility;
+using CSToolbox.Weak;
 
 namespace DMOrganizerModel.Implementation.Items
 {
     internal class BookPage : ContainerItem<IObjectContainer>, IPage
     {
         public WeakEvent<IPage, PageActionEventArgs> PageActionCompleted { get; } = new();
-        private void InvokePageActionCompleted(int parentID, ActionType action, ResultType result = ResultType.Success)
+        private void InvokePageActionCompleted(int parentID, PageActionEventArgs.ActionType action, PageActionEventArgs.ResultType result = PageActionEventArgs.ResultType.Success)
         {
             PageActionCompleted.Invoke(this, new PageActionEventArgs(parentID, action, result));
         }
@@ -90,12 +91,12 @@ namespace DMOrganizerModel.Implementation.Items
                     {
                        res = Query.SetPagePosition(Organizer.Connection, ItemID, oldPosition, newPosition);
                     }
-                    if (res )InvokePageActionCompleted(bookID, ActionType.ChangedPosition, ResultType.Success);
-                    else InvokePageActionCompleted(bookID, ActionType.ChangedPosition, ResultType.Failure);
+                    if (res )InvokePageActionCompleted(bookID, PageActionEventArgs.ActionType.ChangedPosition, PageActionEventArgs.ResultType.Success);
+                    else InvokePageActionCompleted(bookID, PageActionEventArgs.ActionType.ChangedPosition, PageActionEventArgs.ResultType.Failure);
                 }
                 else
                 {
-                    InvokePageActionCompleted(bookID, ActionType.ChangedPosition, ResultType.Failure);
+                    InvokePageActionCompleted(bookID, PageActionEventArgs.ActionType.ChangedPosition, PageActionEventArgs.ResultType.Failure);
                     throw new InvalidOperationException("Attempt on moving non existing pages.");
                 }
             });

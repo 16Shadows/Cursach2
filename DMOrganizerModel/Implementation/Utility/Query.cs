@@ -1,5 +1,6 @@
 ﻿using System.Data.SQLite;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace DMOrganizerModel.Implementation.Utility
 {
@@ -1064,6 +1065,40 @@ namespace DMOrganizerModel.Implementation.Utility
                 result = cmd.ExecuteNonQuery();
             });
             return result > 0;
+        }
+        public static List<int> GetContainerCoordinates(SyncronizedSQLiteConnection connection, int containerID)
+        {
+            List<int> res = new List<int>(2);
+            connection.Read(con =>
+            {
+                using SQLiteCommand cmd = con.CreateCommand();
+                cmd.CommandText = @"SELECT Container.CoordinateX, Container.CoordinateY
+                                    FROM  Container
+                                    WHERE Container.ID is @ContainerID;";
+                cmd.Parameters.AddWithValue("@ContainerID", containerID);
+                using SQLiteDataReader reader = cmd.ExecuteReader();
+                reader.Read();
+                res[0] = reader.GetInt32(0);
+                res[1] = reader.GetInt32(1);
+            });
+            return res;
+        }
+        public static List<int> GetContainerSize(SyncronizedSQLiteConnection connection, int containerID)
+        {
+            List<int> res = new List<int>(2);
+            connection.Read(con =>
+            {
+                using SQLiteCommand cmd = con.CreateCommand();
+                cmd.CommandText = @"SELECT Container.Width, Container.Height
+                                    FROM  Container
+                                    WHERE Container.ID is @ContainerID;";
+                cmd.Parameters.AddWithValue("@ContainerID", containerID);
+                using SQLiteDataReader reader = cmd.ExecuteReader();
+                reader.Read();
+                res[0] = reader.GetInt32(0);
+                res[1] = reader.GetInt32(1);
+            });
+            return res;
         }
         #endregion
 

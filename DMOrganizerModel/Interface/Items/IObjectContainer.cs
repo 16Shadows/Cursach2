@@ -1,4 +1,5 @@
 ﻿using CSToolbox.Weak;
+using DMOrganizerModel.Interface.References;
 using System;
 
 namespace DMOrganizerModel.Interface.Items
@@ -15,7 +16,7 @@ namespace DMOrganizerModel.Interface.Items
             /// <summary>
             /// Updation failure, incorrect size
             /// </summary>
-            IncorrectCoordinates
+            IncorrectSize
         }
 
         public ResultType Result { get; }
@@ -122,11 +123,11 @@ namespace DMOrganizerModel.Interface.Items
         /// </summary>
         /// <param name="oldObjectID">Old object ID</param>
         /// <param name="newObjectID">New object ID</param>
-        void UpdateContent(int oldObjectID, int newObjectID);
+        //void UpdateContent(int oldObjectID, int newObjectID);
 
         /// <summary>
         /// Creates new object in container.
         /// </summary>
-        void AddObject();
+        void AddObject(IReferenceable obj);
     }
 }
