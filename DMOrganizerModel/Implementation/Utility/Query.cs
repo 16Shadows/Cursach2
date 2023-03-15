@@ -39,7 +39,7 @@ namespace DMOrganizerModel.Implementation.Utility
             connection.Read(con =>
             {
                 using SQLiteCommand cmd = con.CreateCommand();
-                cmd.CommandText = $"SELECT SectionID FROM Document WHERE SectionID={documentID} AND CategoryID=NULL";
+                cmd.CommandText = $"SELECT SectionID FROM Document WHERE SectionID={documentID} AND CategoryID IS NULL";
                 success = cmd.ExecuteNonQuery() > 0;
             });
             return success;
@@ -51,7 +51,7 @@ namespace DMOrganizerModel.Implementation.Utility
             connection.Read(con =>
             {
                 using SQLiteCommand cmd = con.CreateCommand();
-                cmd.CommandText = $"SELECT ID FROM Category WHERE ID={categoryID} AND Parent=NULL";
+                cmd.CommandText = $"SELECT ID FROM Category WHERE ID={categoryID} AND Parent IS NULL";
                 success = cmd.ExecuteNonQuery() > 0;
             });
             return success;
@@ -78,7 +78,7 @@ namespace DMOrganizerModel.Implementation.Utility
             connection.Read(con =>
             {
                 using SQLiteCommand cmd = con.CreateCommand();
-                cmd.CommandText = $"SELECT SectionID FROM Document WHERE CategoryID=NULL";
+                cmd.CommandText = $"SELECT SectionID FROM Document WHERE CategoryID IS NULL";
                 using SQLiteDataReader reader = cmd.ExecuteReader();
                 while (reader.Read())
                     res.Add(reader.GetInt32(0));
@@ -92,7 +92,7 @@ namespace DMOrganizerModel.Implementation.Utility
             connection.Read(con =>
             {
                 using SQLiteCommand cmd = con.CreateCommand();
-                cmd.CommandText = $"SELECT ID FROM Category WHERE Parent=NULL";
+                cmd.CommandText = $"SELECT ID FROM Category WHERE Parent IS NULL";
                 using SQLiteDataReader reader = cmd.ExecuteReader();
                 while (reader.Read())
                     res.Add(reader.GetInt32(0));
@@ -505,7 +505,7 @@ namespace DMOrganizerModel.Implementation.Utility
                 if (parentID.HasValue)
                     cmd.CommandText = $"UPDATE Category SET Parent={parentID} WHERE ID={categoryID}";
                 else
-                    cmd.CommandText = $"UPDATE Category SET Parent=NULL WHERE ID={categoryID}";
+                    cmd.CommandText = $"UPDATE Category SET Parent IS NULL WHERE ID={categoryID}";
                 success = cmd.ExecuteNonQuery() > 0;
             });
             return success;
