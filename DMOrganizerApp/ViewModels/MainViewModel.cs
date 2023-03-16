@@ -1,6 +1,7 @@
 ﻿using DMOrganizerModel.Implementation.Organizers;
 using DMOrganizerViewModel;
 using MVVMToolbox;
+using MVVMToolbox.ViewModel;
 using System;
 
 namespace DMOrganizerApp.ViewModels
