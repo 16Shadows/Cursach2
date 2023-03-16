@@ -11,7 +11,7 @@ namespace WPFToolbox.Converter
         {
             if (value != null)
                 return value;
-            if (targetType.IsSubclassOf(typeof(IEnumerable)))
+            if (targetType.IsSubclassOf(typeof(IEnumerable)) || targetType == typeof(IEnumerable))
                 return new string[] { Resources.CommonLocale.LocaleKey_Loading };
             else
                 return Resources.CommonLocale.LocaleKey_Loading;

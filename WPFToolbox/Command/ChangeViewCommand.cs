@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Windows.Input;
-using MVVMToolbox;
+using MVVMToolbox.ViewModel;
 
 namespace WPFToolbox.Command
 {
