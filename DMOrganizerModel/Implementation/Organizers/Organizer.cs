@@ -145,7 +145,7 @@ namespace DMOrganizerModel.Implementation.Organizers
                 @"BEGIN TRANSACTION;
                 CREATE TABLE IF NOT EXISTS ""Book"" (
 	                ""ID""	INTEGER NOT NULL UNIQUE,
-	                ""Title"" 	TEXT NOT NULL DEFAULT 'Book' CHECK(length(""Title"") > 0) COLLATE NOCASE,
+	                ""Title"" 	TEXT NOT NULL DEFAULT 'Book' CHECK(length(""Title"") > 0) UNIQUE COLLATE NOCASE,
 	                ""ID_Parent_Category""	INTEGER DEFAULT NULL,
 	                PRIMARY KEY(""ID"" AUTOINCREMENT),
                 FOREIGN KEY(""ID_Parent_Category"") REFERENCES ""Category""(""ID"") ON DELETE CASCADE
