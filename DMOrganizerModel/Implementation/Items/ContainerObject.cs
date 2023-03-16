@@ -23,10 +23,12 @@ namespace DMOrganizerModel.Implementation.Items
         {
             //need to get item by link
             string link = newLink.Encode();
+            IReferenceable oldItem = (Organizer.DecodeReference(Query.GetObjectContent(Organizer.Connection, ItemID)[0])).Item;
             if (Query.SetObjectLink(Organizer.Connection, ItemID, link))
             {
-
                 InvokeItemContainerContentChanged(oldItem, ItemContainerContentChangedEventArgs<IReferenceable>.ChangeType.ItemRemoved, ItemContainerContentChangedEventArgs<IReferenceable>.ResultType.Success);
+                
+                IReferenceable newItem = (Organizer.DecodeReference(Query.GetObjectContent(Organizer.Connection, ItemID)[0])).Item;
                 InvokeItemContainerContentChanged(newItem, ItemContainerContentChangedEventArgs<IReferenceable>.ChangeType.ItemAdded, ItemContainerContentChangedEventArgs<IReferenceable>.ResultType.Success);
             }
         }
@@ -34,13 +36,11 @@ namespace DMOrganizerModel.Implementation.Items
         protected override IEnumerable<IReferenceable> GetContent()
         {
             List<string> items = Query.GetObjectContent(Organizer.Connection, ItemID);
-            List<IReference> itemsRef = new List<IReference>();
+            List<IReferenceable> result = new List<IReferenceable>();
             foreach (string refString in items)
-                itemsRef.Add(Organizer.DecodeReference(refString));
-
-            //need to get objects by references
-            InvokeItemContainerCurrentContent(itemsRef);
-            return itemsRef;
+                result.Add(Organizer.DecodeReference(refString).Item); //gets items by reference link
+            InvokeItemContainerCurrentContent(result);
+            return result;
         }
 
         protected override bool HasItem(IReferenceable item)
@@ -54,7 +54,7 @@ namespace DMOrganizerModel.Implementation.Items
             string strlink = link.Encode();
             Query.SetObjectLink(Organizer.Connection, ItemID, strlink);
             // need to get IReferenceable object by link
-            InvokeItemContainerContentChanged("!!!", ItemContainerContentChangedEventArgs<IReferenceable>.ChangeType.ItemAdded, ItemContainerContentChangedEventArgs<IReferenceable>.ResultType.Success);
+            InvokeItemContainerContentChanged((Organizer.DecodeReference(Query.GetObjectContent(Organizer.Connection, ItemID)[0])).Item, ItemContainerContentChangedEventArgs<IReferenceable>.ChangeType.ItemAdded, ItemContainerContentChangedEventArgs<IReferenceable>.ResultType.Success);
         }
         protected override void SetParentInternal(IItemContainerBase parent)
         {
