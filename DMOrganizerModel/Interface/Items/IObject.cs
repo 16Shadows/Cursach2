@@ -1,4 +1,5 @@
 ﻿using DMOrganizerModel.Interface.References;
+using CSToolbox.Weak;
 
 namespace DMOrganizerModel.Interface.Items
 {
@@ -12,12 +13,13 @@ namespace DMOrganizerModel.Interface.Items
         // check if all child-objects are valid and can be displayed            !!!
         // (if link to item is not valid or item was deleted - show error) 
 
-        //may be need to change methods...
+        //maybe need to change methods...
 
         /// <summary>
         /// Sets content to object with new link.
         /// </summary>
         /// <param name="newLink">Link to object that will be displayed and stored.</param>
-        void UpdateContent(IReferenceable newLink); //event iitemcontainer
+        void UpdateContent(IReference newLink); //event iitemcontainer
+        void SetLink(IReference link);
     }
 }

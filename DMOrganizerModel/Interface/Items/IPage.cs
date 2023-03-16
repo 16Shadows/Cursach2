@@ -1,7 +1,34 @@
-﻿using System;
+﻿using CSToolbox.Weak;
+using System;
 
 namespace DMOrganizerModel.Interface.Items
 {
+    public class PageActionEventArgs : EventArgs
+    {
+        public enum ResultType
+        {
+            Success,
+            Failure
+        }
+
+        public enum ActionType
+        {
+            ChangedPosition,
+            PageDeleted,
+            PageAdded
+        }
+
+        public ResultType Result { get; }
+        public ActionType Action { get; }
+        public int Parent { get; }
+
+        public PageActionEventArgs(int parent, ActionType action, ResultType result = ResultType.Success)
+        {
+            Parent = parent;
+            Action = action;
+            Result = result;
+        }
+    }
 
     /// <summary>
     /// Page - container for object_containers. Part of book.
@@ -14,6 +41,7 @@ namespace DMOrganizerModel.Interface.Items
         //remove container (not deleting its content, but deleting set-bond) event-IItemContainer
         //request page containers (IContainerItem)
 
+        WeakEvent<IPage, PageActionEventArgs> PageActionCompleted { get; }
 
         /// <summary>
         /// Creates empty container on page with default size and position.

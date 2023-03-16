@@ -7,47 +7,63 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CSToolbox.Weak;
+using System.Net.Mime;
+using DMOrganizerModel.Implementation.Utility;
 
 namespace DMOrganizerModel.Implementation.Items
 {
-    internal class ContainerObject : ContainerItem<IObject>, IObject
+    internal class ContainerObject : ContainerItem<IReferenceable>, IObject
     {
-        public ContainerObject(int itemID, IItemContainerBase parent, Organizer organizer) : base(itemID, parent, organizer){}
-
         // check if all child-objects are valid and can be displayed            !!!
         // (if link to item is not valid or item was deleted - show error) 
-        WeakEvent<IItemContainer<IReferenceable>, ItemContainerCurrentContentEventArgs<IReferenceable>> IItemContainer<IReferenceable>.ItemContainerCurrentContent => throw new NotImplementedException();
+        public ContainerObject(int itemID, IItemContainerBase parent, Organizer organizer) : base(itemID, parent, organizer){}
 
-        WeakEvent<IItemContainer<IReferenceable>, ItemContainerContentChangedEventArgs<IReferenceable>> IItemContainer<IReferenceable>.ItemContainerContentChanged => throw new NotImplementedException();
-
-        public void MakeParentOf(IReferenceable item)
+        public void UpdateContent(IReference newLink)
         {
-            throw new NotImplementedException();
+            //need to get item by link
+            string link = newLink.Encode();
+            IReferenceable oldItem = (Organizer.DecodeReference(Query.GetObjectContent(Organizer.Connection, ItemID)[0])).Item;
+            if (Query.SetObjectLink(Organizer.Connection, ItemID, link))
+            {
+                InvokeItemContainerContentChanged(oldItem, ItemContainerContentChangedEventArgs<IReferenceable>.ChangeType.ItemRemoved, ItemContainerContentChangedEventArgs<IReferenceable>.ResultType.Success);
+                
+                IReferenceable newItem = (Organizer.DecodeReference(Query.GetObjectContent(Organizer.Connection, ItemID)[0])).Item;
+                InvokeItemContainerContentChanged(newItem, ItemContainerContentChangedEventArgs<IReferenceable>.ChangeType.ItemAdded, ItemContainerContentChangedEventArgs<IReferenceable>.ResultType.Success);
+            }
+        }
+       
+        protected override IEnumerable<IReferenceable> GetContent()
+        {
+            List<string> items = Query.GetObjectContent(Organizer.Connection, ItemID);
+            List<IReferenceable> result = new List<IReferenceable>();
+            foreach (string refString in items)
+                result.Add(Organizer.DecodeReference(refString).Item); //gets items by reference link
+            InvokeItemContainerCurrentContent(result);
+            return result;
         }
 
-        public void UpdateContent(IReferenceable newLink)
+        protected override bool HasItem(IReferenceable item)
         {
-            throw new NotImplementedException();
+            //gets reference, encode it in string format and returns if object has the same string in db
+            string link = item.GetReference().Encode();
+            return Query.ObjectHasLink(Organizer.Connection, ItemID, link);
         }
-
-        protected override bool DeleteItemInternal()
+        public void SetLink(IReference link)
         {
-            throw new NotImplementedException();
+            string strlink = link.Encode();
+            Query.SetObjectLink(Organizer.Connection, ItemID, strlink);
+            // need to get IReferenceable object by link
+            InvokeItemContainerContentChanged((Organizer.DecodeReference(Query.GetObjectContent(Organizer.Connection, ItemID)[0])).Item, ItemContainerContentChangedEventArgs<IReferenceable>.ChangeType.ItemAdded, ItemContainerContentChangedEventArgs<IReferenceable>.ResultType.Success);
         }
-
-        protected override IEnumerable<IObject> GetContent()
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override bool HasItem(IObject item)
-        {
-            throw new NotImplementedException();
-        }
-
         protected override void SetParentInternal(IItemContainerBase parent)
         {
-            throw new NotImplementedException();
+            if (parent is not ObjectContainer) throw new ArgumentTypeException(nameof(parent), "Unsupported object parent type.");
+            else Query.SetObjectParent(Organizer.Connection, ItemID, (parent as ObjectContainer).ItemID);
+        }
+        protected override bool DeleteItemInternal()
+        {
+            return Query.DeleteBook(Organizer.Connection, ItemID);
         }
     }
 }

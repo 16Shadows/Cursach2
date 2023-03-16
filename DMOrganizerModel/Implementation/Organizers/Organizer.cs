@@ -145,9 +145,9 @@ namespace DMOrganizerModel.Implementation.Organizers
                 @"BEGIN TRANSACTION;
                 CREATE TABLE IF NOT EXISTS ""Book"" (
 	                ""ID""	INTEGER NOT NULL UNIQUE,
-	                ""Title"" 	TEXT NOT NULL,
-	                ""ID_Parent_Category""	INTEGER,
-	                PRIMARY KEY(""ID"" AUTOINCREMENT)
+	                ""Title"" 	TEXT NOT NULL DEFAULT 'Book' CHECK(length(""Title"") > 0) UNIQUE COLLATE NOCASE,
+	                ""ID_Parent_Category""	INTEGER DEFAULT NULL,
+	                PRIMARY KEY(""ID"" AUTOINCREMENT),
                 FOREIGN KEY(""ID_Parent_Category"") REFERENCES ""Category""(""ID"") ON DELETE CASCADE
                 );
                 CREATE TABLE IF NOT EXISTS ""Object"" (
@@ -157,18 +157,17 @@ namespace DMOrganizerModel.Implementation.Organizers
                 );
                 CREATE TABLE IF NOT EXISTS ""Page"" (
 	                ""ID""	INTEGER NOT NULL UNIQUE,
-                    ""Position""	INTEGER NOT NULL UNIQUE,
+	                ""Position""	INTEGER NOT NULL CHECK(""Position"" > 0),
 	                ""ID_Parent_Book""	INTEGER NOT NULL,
 	                PRIMARY KEY(""ID"" AUTOINCREMENT),
 	                FOREIGN KEY(""ID_Parent_Book"") REFERENCES ""Book""(""ID"") ON DELETE CASCADE
-                );
-                CREATE TABLE IF NOT EXISTS ""Container"" (
+                );CREATE TABLE IF NOT EXISTS ""Container"" (
 	                ""ID""	INTEGER NOT NULL UNIQUE,
-	                ""Type""	INTEGER NOT NULL,
-	                ""Height""	INTEGER NOT NULL,
-                ""Width""	INTEGER NOT NULL,
-	                ""CoordinateX""	INTEGER NOT NULL,
-                ""CoordinateY""	INTEGER NOT NULL,
+	                ""Type""	INTEGER NOT NULL DEFAULT 1,
+	                ""Height""	INTEGER NOT NULL DEFAULT 200,
+                ""Width""	INTEGER NOT NULL DEFAULT 200,
+	                ""CoordinateX""	INTEGER NOT NULL DEFAULT 0,
+                ""CoordinateY""	INTEGER NOT NULL DEFAULT 0,
 	                PRIMARY KEY(""ID"" AUTOINCREMENT)
                 );
                 CREATE TABLE IF NOT EXISTS ""Set_Page_Containers"" (
@@ -195,7 +194,6 @@ namespace DMOrganizerModel.Implementation.Organizers
 	                FOREIGN KEY(""ID_Object"") REFERENCES ""Object""(""ID""),
 	                FOREIGN KEY(""ID_Container"") REFERENCES ""Container""(""ID"") ON DELETE CASCADE
                 );
-
                 CREATE TRIGGER IF NOT EXISTS Page_deletion_on_book_deletion AFTER DELETE ON Set_Book_Pages
                 BEGIN
                 DELETE FROM Page WHERE Page.ID=OLD.ID_Page;
@@ -209,6 +207,26 @@ namespace DMOrganizerModel.Implementation.Organizers
                 CREATE TRIGGER IF NOT EXISTS Object_deletion_on_container_deletion AFTER DELETE ON Set_Container_Objects
                 BEGIN
                 DELETE FROM Object WHERE Object.ID=OLD.ID_Object;
+                END;
+
+                CREATE TRIGGER Validate_Page_Position_Before_Insert 
+                   BEFORE INSERT ON Page
+                BEGIN
+                   SELECT
+                      CASE
+	                WHEN Page.Position IN (SELECT Page.Position FROM Page WHERE Page.ID_Parent_Book = NEW.ID_Parent_Book) THEN
+   	                  RAISE (ABORT,'Invalid page position.')
+                       END;
+                END;
+
+                CREATE TRIGGER Validate_Page_Position_Before_Insert 
+                   BEFORE INSERT ON Page
+                BEGIN
+                   SELECT
+                      CASE
+	                WHEN NEW.Position IN (SELECT Page.Position FROM Page WHERE Page.ID_Parent_Book = NEW.ID_Parent_Book) THEN
+   	                  RAISE (ABORT,'Invalid page position.')
+                       END;
                 END;
 
                 COMMIT;
