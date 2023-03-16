@@ -35,7 +35,7 @@ namespace MVVMToolbox.Services
         public InputBoxConfiguration(Scenarios activeScenario, ConverterType converter)
         {
             Converter = converter ?? throw new ArgumentNullException(nameof(converter));
-            ActiveScenario = activeScenario;
+            Scenario = activeScenario;
         }
     }
 
