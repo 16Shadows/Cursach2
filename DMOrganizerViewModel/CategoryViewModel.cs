@@ -1,5 +1,6 @@
 using DMOrganizerModel.Interface.Items;
 using MVVMToolbox;
+using MVVMToolbox.ViewModel;
 using System;
 
 namespace DMOrganizerViewModel
@@ -8,7 +9,7 @@ namespace DMOrganizerViewModel
     {
         public CategoryViewModel(IContext context, IServiceProvider serviceProvider, ICategory category) : base(context, serviceProvider, category, category) {}
 
-        protected override ViewModelBase CreateViewModel(IOrganizerItem item)
+        protected override DMOrganizerViewModelBase CreateViewModel(IOrganizerItem item)
         {
             if (item is ICategory category)
                 return new CategoryViewModel(Context, ServiceProvider, category);

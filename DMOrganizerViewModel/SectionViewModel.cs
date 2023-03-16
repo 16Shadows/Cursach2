@@ -2,6 +2,7 @@
 using CSToolbox.Weak;
 using DMOrganizerModel.Interface.Items;
 using MVVMToolbox;
+using MVVMToolbox.ViewModel;
 using System;
 
 namespace DMOrganizerViewModel
@@ -33,6 +34,6 @@ namespace DMOrganizerViewModel
             Context.Invoke(() => Content.Value = e.Content);
         }
 
-        protected override ViewModelBase CreateViewModel(ISection item) => new SectionViewModel(Context, ServiceProvider, item);
+        protected override DMOrganizerViewModelBase CreateViewModel(ISection item) => new SectionViewModel(Context, ServiceProvider, item);
     }
 }
