@@ -1145,7 +1145,7 @@ namespace DMOrganizerModel.Implementation.Utility
             return result > 0;
         }
         //set object parent
-        public static bool SetObjectParent(SyncronizedSQLiteConnection connection, int parentID, int objectID)
+        public static bool SetObjectParent(SyncronizedSQLiteConnection connection, int objectID, int parentID)
         {
             int result = -1;
             connection.Write(con =>
@@ -1181,8 +1181,40 @@ namespace DMOrganizerModel.Implementation.Utility
         }
 
         //get content
+        public static List<string> GetObjectContent(SyncronizedSQLiteConnection connection, int objectID)
+        {
+            List<string> res = new List<string>();
+            connection.Read(con =>
+            {
+                using SQLiteCommand cmd = con.CreateCommand();
+                cmd.CommandText = @"SELECT Link_To_Object
+                                    FROM  Object
+                                    WHERE Object.ID is @ObjectID;";
+                cmd.Parameters.AddWithValue("@ObjectID", objectID);
+                using SQLiteDataReader reader = cmd.ExecuteReader();
+                while (reader.Read())
+                    res.Add(reader.GetString(0));
+            });
+            return res;
+        }
         //has item
-        //set parent of object
+        public static bool ObjectHasLink(SyncronizedSQLiteConnection connection, int objectID, string link)
+        {
+            int result = -1;
+            connection.Read(con =>
+            {
+                using SQLiteCommand cmd = con.CreateCommand();
+                cmd.CommandText = @"SELECT object.ID
+                                    FROM object
+                                    WHERE object.Link_to_Object IS @Link
+                                    AND object.ID is @ObjectID;";
+                cmd.Parameters.AddWithValue("@Link", link);
+                cmd.Parameters.AddWithValue("@ObjectID", objectID);
+                result = (int)cmd.ExecuteScalar();
+            }
+            );
+            return result > 0;
+        }
         #endregion
     }
 
