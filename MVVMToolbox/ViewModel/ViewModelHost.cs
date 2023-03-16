@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MVVMToolbox
+namespace MVVMToolbox.ViewModel
 {
     public class ViewModelHost : ViewModelBase
     {

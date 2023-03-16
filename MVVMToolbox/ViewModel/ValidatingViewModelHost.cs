@@ -2,62 +2,19 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 
-namespace MVVMToolbox
+namespace MVVMToolbox.ViewModel
 {
-    public class ViewModelBase : INotifyPropertyChanged, INotifyDataErrorInfo
+    public class ValidatingViewModelHost : ViewModelHost, INotifyDataErrorInfo
     {
-        private int HostsCount { get; set;}
+        public ValidatingViewModelHost(IContext context, IServiceProvider serviceProvider, ViewModelBase? startingViewModel) : base(context, serviceProvider, startingViewModel) {}
 
-        protected IContext Context { get; }
-        protected IServiceProvider ServiceProvider { get; }
-
-        public ViewModelBase(IContext context, IServiceProvider serviceProvider)
-        {
-            Context = context ?? throw new ArgumentNullException(nameof(context));
-            ServiceProvider = serviceProvider;
-        }
-
-        public void Load()
-        {
-            if (HostsCount == 0)
-                OnLoad();
-            HostsCount++;
-        }
-
-        public void Unload()
-        {
-            HostsCount--;
-            if (HostsCount == 0)
-                OnUnload();
-        }
-
-        /// <summary>
-        /// Is called just before this view model is hosted by a ViewModelHost for the first time after it had no hosts.
-        /// </summary>
-        protected virtual void OnLoad() {}
-
-        /// <summary>
-        /// Is called right after this view model is no longer hosted by any ViewModelHosts
-        /// </summary>
-        protected virtual void OnUnload() {}
-
-        #region Events
-        public event PropertyChangedEventHandler? PropertyChanged;
-        protected void InvokePropertyChanged(string name)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-        }
-
+        #region Errors
         public event EventHandler<DataErrorsChangedEventArgs>? ErrorsChanged;
         protected void InvokeErrorsChanged(string? name)
         {
             ErrorsChanged?.Invoke(this, new DataErrorsChangedEventArgs(name));
         }
-        #endregion
-
-        #region Errors
         private Dictionary<string, object?> FailedValues { get; } = new Dictionary<string, object?>();
         /// <summary>
         /// Stores validators for properties which provides value for INotifyDataErrorInfo
