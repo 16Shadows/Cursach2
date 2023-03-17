@@ -1,7 +1,7 @@
 ﻿using DMOrganizerApp.Resources;
-using DMOrganizerApp.UserControls;
 using DMOrganizerViewModel;
 using MVVMToolbox.Services;
+using WPFToolbox.Controls.Dialog;
 using System.Globalization;
 using System.Windows;
 

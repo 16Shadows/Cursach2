@@ -5,7 +5,7 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Windows;
 
-namespace DMOrganizerApp.UserControls
+namespace WPFToolbox.Controls.Dialog
 {
     /// <summary>
     /// Interaction logic for ExclusiveInputBox.xaml

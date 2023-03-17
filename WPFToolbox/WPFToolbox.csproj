@@ -12,6 +12,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Controls\Dialog\ExclusiveInputBox.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Resources\CommonLocale.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
