@@ -25,7 +25,7 @@ namespace DMOrganizerViewModel
         //creation of child page (view model ot this page)
         protected override DMOrganizerViewModelBase CreateViewModel(IPage item)
         {
-            return new BookPageViewModel(Context, ServiceProvider, item);
+            return new BookPageViewModel(Context, ServiceProvider, item, item);
         }
     }
 }

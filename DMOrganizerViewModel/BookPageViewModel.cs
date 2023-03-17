@@ -29,27 +29,20 @@ namespace DMOrganizerViewModel
             if (page is null) throw new ArgumentNullException(nameof(page));
             else Page = page;
 
-            Position = new LazyProperty<int>(p =>
-            {
-                WeakAction<IPage, PageActionEventArgs>.CallType handler = (_, e) => Context.Invoke(() => Position.Value = e.Position);
-                Page.PageActionCompleted.Subscribe(handler);
-                Page.RequestPagePosition();
-            });
-            Page.ItemContainerContentChanged.Subscribe(Page_PositionChanged);
+            // Lazy property will be called after initialization once, when we'll ask to get Position and then will be collected with GC,
+            // we need to subsribe our updater-method for further Position updates 
+            Position = new LazyProperty<int>(_ => Page.RequestPagePosition());
+            Page.PageActionCompleted.Subscribe(Page_PositionChanged);
         }
 
+        // on pageActionCompleted we will be listening and updating Position property
         private void Page_PositionChanged(IItemContainer<IObjectContainer> sender, PageActionEventArgs e)
         {
-            if (e.Position.Equals(Position))
-                return;
             Context.Invoke(() => Position.Value = e.Position);
-
         }
         protected override DMOrganizerViewModelBase CreateViewModel(IObjectContainer item)
         {
-            return new ObjectContainerViewModel(Context, ServiceProvider, item);
+            return new ObjectContainerViewModel(Context, ServiceProvider, item, item);
         }
-
-
     }
 }
