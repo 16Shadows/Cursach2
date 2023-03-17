@@ -41,7 +41,6 @@ namespace CSToolbox
                         if (!m_Loaded)
                         {
                             m_Loader(this);
-                            m_Loader = null;
                         }
                     }
                 }
@@ -60,6 +59,7 @@ namespace CSToolbox
                         {
                             m_Value = value;
                             m_Loaded = true;
+                            m_Loader = null;
                         }
                     }
                 }
