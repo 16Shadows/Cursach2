@@ -61,7 +61,7 @@ namespace DMOrganizerApp.Resources {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Category &apos;%0&apos; was created successfully..
+        ///   Looks up a localized string similar to Category &apos;%0&apos; was created successfully..
         /// </summary>
         internal static string CategoryCreated {
             get {
@@ -70,7 +70,16 @@ namespace DMOrganizerApp.Resources {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Document &apos;%0&apos; was created successfully..
+        ///   Looks up a localized string similar to &apos;{0}&apos; has been deleted..
+        /// </summary>
+        internal static string DeletedItem {
+            get {
+                return ResourceManager.GetString("DeletedItem", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Document &apos;{0}&apos; was created successfully..
         /// </summary>
         internal static string DocumentCreated {
             get {
@@ -79,7 +88,7 @@ namespace DMOrganizerApp.Resources {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на There already is another item named &apos;%0&apos;..
+        ///   Looks up a localized string similar to There already is another item named &apos;{0}&apos;..
         /// </summary>
         internal static string DuplicateItemName {
             get {
@@ -102,6 +111,24 @@ namespace DMOrganizerApp.Resources {
         internal static string InputDocumentName {
             get {
                 return ResourceManager.GetString("InputDocumentName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Input a new name for this item:.
+        /// </summary>
+        internal static string InputNewName {
+            get {
+                return ResourceManager.GetString("InputNewName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Item&apos;s name has been changed to &apos;{0}&apos;..
+        /// </summary>
+        internal static string RenamedSuccessfully {
+            get {
+                return ResourceManager.GetString("RenamedSuccessfully", resourceCulture);
             }
         }
     }

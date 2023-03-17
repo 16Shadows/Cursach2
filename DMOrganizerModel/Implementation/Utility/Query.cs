@@ -81,7 +81,7 @@ namespace DMOrganizerModel.Implementation.Utility
             connection.Read(con =>
             {
                 using SQLiteCommand cmd = con.CreateCommand();
-                cmd.CommandText = $"SELECT SectionID FROM Document WHERE CategoryID IS NULL";
+                cmd.CommandText = $"SELECT SectionID FROM Document WHERE CategoryID IS NULL ORDER BY SectionID";
                 using SQLiteDataReader reader = cmd.ExecuteReader();
                 while (reader.Read())
                     res.Add(reader.GetInt32(0));
@@ -95,7 +95,7 @@ namespace DMOrganizerModel.Implementation.Utility
             connection.Read(con =>
             {
                 using SQLiteCommand cmd = con.CreateCommand();
-                cmd.CommandText = $"SELECT ID FROM Category WHERE Parent IS NULL";
+                cmd.CommandText = $"SELECT ID FROM Category WHERE Parent IS NULL ORDER BY ID";
                 using SQLiteDataReader reader = cmd.ExecuteReader();
                 while (reader.Read())
                     res.Add(reader.GetInt32(0));
@@ -111,7 +111,8 @@ namespace DMOrganizerModel.Implementation.Utility
                 using SQLiteCommand cmd = con.CreateCommand();
                 cmd.CommandText = @"SELECT ID 
                                     FROM Book
-                                    WHERE ID_Parent_Category IS NULL;";
+                                    WHERE ID_Parent_Category IS NULL
+                                    ORDER BY ID;";
                 using SQLiteDataReader reader = cmd.ExecuteReader();
                 while (reader.Read())
                     res.Add(reader.GetInt32(0));
@@ -422,7 +423,7 @@ namespace DMOrganizerModel.Implementation.Utility
             connection.Read(con =>
             {
                 using SQLiteCommand cmd = con.CreateCommand();
-                cmd.CommandText = $"SELECT SectionID FROM Document WHERE CategoryID={categoryID}";
+                cmd.CommandText = $"SELECT SectionID FROM Document WHERE CategoryID={categoryID} ORDER BY SectionID";
                 using SQLiteDataReader reader = cmd.ExecuteReader();
                 while (reader.Read())
                     res.Add(reader.GetInt32(0));
@@ -436,7 +437,7 @@ namespace DMOrganizerModel.Implementation.Utility
             connection.Read(con =>
             {
                 using SQLiteCommand cmd = con.CreateCommand();
-                cmd.CommandText = $"SELECT ID FROM Category WHERE Parent={categoryID}";
+                cmd.CommandText = $"SELECT ID FROM Category WHERE Parent={categoryID} ORDER BY ID";
                 using SQLiteDataReader reader = cmd.ExecuteReader();
                 while (reader.Read())
                     res.Add(reader.GetInt32(0));
@@ -453,7 +454,8 @@ namespace DMOrganizerModel.Implementation.Utility
                 using SQLiteCommand cmd = con.CreateCommand();
                 cmd.CommandText = @"SELECT Book.ID 
                                     FROM Book 
-                                    WHERE Book.ID_Parent_Category = @ParentCategoryID;";
+                                    WHERE Book.ID_Parent_Category = @ParentCategoryID
+                                    ORDER BY Book.ID;";
                 cmd.Parameters.AddWithValue("@ParentCategoryID", categoryID);
                 using SQLiteDataReader reader = cmd.ExecuteReader();
                 while (reader.Read())

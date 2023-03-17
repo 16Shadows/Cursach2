@@ -63,7 +63,7 @@
                         </StackPanel.ContextMenu>
                     </StackPanel>
                 </HierarchicalDataTemplate>
-                <HierarchicalDataTemplate DataType="{x:Type vm:DocumentViewModel}" ItemsSource="{Binding Items.Value}">
+                <DataTemplate DataType="{x:Type vm:DocumentViewModel}">
                     <StackPanel Orientation="Horizontal">
                         <Image Height="{StaticResource NavTreeIconHeight}" VerticalAlignment="Center" HorizontalAlignment="Center" Stretch="Uniform" Source="{StaticResource DocumentIcon}"/>
                         <TextBlock Text="{Binding Name.Value, Converter={StaticResource NullToLoading}}" FontSize="{StaticResource NavTreeFontSize}" VerticalAlignment="Center" HorizontalAlignment="Left"/>

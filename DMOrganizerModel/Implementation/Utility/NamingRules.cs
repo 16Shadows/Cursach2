@@ -5,12 +5,12 @@
         public static bool IsValidName(string name)
         {
             //TODO: implement actual checks
-            return true;
+            return name.Length > 0;
         }
 
         public static bool IsValidTag(string tag)
         {
-            return true;
+            return tag.Length > 0;
         }
     }
 }

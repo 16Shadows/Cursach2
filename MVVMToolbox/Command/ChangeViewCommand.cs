@@ -2,7 +2,7 @@
 using System.Windows.Input;
 using MVVMToolbox.ViewModel;
 
-namespace WPFToolbox.Command
+namespace MVVMToolbox.Command
 {
     public class ChangeViewCommand : ICommand
     {

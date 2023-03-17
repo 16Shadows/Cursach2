@@ -110,13 +110,6 @@ namespace DMOrganizerModel.Implementation.Items
             return Query.HasNameInSection(Organizer.Connection, name, ItemID);
         }
 
-        protected override bool HasItem(ISection item)
-        {
-            if (item is not Section sec)
-                throw new ArgumentTypeException(nameof(item), "Invalid item type.");
-
-            return Query.SectionHasSection(Organizer.Connection, sec.ItemID, ItemID);
-        }
 
         protected override bool DeleteItemInternal()
         {

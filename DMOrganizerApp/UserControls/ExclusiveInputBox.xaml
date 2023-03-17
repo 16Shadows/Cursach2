@@ -3,9 +3,14 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:cmd="clr-namespace:WPFToolbox.Command;assembly=WPFToolbox"
         xmlns:local="clr-namespace:DMOrganizerApp.UserControls"
         mc:Ignorable="d"
         Title="ExclusiveInputBox" Height="120" Width="200" SizeToContent="WidthAndHeight">
+    <Window.CommandBindings>
+        <CommandBinding Command="cmd:RoutedCommands.CommandEscape" Executed="Escape_Executed" />
+        <CommandBinding Command="cmd:RoutedCommands.CommandNext" Executed="Next_Executed" CanExecute="Next_CanExecute" />
+    </Window.CommandBindings>
     <Grid Background="LightGray">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="20" />
@@ -22,15 +27,15 @@
             <RowDefinition Height="10" />
         </Grid.RowDefinitions>
         <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding InputPrompt, RelativeSource={RelativeSource AncestorType=local:ExclusiveInputBox}}" />
-        <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding Text, RelativeSource={RelativeSource AncestorType=local:ExclusiveInputBox}}" />
+        <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding Text, UpdateSourceTrigger=PropertyChanged, RelativeSource={RelativeSource AncestorType=local:ExclusiveInputBox}}" />
         <Grid Grid.Row="5" Grid.Column="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="10" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
-            <Button HorizontalAlignment="Center" VerticalAlignment="Stretch" Content="Cancel" Width="50" Click="Cancel_Click"/>
-            <Button Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Stretch" Content="OK" Width="50" Click="OK_Click"/>
+            <Button HorizontalAlignment="Center" VerticalAlignment="Stretch" Content="Cancel" Width="50" Command="cmd:RoutedCommands.CommandEscape"/>
+            <Button Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Stretch" Content="OK" Width="50" Command="cmd:RoutedCommands.CommandNext"/>
         </Grid>
     </Grid>
 </Window>

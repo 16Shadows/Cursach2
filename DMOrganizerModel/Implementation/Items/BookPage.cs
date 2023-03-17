@@ -110,10 +110,6 @@ namespace DMOrganizerModel.Implementation.Items
             return Query.GetPagePosition(Organizer.Connection, ItemID);
         }
 
-        protected override bool HasItem(IObjectContainer item)
-        {
-            return item is ObjectContainer cont && Query.PageHasContainer(Organizer.Connection, ItemID, cont.ItemID);
-        }
 
         protected override IEnumerable<IObjectContainer> GetContent()
         {

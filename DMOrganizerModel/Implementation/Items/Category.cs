@@ -138,16 +138,6 @@ namespace DMOrganizerModel.Implementation.Items
             return !Query.HasNameInCategory(Organizer.Connection, name, ItemID);
         }
 
-        protected override bool HasItem(IOrganizerItem item)
-        {
-            if (item is not Item)
-                throw new ArgumentTypeException(nameof(item), "Invalid item type.");
-
-            return (item is Document doc && Query.CategoryHasDocument(Organizer.Connection, doc.ItemID, ItemID)) ||
-                   (item is Category cat && Query.CategoryHasCategory(Organizer.Connection, cat.ItemID, ItemID)) ||
-                   (item is Book book && Query.CategoryHasBook(Organizer.Connection, book.ItemID, ItemID));
-        }
-
         protected override bool DeleteItemInternal()
         {
             return Query.DeleteCategory(Organizer.Connection, ItemID);

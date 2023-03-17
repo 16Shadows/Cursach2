@@ -57,13 +57,12 @@ namespace CSToolbox
                     {
                         if (!m_Loaded)
                         {
-                            m_Value = value;
                             m_Loaded = true;
                             m_Loader = null;
                         }
                     }
                 }
-                
+                m_Value = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Value)));
                 WeakPropertyChanged.Invoke(this);
             }

@@ -56,12 +56,6 @@ namespace DMOrganizerModel.Implementation.Items
             return result;
         }
 
-        protected override bool HasItem(IReferenceable item)
-        {
-            //gets reference, encode it in string format and returns if object has the same string in db
-            string link = item.GetReference().Encode();
-            return Query.ObjectHasLink(Organizer.Connection, ItemID, link);
-        }
         public void SetLink(IReference link)
         {
             string strlink = link.Encode();
