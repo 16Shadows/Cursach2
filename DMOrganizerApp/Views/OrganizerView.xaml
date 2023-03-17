@@ -12,7 +12,6 @@
     <UserControl.Resources>
         <core:Double x:Key="NavTreeFontSize">20</core:Double>
         <core:Double x:Key="NavTreeIconHeight">40</core:Double>
-        <core:Double x:Key="ContextMenuIconHeight">40</core:Double>
     </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
@@ -37,12 +36,37 @@
                             </Image.Style>
                         </Image>
                         <TextBlock Text="{Binding Name.Value, Converter={StaticResource NullToLoading}}" FontSize="{StaticResource NavTreeFontSize}" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                        <StackPanel.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="Create">
+                                    <MenuItem Command="{Binding CreateCategory}" Header="Category">
+                                        <MenuItem.Icon>
+                                            <Image Source="{StaticResource CollapsedCategoryIcon}" Stretch="Uniform"/>
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+                                    <MenuItem Command="{Binding CreateDocument}" Header="Document">
+                                        <MenuItem.Icon>
+                                            <Image Source="{StaticResource DocumentIcon}" Stretch="Uniform"/>
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+                                </MenuItem>
+                                <Separator />
+                                <MenuItem Header="Rename" Command="{Binding Rename}"/>
+                                <MenuItem Header="Delete" Command="{Binding Delete}" />
+                            </ContextMenu>
+                        </StackPanel.ContextMenu>
                     </StackPanel>
                 </HierarchicalDataTemplate>
                 <HierarchicalDataTemplate DataType="{x:Type vm:DocumentViewModel}" ItemsSource="{Binding Items.Value}">
                     <StackPanel Orientation="Horizontal">
                         <Image Height="{StaticResource NavTreeIconHeight}" VerticalAlignment="Center" HorizontalAlignment="Center" Stretch="Uniform" Source="{StaticResource DocumentIcon}"/>
                         <TextBlock Text="{Binding Name.Value, Converter={StaticResource NullToLoading}}" FontSize="{StaticResource NavTreeFontSize}" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                        <StackPanel.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="Rename" Command="{Binding Rename}"/>
+                                <MenuItem Header="Delete" Command="{Binding Delete}" />
+                            </ContextMenu>
+                        </StackPanel.ContextMenu>
                     </StackPanel>
                 </HierarchicalDataTemplate>
                 <DataTemplate DataType="{x:Type core:String}">
@@ -52,13 +76,15 @@
             <TreeView.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="Create">
-                        <MenuItem Command="">
-                            <MenuItem.Header>
-                                <StackPanel Orientation="Horizontal">
-                                    <Image Source="{StaticResource CollapsedCategoryIcon}" />
-                                    <TextBlock Text="Category"/>
-                                </StackPanel>
-                            </MenuItem.Header>
+                        <MenuItem Command="{Binding CreateCategory}" Header="Category">
+                            <MenuItem.Icon>
+                                <Image Source="{StaticResource CollapsedCategoryIcon}" Stretch="Uniform"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Command="{Binding CreateDocument}" Header="Document">
+                            <MenuItem.Icon>
+                                <Image Source="{StaticResource DocumentIcon}" Stretch="Uniform"/>
+                            </MenuItem.Icon>
                         </MenuItem>
                     </MenuItem>
                 </ContextMenu>
