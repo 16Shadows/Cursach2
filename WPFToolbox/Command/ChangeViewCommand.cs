@@ -6,7 +6,9 @@ namespace WPFToolbox.Command
 {
     public class ChangeViewCommand : ICommand
     {
+        #pragma warning disable CS0067
         public event EventHandler? CanExecuteChanged;
+        #pragma warning restore CS0067
 
         protected ViewModelHost TargetModelHost { get; }
         protected Func<ViewModelBase> NewViewModel { get; }
