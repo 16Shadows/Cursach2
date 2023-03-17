@@ -2,7 +2,6 @@
 using CSToolbox.Weak;
 using DMOrganizerModel.Interface.Items;
 using MVVMToolbox;
-using MVVMToolbox.ViewModel;
 using System;
 
 namespace DMOrganizerViewModel

@@ -4,6 +4,7 @@ using DMOrganizerModel.Interface.Items;
 using MVVMToolbox;
 using System;
 using System.Collections.ObjectModel;
+using WPFToolbox.Command;
 
 namespace DMOrganizerViewModel
 {
@@ -12,6 +13,9 @@ namespace DMOrganizerViewModel
         public ReadOnlyLazyProperty<ObservableCollection<string>> Tags { get; }
 
         protected IDocument Document { get; }
+
+        public DeferredCommand Rename { get; }
+        public DeferredCommand Delete { get; }
 
         public DocumentViewModel(IContext context, IServiceProvider serviceProvider, IDocument document) : base(context, serviceProvider, document)
         {
