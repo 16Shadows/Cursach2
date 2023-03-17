@@ -414,22 +414,10 @@ namespace DMOrganizerModel.Implementation.Organizers
             return !Query.HasNameInOrganizer(Connection, name);
         }
 
-        private bool HasItem(IOrganizerItem item)
-        {
-            if (item is not Item)
-                throw new ArgumentTypeException(nameof(item), "Invalid item type.");
-
-            return (item is Document doc && Query.OrganizerHasDocument(Connection, doc.ItemID)) ||
-                   (item is Category cat && Query.OrganizerHasCategory(Connection, cat.ItemID)) ||
-                   (item is Book book && Query.OrganizerHasBook(Connection, book.ItemID));
-        }
-
         public void OnItemRemoved(IItem item)
         {
             if (item is not IOrganizerItem itemTyped)
                 throw new ArgumentTypeException(nameof(item), "Invalid item type");
-            else if (!HasItem(itemTyped))
-                throw new ArgumentException("This container does not have such item.", nameof(item));
 
             InvokeItemContainerContentChanged(itemTyped, ItemContainerContentChangedEventArgs<IOrganizerItem>.ChangeType.ItemRemoved, ItemContainerContentChangedEventArgs<IOrganizerItem>.ResultType.Success);
         }

@@ -64,7 +64,6 @@ namespace DMOrganizerModel.Implementation.Items
         #region IItemsContainerBase
         protected virtual bool CanBeParentOf(ContentType item) => true;
         public virtual bool CanHaveItemWithName(string name) => true;
-        protected abstract bool HasItem(ContentType item);
         #endregion
 
         protected abstract IEnumerable<ContentType> GetContent();
@@ -73,8 +72,6 @@ namespace DMOrganizerModel.Implementation.Items
         {
             if (item is not ContentType itemTyped)
                 throw new ArgumentTypeException(nameof(item), "Invalid item type");
-            else if (!HasItem(itemTyped))
-                throw new ArgumentException("This container does not have such item.", nameof(item));
 
             InvokeItemContainerContentChanged(itemTyped, ItemContainerContentChangedEventArgs<ContentType>.ChangeType.ItemRemoved, ItemContainerContentChangedEventArgs<ContentType>.ResultType.Success);
         }

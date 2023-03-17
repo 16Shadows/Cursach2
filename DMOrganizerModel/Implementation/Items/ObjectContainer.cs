@@ -122,11 +122,6 @@ namespace DMOrganizerModel.Implementation.Items
             return result;
         }
 
-        protected override bool HasItem(IObject item)
-        {
-            return item is ContainerObject obj && Query.ContainerHasObject(Organizer.Connection, ItemID, obj.ItemID);
-        }
-
         protected override void SetParentInternal(IItemContainerBase parent)
         {
             if (parent is not BookPage) throw new ArgumentTypeException(nameof(parent), "Unsupported container parent type.");
