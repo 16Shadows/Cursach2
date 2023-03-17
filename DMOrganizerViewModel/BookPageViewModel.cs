@@ -31,8 +31,9 @@ namespace DMOrganizerViewModel
 
             // Lazy property will be called after initialization once, when we'll ask to get Position and then will be collected with GC,
             // we need to subsribe our updater-method for further Position updates 
-            Position = new LazyProperty<int>(_ => Page.RequestPagePosition());
+
             Page.PageActionCompleted.Subscribe(Page_PositionChanged);
+            Position = new LazyProperty<int>(_ => Page.RequestPagePosition());
         }
 
         // on pageActionCompleted we will be listening and updating Position property

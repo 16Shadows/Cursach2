@@ -186,10 +186,6 @@ namespace DMOrganizerModel.Implementation.Organizers
 	                FOREIGN KEY(""ID_Object"") REFERENCES ""Object""(""ID""),
 	                FOREIGN KEY(""ID_Container"") REFERENCES ""Container""(""ID"") ON DELETE CASCADE
                 );
-                CREATE TRIGGER IF NOT EXISTS Page_deletion_on_book_deletion AFTER DELETE ON Set_Book_Pages
-                BEGIN
-                DELETE FROM Page WHERE Page.ID=OLD.ID_Page;
-                END;
 
                 CREATE TRIGGER IF NOT EXISTS Container_deletion_on_page_deletion AFTER DELETE ON Set_Page_Containers
                 BEGIN

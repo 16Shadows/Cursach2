@@ -9,12 +9,22 @@ using System.Text;
 using System.Threading.Tasks;
 using MVVMToolbox;
 using System.ComponentModel;
+using DMOrganizerModel.Interface.References;
+using System.Windows.Controls;
 
 namespace DMOrganizerViewModel
 {
-    internal class ContainerObjectViewModel : DMOrganizerViewModelBase
+    internal class ContainerObjectViewModel : ContainerViewModel<IReferenceable>
     {
-        //has INotifyPropertyChanged, method void InvokePropertyChanged(string name)
-        public ContainerObjectViewModel(IContext context, IServiceProvider serviceProvider) : base(context, serviceProvider, null) { }
+        // ContainerViewModel already keeps all Object IReferenceable objects, we just need to show them in proper way
+        public LazyProperty<IReferenceable> ReferenceableObjectType { get; }
+        protected IObject ContainerObject { get; }
+        public ContainerObjectViewModel(IContext context, IServiceProvider serviceProvider, IItemContainer<IReferenceable> container, IObject obj) : base(context, serviceProvider, container) { }
+
+        protected override DMOrganizerViewModelBase CreateViewModel(IReferenceable item)
+        {
+            //type check and creation of different child-objects
+            throw new NotImplementedException();
+        }
     }
 }
