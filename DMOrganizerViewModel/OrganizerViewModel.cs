@@ -22,7 +22,7 @@ namespace DMOrganizerViewModel
         CreateCategorySuccess,
         CreateCategoryFailure,
         CreateDocumentSuccess,
-        CreateDocumentFailure,
+        CreateDocumentFailure
     }
 
     public class OrganizerNotificationConfiguration : NotificationConfiguration<OrganizerNotificationScenarios>
@@ -76,7 +76,7 @@ namespace DMOrganizerViewModel
 
         private void CommandHandler_CreateCategory()
         {
-            var config = new InputBoxConfiguration<OrganizerInputBoxScenarios, string>(OrganizerInputBoxScenarios.CategoryName, (string inV, out string? outV, CultureInfo _) => NamingRules.IsValidName(outV = inV) );
+            var config = new InputBoxConfiguration<OrganizerInputBoxScenarios, string>(OrganizerInputBoxScenarios.CategoryName, (inV, _) => inV, (inV, _) => NamingRules.IsValidName(inV) );
             if (InputBoxService.Show(config) == InputBoxResult.Success)
             {
                 LockingOperation = true;
