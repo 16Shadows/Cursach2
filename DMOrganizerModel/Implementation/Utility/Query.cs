@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System;
+using System.Data;
 
 namespace DMOrganizerModel.Implementation.Utility
 {
@@ -29,7 +30,7 @@ namespace DMOrganizerModel.Implementation.Utility
                                     FROM Book
                                     WHERE Book.Title IS @Name
                                     AND Book.ID_Parent_Category is NULL;";
-                cmd.Parameters.AddWithValue("$title", name);
+                cmd.Parameters.AddWithValue("@Name", name);
                 success = cmd.ExecuteScalar() != null;
             });
             return success;
@@ -139,7 +140,9 @@ namespace DMOrganizerModel.Implementation.Utility
                                   $"SELECT SectionID FROM Document WHERE rowid=last_insert_rowid();";
                 }
                 cmd.Parameters.AddWithValue("$title", name);
-                res = (int)cmd.ExecuteScalar();
+                using SQLiteDataReader reader = cmd.ExecuteReader();
+                if (reader.Read())
+                    res = reader.GetInt32(0);
             });
             return res;
         }
@@ -165,8 +168,8 @@ namespace DMOrganizerModel.Implementation.Utility
                 using SQLiteCommand cmd = con.CreateCommand();
                 cmd.CommandText = $"SELECT ID FROM Tag WHERE Text=$tag";
                 cmd.Parameters.AddWithValue("$tag", tag);
-
-                int? id = (int?)cmd.ExecuteScalar();
+                using SQLiteDataReader reader = cmd.ExecuteReader();
+                int? id = reader.Read() ? reader.GetInt32(0) : null;
 
                 if (id.HasValue)
                 {
@@ -335,7 +338,9 @@ namespace DMOrganizerModel.Implementation.Utility
                 cmd.CommandText = $"INSERT INTO Section (Title, Parent) VALUES ($title, {parentID});" +
                                   $"SELECT last_insert_rowid();";
                 cmd.Parameters.AddWithValue("$title", name);
-                res = (int)cmd.ExecuteScalar();
+                using SQLiteDataReader reader = cmd.ExecuteReader();
+                if (reader.Read())
+                    res = reader.GetInt32(0);
             });
             return res;
         }
@@ -404,7 +409,9 @@ namespace DMOrganizerModel.Implementation.Utility
                 }
                 
                 cmd.Parameters.AddWithValue("$title", name);
-                res = (int)cmd.ExecuteScalar();
+                using SQLiteDataReader reader = cmd.ExecuteReader();
+                if (reader.Read())
+                    res = reader.GetInt32(0);
             });
             return res;
         }
@@ -492,7 +499,9 @@ namespace DMOrganizerModel.Implementation.Utility
                                     AND Page.ID is @BookID;";
                 cmd.Parameters.AddWithValue("@CategoryParentID", categoryID);
                 cmd.Parameters.AddWithValue("@BookID", bookID);
-                result = (int)cmd.ExecuteScalar();
+                using SQLiteDataReader reader = cmd.ExecuteReader();
+                if (reader.Read())
+                    result = reader.GetInt32(0);
             }
             );
             return result > 0;
@@ -566,7 +575,9 @@ namespace DMOrganizerModel.Implementation.Utility
 
                 cmd.Parameters.AddWithValue("@BookName", name);
                 cmd.Parameters.AddWithValue("@BookParentID", parentID);
-                res = (int)cmd.ExecuteScalar(); //res = null при ошибке или ID созданной книги
+                using SQLiteDataReader reader = cmd.ExecuteReader();
+                if (reader.Read())
+                    res = reader.GetInt32(0);
             });
             return res;
         }
@@ -583,7 +594,9 @@ namespace DMOrganizerModel.Implementation.Utility
                                             VALUES (@BookName, NULL);";
 
                 cmd.Parameters.AddWithValue("@BookName", name);
-                res = (int)cmd.ExecuteScalar();
+                using SQLiteDataReader reader = cmd.ExecuteReader();
+                if (reader.Read())
+                    res = reader.GetInt32(0);
             });
             return res;
         }
@@ -618,7 +631,9 @@ namespace DMOrganizerModel.Implementation.Utility
 
                 cmd.Parameters.AddWithValue("@Position", pagePosition);
                 cmd.Parameters.AddWithValue("@BookParentID", bookID);
-                res = (int)cmd.ExecuteScalar(); //new page's id
+                using SQLiteDataReader reader = cmd.ExecuteReader();
+                if (reader.Read())
+                    res = reader.GetInt32(0);
             });
             return res;
         }
@@ -690,9 +705,10 @@ namespace DMOrganizerModel.Implementation.Utility
                                     AND Page.ID is @PageID;";
                 cmd.Parameters.AddWithValue("@BookParentID", bookID);
                 cmd.Parameters.AddWithValue("@PageID", pageID);
-                result = (int)cmd.ExecuteScalar();
-            }
-            );
+                using SQLiteDataReader reader = cmd.ExecuteReader();
+                if (reader.Read())
+                    result = reader.GetInt32(0);
+            });
             return result > 0;
         }
 
@@ -746,7 +762,9 @@ namespace DMOrganizerModel.Implementation.Utility
                                             VALUES (@PagePosition, @BookParentID);";
                 cmd.Parameters.AddWithValue("@PagePosition", position);
                 cmd.Parameters.AddWithValue("@BookParentID", parentID);
-                res = (int)cmd.ExecuteScalar();
+                using SQLiteDataReader reader = cmd.ExecuteReader();
+                if (reader.Read())
+                    res = reader.GetInt32(0);
             });
             return res;
         }
@@ -823,9 +841,10 @@ namespace DMOrganizerModel.Implementation.Utility
                                     Set_Page_Containers.ID_Container = @ContainerID;";
                 cmd.Parameters.AddWithValue("@ContainerID", containerID);
                 cmd.Parameters.AddWithValue("@PageID", pageID);
-                result = (int)cmd.ExecuteScalar();
-            }
-            );
+                using SQLiteDataReader reader = cmd.ExecuteReader();
+                if (reader.Read())
+                    result = reader.GetInt32(0);
+            });
             return result > 0;
         }
 
@@ -945,7 +964,9 @@ namespace DMOrganizerModel.Implementation.Utility
                                             VALUES (@Type);";
 
                 cmd.Parameters.AddWithValue("@Type", type);
-                res = (int)cmd.ExecuteScalar();
+                using SQLiteDataReader reader = cmd.ExecuteReader();
+                if (reader.Read())
+                    res = reader.GetInt32(0);
             });
             return res;
         }
@@ -1076,9 +1097,10 @@ namespace DMOrganizerModel.Implementation.Utility
 									AND Set_Container_Objects.ID_Object = @ObjectID;";
                 cmd.Parameters.AddWithValue("@ContainerID", containerID);
                 cmd.Parameters.AddWithValue("@ObjectID", objectID);
-                result = (int)cmd.ExecuteScalar();
-            }
-            );
+                using SQLiteDataReader reader = cmd.ExecuteReader();
+                if (reader.Read())
+                    result = reader.GetInt32(0);
+            });
             return result > 0;
         }
         //set parent of this container
@@ -1147,7 +1169,9 @@ namespace DMOrganizerModel.Implementation.Utility
                                             VALUES (@Link);";
 
                 cmd.Parameters.AddWithValue("@Link", link);
-                res = (int)cmd.ExecuteScalar();
+                using SQLiteDataReader reader = cmd.ExecuteReader();
+                if (reader.Read())
+                    res = reader.GetInt32(0);
             });
             return res;
         }
@@ -1232,9 +1256,10 @@ namespace DMOrganizerModel.Implementation.Utility
                                     AND object.ID is @ObjectID;";
                 cmd.Parameters.AddWithValue("@Link", link);
                 cmd.Parameters.AddWithValue("@ObjectID", objectID);
-                result = (int)cmd.ExecuteScalar();
-            }
-            );
+                using SQLiteDataReader reader = cmd.ExecuteReader();
+                if (reader.Read())
+                    result = reader.GetInt32(0);
+            });
             return result > 0;
         }
         #endregion

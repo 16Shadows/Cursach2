@@ -1,9 +1,9 @@
 ﻿using System.Windows;
 using System.Windows.Media;
 
-namespace DMOrganizerApp.Resources
+namespace WPFToolbox
 {
-    internal static class WPFUtility
+    internal static class WPFHelper
     {
         public static T? GetVisualParent<T>(this DependencyObject item) where T : DependencyObject
         {

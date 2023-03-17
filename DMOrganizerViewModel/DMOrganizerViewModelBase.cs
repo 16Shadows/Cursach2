@@ -15,7 +15,7 @@ namespace DMOrganizerViewModel
                 if (m_LockingOperation == value)
                     return;
                 m_LockingOperation = value;
-                UpdateCommandsExecutability();
+                Context.Invoke(() => UpdateCommandsExecutability());
                 InvokePropertyChanged(nameof(LockingOperation));
             }
         }

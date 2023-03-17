@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 
-namespace MVVMToolbox
+namespace CSToolbox
 {
     public static class IEnumerableExtensions   
     {

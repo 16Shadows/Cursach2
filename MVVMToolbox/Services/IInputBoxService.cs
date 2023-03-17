@@ -6,13 +6,19 @@ namespace MVVMToolbox.Services
     public class InputBoxConfiguration<Scenarios, ResultType> where Scenarios : Enum
     {
         /// <summary>
-        /// The delegate type of Converter
+        /// The delegate type of <see cref="Converter"/>
         /// </summary>
-        /// <param name="value">User's input.</param>
-        /// <param name="result">The conversion result.</param>
-        /// <param name="culture">Active UI culture.</param>
-        /// <returns>True on successful conversion.</returns>
-        public delegate bool ConverterType(string value, out ResultType? result, CultureInfo culture);
+        /// <param name="value">User-input input.</param>
+        /// <param name="culture">Active culture.</param>
+        /// <returns>Conversion result.</returns>
+        public delegate ResultType ConverterType(string value, CultureInfo culture);
+        /// <summary>
+        /// The delegate type of <see cref="Validator"/>
+        /// </summary>
+        /// <param name="value">User-input string.</param>
+        /// <param name="culture">Active culture.</param>
+        /// <returns>True if the result is valid for conversion.</returns>
+        public delegate bool ValidatorType(string value, CultureInfo culture);
 
         /// <summary>
         /// The scenario for which the InputBox is displayed.
@@ -23,18 +29,25 @@ namespace MVVMToolbox.Services
         /// </summary>
         public ResultType? UserInput { get; set; }
         /// <summary>
-        /// The method used to convert and validate user-input string to the desired value.
+        /// The method used to convert user-input string to the associated value.
+        /// Do note that the method is expected to run synchronously.
         /// </summary>
         public ConverterType Converter { get; }
+        /// <summary>
+        /// The method used to check whether the user-input string is valid for conversion.
+        /// Do note that the method is expected to run synchronously.
+        /// </summary>
+        public ValidatorType Validator { get; }
         /// <summary>
         /// By default the input box is expected to forbid invalid input.
         /// If this is set to true,
         /// </summary>
         public bool AllowFaultyInput { get; set; } = false;
 
-        public InputBoxConfiguration(Scenarios activeScenario, ConverterType converter)
+        public InputBoxConfiguration(Scenarios activeScenario, ConverterType converter, ValidatorType validator = null)
         {
             Converter = converter ?? throw new ArgumentNullException(nameof(converter));
+            Validator = validator ?? ((_, _) => true);
             Scenario = activeScenario;
         }
     }

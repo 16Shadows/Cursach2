@@ -20,9 +20,8 @@ namespace DMOrganizerViewModel
     public enum OrganizerNotificationScenarios
     {
         CreateCategorySuccess,
-        CreateCategoryFailure,
         CreateDocumentSuccess,
-        CreateDocumentFailure,
+        DuplicateItemName
     }
 
     public class OrganizerNotificationConfiguration : NotificationConfiguration<OrganizerNotificationScenarios>
@@ -76,7 +75,7 @@ namespace DMOrganizerViewModel
 
         private void CommandHandler_CreateCategory()
         {
-            var config = new InputBoxConfiguration<OrganizerInputBoxScenarios, string>(OrganizerInputBoxScenarios.CategoryName, (string inV, out string? outV, CultureInfo _) => NamingRules.IsValidName(outV = inV) );
+            var config = new InputBoxConfiguration<OrganizerInputBoxScenarios, string>(OrganizerInputBoxScenarios.CategoryName, (inV, _) => inV, (inV, _) => NamingRules.IsValidName(inV) );
             if (InputBoxService.Show(config) == InputBoxResult.Success)
             {
                 LockingOperation = true;
@@ -92,9 +91,15 @@ namespace DMOrganizerViewModel
             
             OrganizerNotificationConfiguration config;
             if (m_CreatedCategory == e.Name)
-                config = new( e.Result == OrganizerItemCreatedEventArgs.ResultType.Success ? OrganizerNotificationScenarios.CreateCategorySuccess : OrganizerNotificationScenarios.CreateCategoryFailure, e.Name );
+            {
+                config = new( e.Result == OrganizerItemCreatedEventArgs.ResultType.Success ? OrganizerNotificationScenarios.CreateCategorySuccess : OrganizerNotificationScenarios.DuplicateItemName, e.Name );
+                m_CreatedCategory = null;
+            }
             else if (m_CreatedDocument == e.Name)
-                config = new (e.Result == OrganizerItemCreatedEventArgs.ResultType.Success ? OrganizerNotificationScenarios.CreateDocumentSuccess : OrganizerNotificationScenarios.CreateDocumentFailure, e.Name );
+            {
+                config = new (e.Result == OrganizerItemCreatedEventArgs.ResultType.Success ? OrganizerNotificationScenarios.CreateDocumentSuccess : OrganizerNotificationScenarios.DuplicateItemName, e.Name );
+                m_CreatedDocument = null;
+            }
             else
                 return;
 

@@ -1,11 +1,8 @@
-﻿using DMOrganizerViewModel;
-using MVVMToolbox;
+﻿using DMOrganizerApp.UserControls;
+using DMOrganizerViewModel;
 using MVVMToolbox.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Globalization;
+using System.Windows;
 
 namespace DMOrganizerApp.Services
 {
@@ -13,7 +10,17 @@ namespace DMOrganizerApp.Services
     {
         public InputBoxResult Show<ReturnType>(InputBoxConfiguration<OrganizerInputBoxScenarios, ReturnType> configuration)
         {
-            throw new NotImplementedException();
+            ExclusiveInputBox box = new ()
+            {
+                InputPrompt = "Test",
+                Owner = Application.Current.MainWindow,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                Validator = (value, culture) => configuration.Validator(value, culture)
+            };
+            if (box.ShowDialog() != true)
+                return InputBoxResult.Canceled;
+            configuration.UserInput = configuration.Converter(box.Text, CultureInfo.CurrentCulture);
+            return InputBoxResult.Success;
         }
     }
 }
