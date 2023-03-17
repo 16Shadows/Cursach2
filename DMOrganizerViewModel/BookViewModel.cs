@@ -17,6 +17,9 @@ namespace DMOrganizerViewModel
         // IItemContainer<IPage> Container { get; }
         // event on container items change (add, remove) - ItemContainer_ItemContainerContentChanged
         // ItemContainerContentChanged for events on add/remove item
+        // event on item name changed - NamedItem_ItemNameChanged
+
+        //base constructor makes property of book Name and subscribes events on it, +Items and events
         public BookViewModel(IContext context, IServiceProvider serviceProvider, INamedItem item, IItemContainer<IPage> container) : base(context, serviceProvider, item, container) { }
 
         //creation of child page (view model ot this page)

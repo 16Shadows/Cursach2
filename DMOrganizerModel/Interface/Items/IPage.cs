@@ -13,20 +13,20 @@ namespace DMOrganizerModel.Interface.Items
 
         public enum ActionType
         {
-            ChangedPosition,
-            PageDeleted,
-            PageAdded
+            ChangedPosition
         }
 
         public ResultType Result { get; }
         public ActionType Action { get; }
         public int Parent { get; }
+        public int Position { get; }
 
-        public PageActionEventArgs(int parent, ActionType action, ResultType result = ResultType.Success)
+        public PageActionEventArgs(int parent, ActionType action, int position, ResultType result = ResultType.Success)
         {
             Parent = parent;
             Action = action;
             Result = result;
+            Position = position;
         }
     }
 
