@@ -22,20 +22,37 @@ namespace DMOrganizerViewModel
         public LazyProperty<int> Height { get; }
         public LazyProperty<int> CoordX { get; }
         public LazyProperty<int> CoordY { get; }
-        public LazyProperty<int> ContainerType { get; }
+        public LazyProperty<int> Type { get; }
         protected IObjectContainer ObjectContainer { get; }
 
-        public ObjectContainerViewModel(IContext context, IServiceProvider serviceProvider, IItemContainer<IObject> container, IObjectContainer objectContainer) : base(context, serviceProvider, container) 
+        public ObjectContainerViewModel(IContext context, IServiceProvider serviceProvider, IObjectContainer container, IObjectContainer objectContainer) : base(context, serviceProvider, container) 
         {
             if (objectContainer is null) throw new ArgumentNullException(nameof(objectContainer));
             else ObjectContainer = objectContainer;
-            //need to set properties for Width, Height, X, Y, Type
-            //Width = new LazyProperty<int>(_ => ObjectContainer.RequestContainerViewInfo()[0]);
+            //need to set properties for Width, Height, X, Y, Type and subscribe our updater-method to listen to the model
+            ObjectContainer.ObjectContainerViewInfo.Subscribe(ObjectContainer_RequestContainerViewInfo);
+
+            Width = new LazyProperty<int>(_ => ObjectContainer.RequestContainerViewInfo());
+            Height = new LazyProperty<int>(_ => ObjectContainer.RequestContainerViewInfo());
+            CoordX = new LazyProperty<int>(_ => ObjectContainer.RequestContainerViewInfo());
+            CoordY = new LazyProperty<int>(_ => ObjectContainer.RequestContainerViewInfo());
+            Type = new LazyProperty<int>(_ => ObjectContainer.RequestContainerViewInfo());
         }
 
+        public void ObjectContainer_RequestContainerViewInfo(IItemContainer<IObject> sender, ObjectContainerViewInfoEventArgs e)
+        {
+            Context.Invoke(() =>
+            {
+                Width.Value = e.Width;
+                Height.Value = e.Height;
+                CoordX.Value = e.CoordX;
+                CoordY.Value = e.CoordY;
+                Type.Value = e.Type;
+            });
+        }
         protected override DMOrganizerViewModelBase CreateViewModel(IObject item)
         {
-            return new ContainerObjectViewModel(Context, ServiceProvider);
+            return new ContainerObjectViewModel(Context, ServiceProvider, item, item);
         }
     }
 }

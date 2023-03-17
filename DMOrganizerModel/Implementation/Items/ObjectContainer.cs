@@ -28,9 +28,9 @@ namespace DMOrganizerModel.Implementation.Items
             ObjectContainerUpdatedSize.Invoke(this, new ObjectContainerUpdateSizeEventArgs(width, height, result));
         }
         public WeakEvent<IObjectContainer, ObjectContainerViewInfoEventArgs> ObjectContainerViewInfo { get; } = new();
-        private void InvokeObjectContainerViewInfo(int width, int height, int coordX, int coordY)
+        private void InvokeObjectContainerViewInfo(int width, int height, int coordX, int coordY, int type)
         {
-            ObjectContainerViewInfo.Invoke(this, new ObjectContainerViewInfoEventArgs(width, height, coordX, coordY));
+            ObjectContainerViewInfo.Invoke(this, new ObjectContainerViewInfoEventArgs(width, height, coordX, coordY, type));
         }
 
         public void AddObject(IReferenceable obj)
@@ -54,10 +54,15 @@ namespace DMOrganizerModel.Implementation.Items
             });
         }
 
-        public void RequestContainerViewInfo()
+        /// <summary>
+        /// Get container view info (width, height, X, Y)
+        /// </summary>
+        /// <returns></returns>
+        public List<int> RequestContainerViewInfo()
         {
             List<int> info = Query.GetContainerViewInfo(Organizer.Connection, ItemID);
             InvokeObjectContainerViewInfo(info[0], info[1], info[2], info[3]);
+            return info;
         }
 
         public void UpdateCoordinates(int newX, int newY)

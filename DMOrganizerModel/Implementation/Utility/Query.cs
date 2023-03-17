@@ -1026,6 +1026,12 @@ namespace DMOrganizerModel.Implementation.Utility
             return res;
         }
         //get view info (width, height, x, y)
+        /// <summary>
+        /// Get container view info (width, height, x, y)
+        /// </summary>
+        /// <param name="connection"></param>
+        /// <param name="containerID"></param>
+        /// <returns></returns>
         public static List<int> GetContainerViewInfo(SyncronizedSQLiteConnection connection, int containerID)
         {
             List<int> res = new List<int>(4);
@@ -1226,7 +1232,7 @@ namespace DMOrganizerModel.Implementation.Utility
             return result > 0;
         }
 
-        //get content
+        //get all content
         public static List<string> GetObjectContent(SyncronizedSQLiteConnection connection, int objectID)
         {
             List<string> res = new List<string>();
@@ -1240,6 +1246,24 @@ namespace DMOrganizerModel.Implementation.Utility
                 using SQLiteDataReader reader = cmd.ExecuteReader();
                 while (reader.Read())
                     res.Add(reader.GetString(0));
+            });
+            return res;
+        }
+
+        //get content
+        public static string GetObjectLink(SyncronizedSQLiteConnection connection, int objectID)
+        {
+            string res = null;
+            connection.Read(con =>
+            {
+                using SQLiteCommand cmd = con.CreateCommand();
+                cmd.CommandText = @"SELECT Link_To_Object
+                                    FROM  Object
+                                    WHERE Object.ID is @ObjectID;";
+                cmd.Parameters.AddWithValue("@ObjectID", objectID);
+                using SQLiteDataReader reader = cmd.ExecuteReader();
+                while (reader.Read())
+                    res = reader.GetString(0);
             });
             return res;
         }

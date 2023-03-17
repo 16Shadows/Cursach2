@@ -1,6 +1,30 @@
 ﻿using DMOrganizerModel.Interface.References;
 using CSToolbox.Weak;
+using System;
 
+public class ObjectUpdateLinkEventArgs : EventArgs
+{
+    public enum ResultType
+    {
+        /// <summary>
+        /// Succesful update, size is correct
+        /// </summary>
+        Success,
+
+        /// <summary>
+        /// Updation failure, incorrect size
+        /// </summary>
+        IncorrectLink
+    }
+
+    public ResultType Result { get; }
+    public string Link { get; }
+    public ObjectUpdateLinkEventArgs(string link, ResultType result)
+    {
+        Link = link;
+        Result = result;
+    }
+}
 namespace DMOrganizerModel.Interface.Items
 {
     /// <summary>
@@ -13,7 +37,7 @@ namespace DMOrganizerModel.Interface.Items
         // check if all child-objects are valid and can be displayed            !!!
         // (if link to item is not valid or item was deleted - show error) 
 
-        //maybe need to change methods...
+        WeakEvent<IObject, ObjectUpdateLinkEventArgs> ObjectUpdateLink { get; }
 
         /// <summary>
         /// Sets content to object with new link.

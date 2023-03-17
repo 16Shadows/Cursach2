@@ -14,6 +14,13 @@ namespace DMOrganizerModel.Implementation.Items
 {
     internal class ContainerObject : ContainerItem<IReferenceable>, IObject
     {
+        public WeakEvent<IObject, ObjectUpdateLinkEventArgs> ObjectUpdateLink { get; } = new();
+
+        private void InvokeObjectUpdateLink(int ID, string link, ObjectUpdateLinkEventArgs.ResultType result)
+        {
+            ObjectUpdateLink.Invoke(this, new ObjectUpdateLinkEventArgs(link, result));
+        }
+
         // check if all child-objects are valid and can be displayed            !!!
         // (if link to item is not valid or item was deleted - show error) 
         public ContainerObject(int itemID, IItemContainerBase parent, Organizer organizer) : base(itemID, parent, organizer){}
@@ -29,9 +36,16 @@ namespace DMOrganizerModel.Implementation.Items
                 
                 IReferenceable newItem = (Organizer.DecodeReference(Query.GetObjectContent(Organizer.Connection, ItemID)[0])).Item;
                 InvokeItemContainerContentChanged(newItem, ItemContainerContentChangedEventArgs<IReferenceable>.ChangeType.ItemAdded, ItemContainerContentChangedEventArgs<IReferenceable>.ResultType.Success);
+                InvokeObjectUpdateLink(ItemID, oldItem.GetReference().Encode(), ObjectUpdateLinkEventArgs.ResultType.Success);
             }
+            else InvokeObjectUpdateLink(ItemID, oldItem.GetReference().Encode(), ObjectUpdateLinkEventArgs.ResultType.IncorrectLink);
         }
-       
+        public string GetObjectLink()
+        {
+            string link = Query.GetObjectLink(Organizer.Connection, ItemID);
+            return link;
+        }
+
         protected override IEnumerable<IReferenceable> GetContent()
         {
             List<string> items = Query.GetObjectContent(Organizer.Connection, ItemID);
@@ -54,6 +68,7 @@ namespace DMOrganizerModel.Implementation.Items
             Query.SetObjectLink(Organizer.Connection, ItemID, strlink);
             // need to get IReferenceable object by link
             InvokeItemContainerContentChanged((Organizer.DecodeReference(Query.GetObjectContent(Organizer.Connection, ItemID)[0])).Item, ItemContainerContentChangedEventArgs<IReferenceable>.ChangeType.ItemAdded, ItemContainerContentChangedEventArgs<IReferenceable>.ResultType.Success);
+            InvokeObjectUpdateLink(ItemID, strlink, ObjectUpdateLinkEventArgs.ResultType.Success);
         }
         protected override void SetParentInternal(IItemContainerBase parent)
         {

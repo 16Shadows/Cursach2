@@ -1,6 +1,7 @@
 ﻿using CSToolbox.Weak;
 using DMOrganizerModel.Interface.References;
 using System;
+using System.Collections.Generic;
 
 namespace DMOrganizerModel.Interface.Items
 {
@@ -59,17 +60,19 @@ namespace DMOrganizerModel.Interface.Items
     public class ObjectContainerViewInfoEventArgs: EventArgs
     {
 
-        int CoordX { get; }
-        int CoordY { get; }
-        int Height { get; }
-        int Width { get; }
+        public int CoordX { get; }
+        public int CoordY { get; }
+        public int Height { get; }
+        public int Width { get; }
+        public int Type { get; }
 
-        public ObjectContainerViewInfoEventArgs(int width, int heigth, int coordX, int coordY)
+        public ObjectContainerViewInfoEventArgs(int width, int heigth, int coordX, int coordY, int type)
         {
             CoordX = coordX;
             CoordY = coordY;
             Width = width;
             Height = heigth;
+            Type = type;    
         }
     }
     /// <summary>
@@ -88,9 +91,9 @@ namespace DMOrganizerModel.Interface.Items
         /// Is invoked when request for container's position is complete.
         /// </summary>
         WeakEvent<IObjectContainer, ObjectContainerUpdatePositionEventArgs> ObjectContainerUpdatedPosition { get; }
-        
+
         /// <summary>
-        /// 
+        /// Is invoked wher request for container's size is complete.
         /// </summary>
         WeakEvent<IObjectContainer, ObjectContainerUpdateSizeEventArgs> ObjectContainerUpdatedSize { get; }
 
@@ -100,9 +103,9 @@ namespace DMOrganizerModel.Interface.Items
         WeakEvent<IObjectContainer, ObjectContainerViewInfoEventArgs> ObjectContainerViewInfo { get; }
 
         /// <summary>
-        /// Request for height, width, X and Y coordinates of container. 
+        /// Request for width, height, X and Y coordinates of container. 
         /// </summary>
-        void RequestContainerViewInfo(); //type, height, width, coordX,Y
+        List<int> RequestContainerViewInfo(); //type, height, width, coordX,Y
 
         /// <summary>
         /// Update coordinates for container on page, from left top corner.
