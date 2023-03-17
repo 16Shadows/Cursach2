@@ -11,9 +11,9 @@ namespace DMOrganizerModel.Implementation.Items
     internal class BookPage : ContainerItem<IObjectContainer>, IPage
     {
         public WeakEvent<IPage, PageActionEventArgs> PageActionCompleted { get; } = new();
-        private void InvokePageActionCompleted(int parentID, PageActionEventArgs.ActionType action, PageActionEventArgs.ResultType result = PageActionEventArgs.ResultType.Success)
+        private void InvokePageActionCompleted(int parentID, PageActionEventArgs.ActionType action, int position, PageActionEventArgs.ResultType result = PageActionEventArgs.ResultType.Success)
         {
-            PageActionCompleted.Invoke(this, new PageActionEventArgs(parentID, action, result));
+            PageActionCompleted.Invoke(this, new PageActionEventArgs(parentID, action, position, result));
         }
         // IPage
         public BookPage(int itemID, IItemContainerBase parent, Organizer organizer) : base(itemID, parent, organizer) { }
@@ -56,6 +56,7 @@ namespace DMOrganizerModel.Implementation.Items
                     for (int i = changePositions.Count; i < changePositions.Count; i++)
                     {
                         ChangePagePosition(BookID, changePositions[i], changePositions[i] + 1);
+
                     }
                 }
             });
@@ -91,12 +92,12 @@ namespace DMOrganizerModel.Implementation.Items
                     {
                        res = Query.SetPagePosition(Organizer.Connection, ItemID, oldPosition, newPosition);
                     }
-                    if (res )InvokePageActionCompleted(bookID, PageActionEventArgs.ActionType.ChangedPosition, PageActionEventArgs.ResultType.Success);
-                    else InvokePageActionCompleted(bookID, PageActionEventArgs.ActionType.ChangedPosition, PageActionEventArgs.ResultType.Failure);
+                    if (res )InvokePageActionCompleted(bookID, PageActionEventArgs.ActionType.ChangedPosition, newPosition, PageActionEventArgs.ResultType.Success);
+                    else InvokePageActionCompleted(bookID, PageActionEventArgs.ActionType.ChangedPosition, oldPosition, PageActionEventArgs.ResultType.Failure);
                 }
                 else
                 {
-                    InvokePageActionCompleted(bookID, PageActionEventArgs.ActionType.ChangedPosition, PageActionEventArgs.ResultType.Failure);
+                    InvokePageActionCompleted(bookID, PageActionEventArgs.ActionType.ChangedPosition, oldPosition, PageActionEventArgs.ResultType.Failure);
                     throw new InvalidOperationException("Attempt on moving non existing pages.");
                 }
             });
