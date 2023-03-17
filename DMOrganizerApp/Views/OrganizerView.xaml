@@ -74,7 +74,7 @@
                             </ContextMenu>
                         </StackPanel.ContextMenu>
                     </StackPanel>
-                </HierarchicalDataTemplate>
+                </DataTemplate>
 
                 <!-- Book -->
                 <DataTemplate DataType="{x:Type vm:BookViewModel}" >
