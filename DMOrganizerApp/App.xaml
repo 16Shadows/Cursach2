@@ -8,6 +8,8 @@
         <BitmapImage x:Key="CollapsedCategoryIcon" UriSource="/DMOrganizerApp;component/Resources/CollapsedCategoryIcon.png" />
         <BitmapImage x:Key="ExpandedCategoryIcon" UriSource="/DMOrganizerApp;component/Resources/ExpandedCategoryIcon.png" />
         <BitmapImage x:Key="DocumentIcon" UriSource="/DMOrganizerApp;component/Resources/DocumentIcon.png" />
+        <BitmapImage x:Key="ClosedBookIcon" UriSource="/DMOrganizerApp;component/Resources/ClosedBookIcon.png" />
+        <BitmapImage x:Key="OpenedBookIcon" UriSource="/DMOrganizerApp;component/Resources/OpenedBookIcon.png" />
         <conv:NullToLoading x:Key="NullToLoading" />
     </Application.Resources>
 </Application>

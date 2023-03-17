@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MVVMToolbox;
 using CSToolbox;
+using WPFToolbox.Command;
 
 namespace DMOrganizerViewModel
 {
@@ -18,6 +19,11 @@ namespace DMOrganizerViewModel
         // event on container items change (add, remove) - ItemContainer_ItemContainerContentChanged
         // ItemContainerContentChanged for events on add/remove item
         // event on item name changed - NamedItem_ItemNameChanged
+
+        //commands for TreeView
+        public DeferredCommand CreateBook { get; }
+        public DeferredCommand Rename { get; }
+        public DeferredCommand Delete { get; }
 
         //base constructor makes property of book Name and subscribes events on it, +Items and events
         public BookViewModel(IContext context, IServiceProvider serviceProvider, INamedItem item, IItemContainer<IPage> container) : base(context, serviceProvider, item, container) { }

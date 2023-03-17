@@ -8,9 +8,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\ClosedBookIcon.png" />
     <None Remove="Resources\CollapsedCategoryIcon.png" />
     <None Remove="Resources\DocumentIcon.png" />
     <None Remove="Resources\ExpandedCategoryIcon.png" />
+    <None Remove="Resources\OpenedBookIcon.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -22,9 +24,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Resources\ClosedBookIcon.png">
+      <CopyToOutputDirectory></CopyToOutputDirectory>
+    </Resource>
     <Resource Include="Resources\CollapsedCategoryIcon.png" />
     <Resource Include="Resources\DocumentIcon.png" />
     <Resource Include="Resources\ExpandedCategoryIcon.png" />
+    <Resource Include="Resources\OpenedBookIcon.png" />
   </ItemGroup>
 
   <ItemGroup>

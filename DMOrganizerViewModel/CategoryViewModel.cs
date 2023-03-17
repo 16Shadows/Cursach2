@@ -10,6 +10,7 @@ namespace DMOrganizerViewModel
     {
         public DeferredCommand CreateCategory { get; }
         public DeferredCommand CreateDocument { get; }
+        public DeferredCommand CreateBook { get; }
         public DeferredCommand Rename { get; }
         public DeferredCommand Delete { get; }
 
@@ -21,6 +22,8 @@ namespace DMOrganizerViewModel
                 return new CategoryViewModel(Context, ServiceProvider, category);
             else if (item is IDocument document)
                 return new DocumentViewModel(Context, ServiceProvider, document);
+            else if (item is IBook book)
+                return new BookViewModel(Context, ServiceProvider, book, book);
             else
                 throw new ArgumentException("Unsupported item type", nameof(item));
         }
