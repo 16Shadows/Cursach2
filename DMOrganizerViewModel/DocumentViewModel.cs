@@ -23,7 +23,12 @@ namespace DMOrganizerViewModel
 
             Tags = new ReadOnlyLazyProperty<ObservableCollection<string>>(p =>
             {
-                WeakAction<IDocument, DocumentCurrentTagsEventArgs>.CallType handler = (_, e) => Context.Invoke(() => p.Value = new ObservableCollection<string>(e.Tags));
+                WeakAction<IDocument, DocumentCurrentTagsEventArgs>.CallType handler = (_, e) => Context.Invoke(() =>
+                {
+                    if (p.Value != null)
+                        return;
+                    p.Value = new ObservableCollection<string>(e.Tags);
+                });
                 Document.DocumentCurrentTags.Subscribe(handler);
                 Document.RequestDocumentCurrentTags();
             });

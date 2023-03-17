@@ -26,6 +26,9 @@ namespace DMOrganizerViewModel
                 */
                 WeakAction<IItemContainer<ContentType>, ItemContainerCurrentContentEventArgs<ContentType>>.CallType handler = (_, e) => Context.Invoke(() =>
                 {
+                    //Skip other possible invocations of this event until the handler is GCd
+                    if (p.Value != null)
+                        return;
                     p.Value = new ObservableCollection<DMOrganizerViewModelBase>();
                     foreach (ContentType item in e.Content)
                         p.Value.Add(CreateViewModel(item));
