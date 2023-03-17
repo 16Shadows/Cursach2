@@ -70,6 +70,15 @@ namespace DMOrganizerApp.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to &apos;{0}&apos; has been deleted..
+        /// </summary>
+        internal static string DeletedItem {
+            get {
+                return ResourceManager.GetString("DeletedItem", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Document &apos;{0}&apos; was created successfully..
         /// </summary>
         internal static string DocumentCreated {
@@ -102,6 +111,24 @@ namespace DMOrganizerApp.Resources {
         internal static string InputDocumentName {
             get {
                 return ResourceManager.GetString("InputDocumentName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Input a new name for this item:.
+        /// </summary>
+        internal static string InputNewName {
+            get {
+                return ResourceManager.GetString("InputNewName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Item&apos;s name has been changed to &apos;{0}&apos;..
+        /// </summary>
+        internal static string RenamedSuccessfully {
+            get {
+                return ResourceManager.GetString("RenamedSuccessfully", resourceCulture);
             }
         }
     }

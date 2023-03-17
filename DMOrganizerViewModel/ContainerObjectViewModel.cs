@@ -15,6 +15,6 @@ namespace DMOrganizerViewModel
     internal class ContainerObjectViewModel : DMOrganizerViewModelBase
     {
         //has INotifyPropertyChanged, method void InvokePropertyChanged(string name)
-        public ContainerObjectViewModel(IContext context, IServiceProvider serviceProvider) : base(context, serviceProvider) { }
+        public ContainerObjectViewModel(IContext context, IServiceProvider serviceProvider) : base(context, serviceProvider, null) { }
     }
 }

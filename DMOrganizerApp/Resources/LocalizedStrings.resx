@@ -120,6 +120,9 @@
   <data name="CategoryCreated" xml:space="preserve">
     <value>Category '{0}' was created successfully.</value>
   </data>
+  <data name="DeletedItem" xml:space="preserve">
+    <value>'{0}' has been deleted.</value>
+  </data>
   <data name="DocumentCreated" xml:space="preserve">
     <value>Document '{0}' was created successfully.</value>
   </data>
@@ -131,5 +134,11 @@
   </data>
   <data name="InputDocumentName" xml:space="preserve">
     <value>Input a name for the new document:</value>
+  </data>
+  <data name="InputNewName" xml:space="preserve">
+    <value>Input a new name for this item:</value>
+  </data>
+  <data name="RenamedSuccessfully" xml:space="preserve">
+    <value>Item's name has been changed to '{0}'.</value>
   </data>
 </root>

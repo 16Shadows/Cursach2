@@ -1,4 +1,5 @@
 ﻿using CSToolbox;
+using CSToolbox.Extensions;
 using CSToolbox.Weak;
 using DMOrganizerModel.Interface.Items;
 using MVVMToolbox;
@@ -14,7 +15,7 @@ namespace DMOrganizerViewModel
 
         protected IItemContainer<ContentType> Container { get; }
 
-        protected ContainerViewModel(IContext context, IServiceProvider serviceProvider, IItemContainer<ContentType> container) : base(context, serviceProvider)
+        protected ContainerViewModel(IContext context, IServiceProvider serviceProvider, IItemContainer<ContentType> container, IItem item) : base(context, serviceProvider, item)
         {
             Container = container ?? throw new ArgumentNullException(nameof(container));
             
@@ -47,7 +48,7 @@ namespace DMOrganizerViewModel
             else if (e.Type == ItemContainerContentChangedEventArgs<ContentType>.ChangeType.ItemAdded)
                 Context.Invoke(() => Items.Value.Add(CreateViewModel(e.Item)));
             else
-                Context.Invoke(() => Items.Value.Remove(CreateViewModel(e.Item)));
+                Context.Invoke(() => Items.Value.Remove(vm => vm.Item.Equals(e.Item)) );
         }
 
         protected abstract DMOrganizerViewModelBase CreateViewModel(ContentType item);

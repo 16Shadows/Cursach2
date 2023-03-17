@@ -24,7 +24,7 @@ namespace DMOrganizerViewModel
         protected IPage Page { get; }
 
         //base constructor only creates Container for page items, we need to make page Position and property for it, subscription on events
-        public BookPageViewModel(IContext context, IServiceProvider serviceProvider, IItemContainer<IObjectContainer> container, IPage page) : base(context, serviceProvider, container) 
+        public BookPageViewModel(IContext context, IServiceProvider serviceProvider, IItemContainer<IObjectContainer> container, IPage page) : base(context, serviceProvider, container, page) 
         {
             if (page is null) throw new ArgumentNullException(nameof(page));
             else Page = page;

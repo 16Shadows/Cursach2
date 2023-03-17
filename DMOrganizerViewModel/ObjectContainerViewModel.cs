@@ -25,7 +25,7 @@ namespace DMOrganizerViewModel
         public LazyProperty<int> ContainerType { get; }
         protected IObjectContainer ObjectContainer { get; }
 
-        public ObjectContainerViewModel(IContext context, IServiceProvider serviceProvider, IItemContainer<IObject> container, IObjectContainer objectContainer) : base(context, serviceProvider, container) 
+        public ObjectContainerViewModel(IContext context, IServiceProvider serviceProvider, IItemContainer<IObject> container, IObjectContainer objectContainer) : base(context, serviceProvider, container, objectContainer) 
         {
             if (objectContainer is null) throw new ArgumentNullException(nameof(objectContainer));
             else ObjectContainer = objectContainer;

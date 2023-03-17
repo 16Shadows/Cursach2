@@ -6,8 +6,7 @@ using MVVMToolbox.Services;
 using MVVMToolbox.ViewModel;
 using System;
 using System.Collections.ObjectModel;
-using System.Globalization;
-using WPFToolbox.Command;
+using MVVMToolbox.Command;
 
 namespace DMOrganizerViewModel
 {
@@ -37,8 +36,8 @@ namespace DMOrganizerViewModel
     public sealed class OrganizerViewModel : ContainerViewModel<IOrganizerItem>
     {
         private IOrganizer Organizer { get; }
-        private IInputBoxService<OrganizerInputBoxScenarios> InputBoxService { get; }
-        private INotificationService<OrganizerNotificationScenarios> NotificationService { get; }
+        private IInputBoxService<OrganizerInputBoxScenarios> OrganizerInputBoxService { get; }
+        private INotificationService<OrganizerNotificationScenarios> OrganizerNotificationService { get; }
         private string? m_CreatedCategory;
         private string? m_CreatedDocument;
 
@@ -47,13 +46,14 @@ namespace DMOrganizerViewModel
         public DeferredCommand CreateCategory { get; }
         public DeferredCommand CreateDocument { get; }
 
-        public OrganizerViewModel(IContext context, IServiceProvider serviceProvider, IOrganizer organizer) : base(context, serviceProvider, organizer)
+        public OrganizerViewModel(IContext context, IServiceProvider serviceProvider, IOrganizer organizer) : base(context, serviceProvider, organizer, null)
         {
             Organizer = organizer ?? throw new ArgumentNullException(nameof(organizer));
             //Disabled until the service is implemented
-            InputBoxService = (IInputBoxService<OrganizerInputBoxScenarios>)serviceProvider.GetService( typeof(IInputBoxService<OrganizerInputBoxScenarios>) ) ?? throw new MissingServiceException("Missing InputBoxService.");
-            NotificationService = (INotificationService<OrganizerNotificationScenarios>)serviceProvider.GetService( typeof(INotificationService<OrganizerNotificationScenarios>) ) ?? throw new MissingServiceException("Missing InputBoxService.");
-            CreateCategory = new DeferredCommand(CommandHandler_CreateCategory, () => !LockingOperation, false);
+            OrganizerInputBoxService = (IInputBoxService<OrganizerInputBoxScenarios>)serviceProvider.GetService( typeof(IInputBoxService<OrganizerInputBoxScenarios>) ) ?? throw new MissingServiceException("Missing InputBoxService.");
+            OrganizerNotificationService = (INotificationService<OrganizerNotificationScenarios>)serviceProvider.GetService( typeof(INotificationService<OrganizerNotificationScenarios>) ) ?? throw new MissingServiceException("Missing NotificationService.");
+            CreateCategory = new DeferredCommand(CommandHandler_CreateCategory, () => !LockingOperation);
+            CreateDocument = new DeferredCommand(CommandHandler_CreateDocument, () => !LockingOperation);
 
             Organizer.OrganizerItemCreated.Subscribe(OrganizerItemCreated);
         }
@@ -71,19 +71,33 @@ namespace DMOrganizerViewModel
         protected override void UpdateCommandsExecutability()
         {
             CreateCategory.InvokeCanExecuteChanged();
+            CreateDocument.InvokeCanExecuteChanged();
         }
 
         private void CommandHandler_CreateCategory()
         {
             var config = new InputBoxConfiguration<OrganizerInputBoxScenarios, string>(OrganizerInputBoxScenarios.CategoryName, (inV, _) => inV, (inV, _) => NamingRules.IsValidName(inV) );
             InputBoxResult res = default;
-            Context.Invoke(() => res = InputBoxService.Show(config));
+            Context.Invoke(() => res = OrganizerInputBoxService.Show(config));
 
             if (res != InputBoxResult.Success)
                 return;
             Context.Invoke(() => LockingOperation = true);
             m_CreatedCategory = config.UserInput;
             Organizer.CreateCategory(m_CreatedCategory);            
+        }
+
+        private void CommandHandler_CreateDocument()
+        {
+            var config = new InputBoxConfiguration<OrganizerInputBoxScenarios, string>(OrganizerInputBoxScenarios.DocumentName, (inV, _) => inV, (inV, _) => NamingRules.IsValidName(inV) );
+            InputBoxResult res = default;
+            Context.Invoke(() => res = OrganizerInputBoxService.Show(config));
+
+            if (res != InputBoxResult.Success)
+                return;
+            Context.Invoke(() => LockingOperation = true);
+            m_CreatedDocument = config.UserInput;
+            Organizer.CreateDocument(m_CreatedDocument);            
         }
 
         private void OrganizerItemCreated(IOrganizer sender, OrganizerItemCreatedEventArgs e)
@@ -107,7 +121,7 @@ namespace DMOrganizerViewModel
 
             Context.Invoke(() =>
             {
-                NotificationService.Show(config);
+                OrganizerNotificationService.Show(config);
                 LockingOperation = false;
             });
         }

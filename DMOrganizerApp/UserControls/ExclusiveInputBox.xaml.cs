@@ -1,4 +1,4 @@
-﻿using CSToolbox;
+﻿using CSToolbox.Extensions;
 using System;
 using System.Collections;
 using System.ComponentModel;
@@ -42,7 +42,7 @@ namespace DMOrganizerApp.UserControls
         public bool HasErrors => GetErrors(null).Any();
         public IEnumerable GetErrors(string? propertyName)
         {
-            if (Validator?.Invoke(Text, CultureInfo.CurrentCulture) == false)
+            if ((propertyName == null || propertyName == nameof(Text)) && Validator?.Invoke(Text, CultureInfo.CurrentCulture) == false)
                 yield return "Invalid value";
 
             yield break;
@@ -60,16 +60,21 @@ namespace DMOrganizerApp.UserControls
 
         protected void InvokePropertyChanged(string name) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 
-        private void Cancel_Click(object sender, RoutedEventArgs e)
+        private void Escape_Executed(object sender, System.Windows.Input.ExecutedRoutedEventArgs e)
         {
             DialogResult = false;
             Close();
         }
 
-        private void OK_Click(object sender, RoutedEventArgs e)
+        private void Next_Executed(object sender, System.Windows.Input.ExecutedRoutedEventArgs e)
         {
             DialogResult = true;
             Close();
-        }   
+        }
+
+        private void Next_CanExecute(object sender, System.Windows.Input.CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = !HasErrors;
+        }
     }
 }
