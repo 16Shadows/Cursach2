@@ -3,9 +3,9 @@ using System.Globalization;
 using System.Windows.Data;
 using System.Windows.Documents;
 
-namespace DMOrganizerApp.Resources
+namespace WPFToolbox.Converter
 {
-    internal class StringToFlowDocument : IValueConverter
+    public class StringToFlowDocument : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
@@ -14,7 +14,8 @@ namespace DMOrganizerApp.Resources
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            throw new NotImplementedException();
+            FlowDocument doc = (FlowDocument)value;
+            return new TextRange(doc.ContentStart, doc.ContentEnd).Text;
         }
     }
 }
