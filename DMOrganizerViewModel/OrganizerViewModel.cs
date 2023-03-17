@@ -76,12 +76,14 @@ namespace DMOrganizerViewModel
         private void CommandHandler_CreateCategory()
         {
             var config = new InputBoxConfiguration<OrganizerInputBoxScenarios, string>(OrganizerInputBoxScenarios.CategoryName, (inV, _) => inV, (inV, _) => NamingRules.IsValidName(inV) );
-            if (InputBoxService.Show(config) == InputBoxResult.Success)
-            {
-                LockingOperation = true;
-                m_CreatedCategory = config.UserInput;
-                Organizer.CreateCategory(m_CreatedCategory);
-            }
+            InputBoxResult res = default;
+            Context.Invoke(() => res = InputBoxService.Show(config));
+
+            if (res != InputBoxResult.Success)
+                return;
+            Context.Invoke(() => LockingOperation = true);
+            m_CreatedCategory = config.UserInput;
+            Organizer.CreateCategory(m_CreatedCategory);            
         }
 
         private void OrganizerItemCreated(IOrganizer sender, OrganizerItemCreatedEventArgs e)
@@ -103,8 +105,11 @@ namespace DMOrganizerViewModel
             else
                 return;
 
-            NotificationService.Show(config);
-            LockingOperation = false;
+            Context.Invoke(() =>
+            {
+                NotificationService.Show(config);
+                LockingOperation = false;
+            });
         }
     }
 }

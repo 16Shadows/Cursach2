@@ -61,7 +61,7 @@ namespace DMOrganizerApp.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Category &apos;%0&apos; was created successfully..
+        ///   Looks up a localized string similar to Category &apos;{0}&apos; was created successfully..
         /// </summary>
         internal static string CategoryCreated {
             get {
@@ -70,7 +70,7 @@ namespace DMOrganizerApp.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Document &apos;%0&apos; was created successfully..
+        ///   Looks up a localized string similar to Document &apos;{0}&apos; was created successfully..
         /// </summary>
         internal static string DocumentCreated {
             get {
@@ -79,7 +79,7 @@ namespace DMOrganizerApp.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to There already is another item named &apos;%0&apos;..
+        ///   Looks up a localized string similar to There already is another item named &apos;{0}&apos;..
         /// </summary>
         internal static string DuplicateItemName {
             get {

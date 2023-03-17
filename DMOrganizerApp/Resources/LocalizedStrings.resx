@@ -118,13 +118,13 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="CategoryCreated" xml:space="preserve">
-    <value>Category '%0' was created successfully.</value>
+    <value>Category '{0}' was created successfully.</value>
   </data>
   <data name="DocumentCreated" xml:space="preserve">
-    <value>Document '%0' was created successfully.</value>
+    <value>Document '{0}' was created successfully.</value>
   </data>
   <data name="DuplicateItemName" xml:space="preserve">
-    <value>There already is another item named '%0'.</value>
+    <value>There already is another item named '{0}'.</value>
   </data>
   <data name="InputCategoryName" xml:space="preserve">
     <value>Input a name for the new category:</value>
