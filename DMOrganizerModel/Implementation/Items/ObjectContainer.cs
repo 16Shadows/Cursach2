@@ -61,7 +61,7 @@ namespace DMOrganizerModel.Implementation.Items
         public List<int> RequestContainerViewInfo()
         {
             List<int> info = Query.GetContainerViewInfo(Organizer.Connection, ItemID);
-            InvokeObjectContainerViewInfo(info[0], info[1], info[2], info[3]);
+            InvokeObjectContainerViewInfo(info[0], info[1], info[2], info[3], info[4]);
             return info;
         }
 

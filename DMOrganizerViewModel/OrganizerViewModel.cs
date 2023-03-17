@@ -64,6 +64,8 @@ namespace DMOrganizerViewModel
                 return new CategoryViewModel(Context, ServiceProvider, category);
             else if (item is IDocument document)
                 return new DocumentViewModel(Context, ServiceProvider, document);
+            else if (item is IBook book)
+                return new BookViewModel(Context, ServiceProvider, book, book);
             else
                 throw new ArgumentException("Unsupported item type", nameof(item));
         }
