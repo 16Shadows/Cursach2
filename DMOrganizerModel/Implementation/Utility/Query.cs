@@ -768,6 +768,28 @@ namespace DMOrganizerModel.Implementation.Utility
             return result;
         }
 
+        //get page id by book and position
+        public static int GetPageID(SyncronizedSQLiteConnection connection, int parentBookID, int pagePosition)
+        {
+            int result = 0;
+            connection.Read(con =>
+            {
+                using SQLiteCommand cmd = con.CreateCommand();
+                cmd.CommandText = @"SELECT Page.ID 
+                                    FROM Page 
+                                    WHERE Page.ID_Parent_Book is @ParentBookID
+                                    AND Page.Position is @PagePos;";
+
+                cmd.Parameters.AddWithValue("@ParentBookID", parentBookID);
+                cmd.Parameters.AddWithValue("@PagePos", pagePosition);
+                using SQLiteDataReader reader = cmd.ExecuteReader();
+                if (reader.Read())
+                { result = reader.GetInt32(0); }
+                else result = 0;
+            });
+            return result;
+        }
+
         //get page content
         public static List<int> GetPageContent(SyncronizedSQLiteConnection connection, int pageID)
         {
