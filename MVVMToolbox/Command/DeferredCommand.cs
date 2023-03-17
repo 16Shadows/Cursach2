@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Input;
 
-namespace WPFToolbox.Command
+namespace MVVMToolbox.Command
 {
     /// <summary>
     /// Implementation of ICommand which defers Execute() and CanExecute() methods to provided methods
@@ -13,12 +13,10 @@ namespace WPFToolbox.Command
         private readonly Action m_Execute;
         private readonly Func<bool> m_CanExecute;
 
-        public DeferredCommand(Action? execute, Func<bool>? canExecute = null, bool useCommandManager = true)
+        public DeferredCommand(Action? execute, Func<bool>? canExecute = null)
         {
             m_Execute = execute ?? (() => { });
             m_CanExecute = canExecute ?? (() => true);
-            if (useCommandManager)
-                CommandManager.RequerySuggested += CommandManager_RequerySuggested;
         }
 
         public bool CanExecute(object? parameter)
@@ -53,12 +51,10 @@ namespace WPFToolbox.Command
         private readonly Action<T?> m_Execute;
         private readonly Predicate<T?> m_CanExecute;
 
-        public DeferredCommand(Action<T?>? execute, Predicate<T?>? canExecute = null, bool useCommandManager = true)
+        public DeferredCommand(Action<T?>? execute, Predicate<T?>? canExecute = null)
         {
             m_Execute = execute ?? (_ => { });
             m_CanExecute = canExecute ?? (_ => true);
-            if (useCommandManager)
-                CommandManager.RequerySuggested += CommandManager_RequerySuggested;
         }
 
         public bool CanExecute(object? parameter)

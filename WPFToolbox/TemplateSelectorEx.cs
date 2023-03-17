@@ -1,4 +1,4 @@
-﻿using CSToolbox;
+﻿using CSToolbox.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Windows;
