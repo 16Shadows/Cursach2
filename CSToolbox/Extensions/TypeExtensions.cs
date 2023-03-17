@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CSToolbox
+namespace CSToolbox.Extensions
 {
     public static class TypeExtensions
     {

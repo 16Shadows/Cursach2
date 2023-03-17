@@ -1,8 +1,8 @@
 ﻿using System.Collections;
 
-namespace CSToolbox
+namespace CSToolbox.Extensions
 {
-    public static class IEnumerableExtensions   
+    public static class IEnumerableExtensions
     {
         static public bool Any(this IEnumerable iterator)
         {
