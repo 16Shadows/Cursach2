@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using CSToolbox.Weak;
+using DMOrganizerModel.Implementation.Items;
 
 namespace DMOrganizerModel.Implementation.Items
 {
@@ -42,7 +43,27 @@ namespace DMOrganizerModel.Implementation.Items
                 }
             });
         }
-
+        public void MovePagesToInsertPage(int BookID, int position)
+        {
+            CheckDeleted();
+            Task.Run(() =>
+            {
+                lock (Lock)
+                {
+                    //get all page's positions that we need to change (>= position)
+                    List<int> changePositions = Query.GetPagesPositionsToChange(Organizer.Connection, ItemID, position);
+                    changePositions.Sort();
+                    changePositions.Reverse();
+                    //changing positions from end to avoid unique pos exception
+                    for (int i = changePositions.Count; i < changePositions.Count; i++)
+                    {
+                        int id = Query.GetPageID(Organizer.Connection, ItemID, changePositions[i]);
+                        BookPage p = Organizer.GetPage(id, this);
+                        p.ChangePagePosition(BookID, changePositions[i], changePositions[i] + 1);
+                    }
+                }
+            });
+        }
         public void AddPage(int position)
         {
             //check how many pages, if it is last or bigger - add at last,
@@ -50,12 +71,7 @@ namespace DMOrganizerModel.Implementation.Items
             CheckDeleted();
             Task.Run(() =>
             {
-                throw new NotImplementedException();
-                lock (Lock) 
-                { 
-
-                }
-                //InvokeBookItemCreated()
+                MovePagesToInsertPage(ItemID, position); //need check if pages were moved
                 int newPageID = Query.CreatePadeInBook(Organizer.Connection, ItemID, position);
                 IPage item = null;
                 item = Organizer.GetPage(newPageID, this); //caching object

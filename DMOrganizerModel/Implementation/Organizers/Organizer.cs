@@ -178,14 +178,6 @@ namespace DMOrganizerModel.Implementation.Organizers
 	                FOREIGN KEY(""ID_Container"") REFERENCES ""Container""(""ID""),
 	                FOREIGN KEY(""ID_Page"") REFERENCES ""Page""(""ID"") ON DELETE CASCADE
                 );
-                CREATE TABLE IF NOT EXISTS ""Set_Book_Pages"" (
-	                ""ID""	INTEGER NOT NULL UNIQUE,
-	                ""ID_Book""	INTEGER NOT NULL,
-	                ""ID_Page""	INTEGER NOT NULL,
-	                PRIMARY KEY(""ID"" AUTOINCREMENT),
-	                FOREIGN KEY(""ID_Page"") REFERENCES ""Page""(""ID""),
-	                FOREIGN KEY(""ID_Book"") REFERENCES ""Book""(""ID"") ON DELETE CASCADE
-                );
                 CREATE TABLE IF NOT EXISTS ""Set_Container_Objects"" (
 	                ""ID""	INTEGER NOT NULL UNIQUE,
 	                ""ID_Container""	INTEGER NOT NULL,
