@@ -2,7 +2,6 @@
 using CSToolbox.Weak;
 using DMOrganizerModel.Interface.Items;
 using MVVMToolbox;
-using MVVMToolbox.ViewModel;
 using System;
 
 namespace DMOrganizerViewModel
@@ -17,20 +16,13 @@ namespace DMOrganizerViewModel
         {
             Section = section ?? throw new ArgumentNullException(nameof(section));
 
-            Content = new LazyProperty<string>(p =>
-            {
-                WeakAction<ISection, SectionContentChangedEventArgs>.CallType handler = (_, e) => Context.Invoke(() => Content.Value = e.Content);
-                Section.SectionContentChanged.Subscribe(handler);
-                Section.RequestSectionContentUpdate();
-            });
-
             Section.SectionContentChanged.Subscribe(Section_ContentChanged);
+
+            Content = new LazyProperty<string>( _ => Section.RequestSectionContentUpdate() );
         }
 
         private void Section_ContentChanged(ISection sender, SectionContentChangedEventArgs e)
         {
-            if (!e.HasChanged)
-                return;
             Context.Invoke(() => Content.Value = e.Content);
         }
 

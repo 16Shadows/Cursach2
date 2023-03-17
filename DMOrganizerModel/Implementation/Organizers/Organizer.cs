@@ -201,7 +201,7 @@ namespace DMOrganizerModel.Implementation.Organizers
                 DELETE FROM Object WHERE Object.ID=OLD.ID_Object;
                 END;
 
-                CREATE TRIGGER Validate_Page_Position_Before_Insert 
+                CREATE TRIGGER IF NOT EXISTS Validate_Page_Position_Before_Insert 
                    BEFORE INSERT ON Page
                 BEGIN
                    SELECT
@@ -211,7 +211,7 @@ namespace DMOrganizerModel.Implementation.Organizers
                        END;
                 END;
 
-                CREATE TRIGGER Validate_Page_Position_Before_Insert 
+                CREATE TRIGGER IF NOT EXISTS Validate_Page_Position_Before_Insert 
                    BEFORE INSERT ON Page
                 BEGIN
                    SELECT
@@ -225,9 +225,10 @@ namespace DMOrganizerModel.Implementation.Organizers
                 ";
                 command.ExecuteNonQuery();
             }
-            catch
+            catch(Exception e)
             {
                 RawConnection.Close();
+                throw new Exception("Failed to open organizer.", e);
             }
             Connection = new SyncronizedSQLiteConnection(RawConnection);
         }

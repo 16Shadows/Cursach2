@@ -1,10 +1,6 @@
 ﻿using MVVMToolbox;
 using MVVMToolbox.ViewModel;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DMOrganizerViewModel
 {
@@ -19,10 +15,13 @@ namespace DMOrganizerViewModel
                 if (m_LockingOperation == value)
                     return;
                 m_LockingOperation = value;
+                UpdateCommandsExecutability();
                 InvokePropertyChanged(nameof(LockingOperation));
             }
         }
 
-        public DMOrganizerViewModelBase(IContext context, IServiceProvider serviceProvider) : base(context, serviceProvider) {}
+        protected DMOrganizerViewModelBase(IContext context, IServiceProvider serviceProvider) : base(context, serviceProvider) {}
+
+        protected virtual void UpdateCommandsExecutability() {}
     }
 }
