@@ -19,7 +19,7 @@ namespace DMOrganizerViewModel
         // ContainerViewModel already keeps all Object IReferenceable objects, we just need to show them in proper way
         public LazyProperty<IReferenceable> ReferenceableObjectType { get; }
         protected IObject ContainerObject { get; }
-        public ContainerObjectViewModel(IContext context, IServiceProvider serviceProvider, IItemContainer<IReferenceable> container, IObject obj) : base(context, serviceProvider, container) { }
+        public ContainerObjectViewModel(IContext context, IServiceProvider serviceProvider, IItemContainer<IReferenceable> container, IObject obj) : base(context, serviceProvider, container, obj) { }
 
         protected override DMOrganizerViewModelBase CreateViewModel(IReferenceable item)
         {

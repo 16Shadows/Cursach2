@@ -25,10 +25,10 @@ namespace DMOrganizerViewModel
         public LazyProperty<int> Type { get; }
         protected IObjectContainer ObjectContainer { get; }
 
-        public ObjectContainerViewModel(IContext context, IServiceProvider serviceProvider, IObjectContainer container, IObjectContainer objectContainer) : base(context, serviceProvider, container) 
+        public ObjectContainerViewModel(IContext context, IServiceProvider serviceProvider, IObjectContainer container) : base(context, serviceProvider, container, container)
         {
-            if (objectContainer is null) throw new ArgumentNullException(nameof(objectContainer));
-            else ObjectContainer = objectContainer;
+            if (container is null) throw new ArgumentNullException(nameof(container));
+            else ObjectContainer = container;
             //need to set properties for Width, Height, X, Y, Type and subscribe our updater-method to listen to the model
             ObjectContainer.ObjectContainerViewInfo.Subscribe(ObjectContainer_RequestContainerViewInfo);
 
