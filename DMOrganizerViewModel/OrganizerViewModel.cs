@@ -13,13 +13,15 @@ namespace DMOrganizerViewModel
     public enum OrganizerInputBoxScenarios
     {
         CategoryName,
-        DocumentName
+        DocumentName,
+        BookName
     }
 
     public enum OrganizerNotificationScenarios
     {
         CreateCategorySuccess,
         CreateDocumentSuccess,
+        CreateBookSuccess,
         DuplicateItemName
     }
 
@@ -40,11 +42,13 @@ namespace DMOrganizerViewModel
         private INotificationService<OrganizerNotificationScenarios> OrganizerNotificationService { get; }
         private string? m_CreatedCategory;
         private string? m_CreatedDocument;
+        private string? m_CreatedBook;
 
         public ObservableCollection<ViewModelBase> OpenedItems { get; } = new();
 
         public DeferredCommand CreateCategory { get; }
         public DeferredCommand CreateDocument { get; }
+        public DeferredCommand CreateBook { get; }
 
         public OrganizerViewModel(IContext context, IServiceProvider serviceProvider, IOrganizer organizer) : base(context, serviceProvider, organizer, null)
         {
@@ -117,6 +121,11 @@ namespace DMOrganizerViewModel
             {
                 config = new (e.Result == OrganizerItemCreatedEventArgs.ResultType.Success ? OrganizerNotificationScenarios.CreateDocumentSuccess : OrganizerNotificationScenarios.DuplicateItemName, e.Name );
                 m_CreatedDocument = null;
+            }
+            else if (m_CreatedBook == e.Name)
+            {
+                config = new(e.Result == OrganizerItemCreatedEventArgs.ResultType.Success ? OrganizerNotificationScenarios.CreateBookSuccess : OrganizerNotificationScenarios.DuplicateItemName, e.Name);
+                m_CreatedBook = null;
             }
             else
                 return;

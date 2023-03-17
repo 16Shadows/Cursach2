@@ -51,6 +51,9 @@ namespace DMOrganizerViewModel
             CategoryNotificationService = (INotificationService<CategoryNotificationScenarios>)serviceProvider.GetService(typeof(INotificationService<CategoryNotificationScenarios>)) ?? throw new MissingServiceException("Missing NotificationService.");
 
             Category.CategoryItemCreated.Subscribe(CategoryItemCreated);
+        public DeferredCommand CreateBook { get; }
+        public DeferredCommand Rename { get; }
+        public DeferredCommand Delete { get; }
 
             CreateCategory = new DeferredCommand(CommandHandler_CreateCategory, () => !LockingOperation);
             CreateDocument = new DeferredCommand(CommandHandler_CreateDocument, () => !LockingOperation);
@@ -62,6 +65,8 @@ namespace DMOrganizerViewModel
                 return new CategoryViewModel(Context, ServiceProvider, category);
             else if (item is IDocument document)
                 return new DocumentViewModel(Context, ServiceProvider, document);
+            else if (item is IBook book)
+                return new BookViewModel(Context, ServiceProvider, book, book);
             else
                 throw new ArgumentException("Unsupported item type", nameof(item));
         }

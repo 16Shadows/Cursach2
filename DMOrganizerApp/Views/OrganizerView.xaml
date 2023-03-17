@@ -49,6 +49,12 @@
                                             <Image Source="{StaticResource DocumentIcon}" Stretch="Uniform"/>
                                         </MenuItem.Icon>
                                     </MenuItem>
+                                    <!-- Book -->
+                                    <MenuItem Command="{Binding CreateBook}" Header="Book">
+                                        <MenuItem.Icon>
+                                            <Image Source="{StaticResource ClosedBookIcon}" Stretch="Uniform"/>
+                                        </MenuItem.Icon>
+                                    </MenuItem>
                                 </MenuItem>
                                 <Separator />
                                 <MenuItem Header="Rename" Command="{Binding Rename}"/>
@@ -60,6 +66,31 @@
                 <DataTemplate DataType="{x:Type vm:DocumentViewModel}">
                     <StackPanel Orientation="Horizontal">
                         <Image Height="{StaticResource NavTreeIconHeight}" VerticalAlignment="Center" HorizontalAlignment="Center" Stretch="Uniform" Source="{StaticResource DocumentIcon}"/>
+                        <TextBlock Text="{Binding Name.Value, Converter={StaticResource NullToLoading}}" FontSize="{StaticResource NavTreeFontSize}" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                        <StackPanel.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="Rename" Command="{Binding Rename}"/>
+                                <MenuItem Header="Delete" Command="{Binding Delete}" />
+                            </ContextMenu>
+                        </StackPanel.ContextMenu>
+                    </StackPanel>
+                </DataTemplate>
+
+                <!-- Book -->
+                <DataTemplate DataType="{x:Type vm:BookViewModel}" >
+                    <StackPanel Orientation="Horizontal">
+                        <Image Height="{StaticResource NavTreeIconHeight}" VerticalAlignment="Center" HorizontalAlignment="Center" Stretch="Uniform">
+                            <Image.Style>
+                                <Style TargetType="Image">
+                                    <Setter Property="Source" Value="{StaticResource ClosedBookIcon}" />
+                                    <!--<Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsExpanded, RelativeSource={RelativeSource AncestorType=TreeViewItem}, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                                            <Setter Property="Source" Value="{StaticResource ExpandedCategoryIcon}" />
+                                        </DataTrigger>
+                                    </Style.Triggers> -->
+                                </Style>
+                            </Image.Style>
+                        </Image>
                         <TextBlock Text="{Binding Name.Value, Converter={StaticResource NullToLoading}}" FontSize="{StaticResource NavTreeFontSize}" VerticalAlignment="Center" HorizontalAlignment="Left"/>
                         <StackPanel.ContextMenu>
                             <ContextMenu>
@@ -84,6 +115,12 @@
                         <MenuItem Command="{Binding CreateDocument}" Header="Document">
                             <MenuItem.Icon>
                                 <Image Source="{StaticResource DocumentIcon}" Stretch="Uniform"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <!-- Book -->
+                        <MenuItem Command="{Binding CreateBook}" Header="Book">
+                            <MenuItem.Icon>
+                                <Image Source="{StaticResource ClosedBookIcon}" Stretch="Uniform"/>
                             </MenuItem.Icon>
                         </MenuItem>
                     </MenuItem>
