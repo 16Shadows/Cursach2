@@ -22,14 +22,14 @@ namespace DMOrganizerApp.Resources {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Localization {
+    internal class LocalizedStrings {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal Localization() {
+        internal LocalizedStrings() {
         }
         
         /// <summary>
@@ -39,7 +39,7 @@ namespace DMOrganizerApp.Resources {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("DMOrganizerApp.Resources.Localization", typeof(Localization).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("DMOrganizerApp.Resources.LocalizedStrings", typeof(LocalizedStrings).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -57,6 +57,51 @@ namespace DMOrganizerApp.Resources {
             }
             set {
                 resourceCulture = value;
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Category &apos;%0&apos; was created successfully..
+        /// </summary>
+        internal static string CategoryCreated {
+            get {
+                return ResourceManager.GetString("CategoryCreated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Document &apos;%0&apos; was created successfully..
+        /// </summary>
+        internal static string DocumentCreated {
+            get {
+                return ResourceManager.GetString("DocumentCreated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There already is another item named &apos;%0&apos;..
+        /// </summary>
+        internal static string DuplicateItemName {
+            get {
+                return ResourceManager.GetString("DuplicateItemName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Input a name for the new category:.
+        /// </summary>
+        internal static string InputCategoryName {
+            get {
+                return ResourceManager.GetString("InputCategoryName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Input a name for the new document:.
+        /// </summary>
+        internal static string InputDocumentName {
+            get {
+                return ResourceManager.GetString("InputDocumentName", resourceCulture);
             }
         }
     }

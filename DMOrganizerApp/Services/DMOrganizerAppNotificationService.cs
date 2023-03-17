@@ -1,7 +1,6 @@
-﻿using DMOrganizerViewModel;
-using MVVMToolbox;
+﻿using DMOrganizerApp.Resources;
+using DMOrganizerViewModel;
 using MVVMToolbox.Services;
-using System;
 using System.Windows;
 
 namespace DMOrganizerApp.Services
@@ -10,7 +9,14 @@ namespace DMOrganizerApp.Services
     {
         public void Show(NotificationConfiguration<OrganizerNotificationScenarios> configuration)
         {
-            MessageBox.Show("Ha-ha!");
+            if (configuration is not OrganizerNotificationConfiguration config)
+                return;
+            else if (config.Scenario == OrganizerNotificationScenarios.CreateCategorySuccess)
+                MessageBox.Show(Application.Current.MainWindow, string.Format(LocalizedStrings.CategoryCreated, config.Name));
+            else if (config.Scenario == OrganizerNotificationScenarios.CreateDocumentSuccess)
+                MessageBox.Show(Application.Current.MainWindow, string.Format(LocalizedStrings.DocumentCreated, config.Name));
+            else if (config.Scenario == OrganizerNotificationScenarios.DuplicateItemName)
+                MessageBox.Show(Application.Current.MainWindow, string.Format(LocalizedStrings.DuplicateItemName, config.Name));
         }
     }
 }
