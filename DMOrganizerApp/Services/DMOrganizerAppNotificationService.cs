@@ -2,6 +2,7 @@
 using MVVMToolbox;
 using MVVMToolbox.Services;
 using System;
+using System.Windows;
 
 namespace DMOrganizerApp.Services
 {
@@ -9,7 +10,7 @@ namespace DMOrganizerApp.Services
     {
         public void Show(NotificationConfiguration<OrganizerNotificationScenarios> configuration)
         {
-            throw new NotImplementedException();
+            MessageBox.Show("Ha-ha!");
         }
     }
 }
