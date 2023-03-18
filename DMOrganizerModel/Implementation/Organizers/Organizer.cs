@@ -70,9 +70,7 @@ namespace DMOrganizerModel.Implementation.Organizers
 	                ""Title""	TEXT NOT NULL DEFAULT 'Title' CHECK(length(""Title"") > 0) COLLATE NOCASE,
 	                ""Content""	TEXT NOT NULL DEFAULT '',
 	                ""Parent""	INTEGER CHECK(""ID"" != ""Parent""),
-	                ""OrderIndex""	INTEGER NOT NULL DEFAULT 0,
 	                UNIQUE(""Parent"",""Title""),
-	                UNIQUE(""Parent"",""OrderIndex""),
 	                FOREIGN KEY(""Parent"") REFERENCES ""Section""(""ID"") ON UPDATE CASCADE ON DELETE CASCADE,
 	                PRIMARY KEY(""ID"" AUTOINCREMENT)
                 );

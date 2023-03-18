@@ -233,7 +233,7 @@ namespace DMOrganizerModel.Implementation.Utility
             connection.Read(con =>
             {
                 using SQLiteCommand cmd = con.CreateCommand();
-                cmd.CommandText = $"SELECT ID FROM Section WHERE Parent={sectionID}";
+                cmd.CommandText = $"SELECT ID FROM Section WHERE Parent={sectionID} ORDER BY ID";
                 using SQLiteDataReader reader = cmd.ExecuteReader();
                 while (reader.Read())
                     res.Add(reader.GetInt32(0));
