@@ -132,6 +132,9 @@
   <data name="DuplicateItemName" xml:space="preserve">
     <value>There already is another item named '{0}'.</value>
   </data>
+  <data name="DuplicateTag" xml:space="preserve">
+    <value>There already is a tag '{0}'.</value>
+  </data>
   <data name="InputBookName" xml:space="preserve">
     <value>Input a name for the new book:</value>
   </data>
@@ -143,6 +146,9 @@
   </data>
   <data name="InputNewName" xml:space="preserve">
     <value>Input a new name for this item:</value>
+  </data>
+  <data name="InputTag" xml:space="preserve">
+    <value>Input a new tag:</value>
   </data>
   <data name="RenamedSuccessfully" xml:space="preserve">
     <value>Item's name has been changed to '{0}'.</value>

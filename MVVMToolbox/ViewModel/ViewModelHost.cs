@@ -12,9 +12,7 @@ namespace MVVMToolbox.ViewModel
             {
                 if (m_ActiveViewModel == value)
                     return;
-                ViewModelBase? oldvm = m_ActiveViewModel;
-                if (oldvm != null)
-                    Context.BeginInvoke(() => oldvm.Unload());
+                m_ActiveViewModel?.Unload();
                 m_ActiveViewModel = value;
                 m_ActiveViewModel?.Load();
                 InvokePropertyChanged(nameof(ActiveViewModel));

@@ -14,7 +14,7 @@ using System.Windows.Controls;
 
 namespace DMOrganizerViewModel
 {
-    public sealed class ContainerObjectViewModel : ContainerViewModel<IReferenceable>
+    public sealed class ContainerObjectViewModel : ContainerItemViewModel<IReferenceable>
     {
 
         // ContainerViewModel already keeps all Object IReferenceable objects, we just need to show them in proper way
@@ -25,7 +25,7 @@ namespace DMOrganizerViewModel
             if (item is null) throw new ArgumentNullException(nameof(item));
             else ContainerObject = item;
         }
-        protected override DMOrganizerViewModelBase CreateViewModel(IReferenceable item)
+        protected override ItemViewModel CreateViewModel(IReferenceable item)
         {
             //type check and creation of different child-objects
             throw new NotImplementedException();

@@ -5,7 +5,10 @@ using System.Windows;
 
 namespace DMOrganizerApp.Services
 {
-    internal sealed class DMOrganizerAppNotificationService : INotificationService<OrganizerNotificationScenarios>, INotificationService<CategoryNotificationScenarios>, INotificationService<NamedItemNotificationScenarios>
+    internal sealed class DMOrganizerAppNotificationService : INotificationService<OrganizerNotificationScenarios>, 
+                                                              INotificationService<CategoryNotificationScenarios>,
+                                                              INotificationService<NamedItemNotificationScenarios>,
+                                                              INotificationService<DocumentNotificationScenarios>
     {
         public void Show(NotificationConfiguration<OrganizerNotificationScenarios> configuration)
         {
@@ -47,6 +50,14 @@ namespace DMOrganizerApp.Services
                 MessageBox.Show(Application.Current.MainWindow, string.Format(LocalizedStrings.DuplicateItemName, config.Name));
             else if (config.Scenario == NamedItemNotificationScenarios.ItemDeleted)
                 MessageBox.Show(Application.Current.MainWindow, string.Format(LocalizedStrings.DeletedItem, config.Name));
+        }
+
+        public void Show(NotificationConfiguration<DocumentNotificationScenarios> configuration)
+        {
+            if (configuration is not DocumentNotificationConfiguration config)
+                return;
+            else if (config.Scenario == DocumentNotificationScenarios.DuplicateTag)
+                MessageBox.Show(Application.Current.MainWindow, string.Format(LocalizedStrings.DuplicateTag, config.Tag));
         }
     }
 }

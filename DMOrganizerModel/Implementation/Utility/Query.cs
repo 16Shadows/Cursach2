@@ -171,6 +171,7 @@ namespace DMOrganizerModel.Implementation.Utility
                 cmd.Parameters.AddWithValue("$tag", tag);
                 using SQLiteDataReader reader = cmd.ExecuteReader();
                 int? id = reader.Read() ? reader.GetInt32(0) : null;
+                reader.Close();
 
                 if (id.HasValue)
                 {

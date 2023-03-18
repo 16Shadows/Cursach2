@@ -21,12 +21,7 @@ namespace DMOrganizerViewModel
             }
         }
 
-        public IItem Item { get; }
-
-        protected DMOrganizerViewModelBase(IContext context, IServiceProvider serviceProvider, IItem item) : base(context, serviceProvider)
-        {
-            Item = item;
-        }
+        protected DMOrganizerViewModelBase(IContext context, IServiceProvider serviceProvider) : base(context, serviceProvider) { }
 
         protected virtual void UpdateCommandsExecutability() {}
     }

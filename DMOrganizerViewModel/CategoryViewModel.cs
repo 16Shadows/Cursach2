@@ -60,7 +60,7 @@ namespace DMOrganizerViewModel
             CreateBook = new DeferredCommand(CommandHandler_CreateBook, () => !LockingOperation);
         }
 
-        protected override DMOrganizerViewModelBase CreateViewModel(IOrganizerItem item)
+        protected override ItemViewModel CreateViewModel(IOrganizerItem item)
         {
             if (item is ICategory category)
                 return new CategoryViewModel(Context, ServiceProvider, category);
@@ -140,6 +140,14 @@ namespace DMOrganizerViewModel
                 CategoryNotificationService.Show(config);
                 LockingOperation = false;
             });
+        }
+
+        protected override void UpdateCommandsExecutability()
+        {
+            base.UpdateCommandsExecutability();
+            CreateDocument.InvokeCanExecuteChanged();
+            CreateCategory.InvokeCanExecuteChanged();
+            CreateBook.InvokeCanExecuteChanged();
         }
     }
 }

@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace DMOrganizerViewModel
 {
-    public class BookPageViewModel : ContainerViewModel<IObjectContainer>
+    public class BookPageViewModel : ContainerItemViewModel<IObjectContainer>
     {
         public LazyProperty<int> Position { get; }
         protected IPage Page { get; }
@@ -34,7 +34,7 @@ namespace DMOrganizerViewModel
         {
             Context.Invoke(() => Position.Value = e.Position);
         }
-        protected override DMOrganizerViewModelBase CreateViewModel(IObjectContainer item)
+        protected override ItemViewModel CreateViewModel(IObjectContainer item)
         {
             return new ObjectContainerViewModel(Context, ServiceProvider, item);
         }

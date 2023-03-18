@@ -10,14 +10,21 @@ namespace CSToolbox
     /// <typeparam name="T">The type of this property</typeparam>
     public class LazyProperty<T> : INotifyPropertyChanged
     {
+        private enum State
+        {
+            Uninitialized,
+            Loading,
+            Initialized
+        }
+
         /// <summary>
         /// The method to use for initialization. May never be called if the value is set before first fetch.
         /// </summary>
-        /// <param name="property">A reference to the property which is being initialized</param>
-        public delegate void LoaderType(LazyProperty<T> property);
+        /// <param name="provideValue">A method used to provide the value to this property</param>
+        public delegate void LoaderType(Action<T> provideValue);
 
         /// <summary>
-        /// Raised when this property changes. 
+        /// Raised when this property changes.
         /// Implemented using <see cref="WeakEvent"/> to allow the object holding this property to subscribe to it without causing a memory leak.
         /// </summary>
         public WeakEvent<LazyProperty<T>> WeakPropertyChanged { get; } = new();
@@ -25,7 +32,7 @@ namespace CSToolbox
 
         private LoaderType m_Loader;
         private T? m_Value;
-        private bool m_Loaded;
+        private State m_State = State.Uninitialized;
 
         /// <summary>
         /// The value this property has
@@ -34,38 +41,50 @@ namespace CSToolbox
         {
             get
             {
-                if (!m_Loaded)
+                if (m_State == State.Uninitialized)
                 {
+                    bool beginLoad = false;
                     lock (WeakPropertyChanged)
-                    {
-                        if (!m_Loaded)
+                        if (m_State == State.Uninitialized)
                         {
-                            m_Loader(this);
+                            m_State = State.Loading;
+                            beginLoad = true;
                         }
-                    }
+                    if (beginLoad)
+                        m_Loader(ProvideValue);
                 }
+
                 return m_Value;
             }
             set
             {
                 if (m_Value?.Equals(value) == true)
                     return;
-
-                if (!m_Loaded)
+                else if (m_State != State.Initialized)
                 {
-                    lock (WeakPropertyChanged)
-                    {
-                        if (!m_Loaded)
-                        {
-                            m_Loaded = true;
-                            m_Loader = null;
-                        }
-                    }
+                    ProvideValue(value);
+                    return;
                 }
+                
                 m_Value = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Value)));
                 WeakPropertyChanged.Invoke(this);
             }
+        }
+
+        private void ProvideValue(T value)
+        {
+            if (m_State == State.Initialized)
+                return;
+            lock (WeakPropertyChanged)
+            {
+                if (m_State == State.Initialized)
+                    return;
+                m_State = State.Initialized;
+            }
+
+            m_Loader = null;
+            Value = value;
         }
 
         /// <summary>
@@ -85,11 +104,18 @@ namespace CSToolbox
     /// <typeparam name="T">The type of this property</typeparam>
     public class ReadOnlyLazyProperty<T> : INotifyPropertyChanged
     {
+        private enum State
+        {
+            Uninitialized,
+            Loading,
+            Initialized
+        }
+
         /// <summary>
-        /// The method to use for initialization. May never be called if the value is set before first fetch.
+        /// The method to use for initialization.
         /// </summary>
-        /// <param name="property">A reference to the property which is being initialized</param>
-        public delegate void LoaderType(ReadOnlyLazyProperty<T> property);
+        /// <param name="provideValue">A method use to provide the value to this property</param>
+        public delegate void LoaderType(Action<T> provideValue);
 
         /// <summary>
         /// Raised when this property changes. 
@@ -100,7 +126,7 @@ namespace CSToolbox
 
         private LoaderType m_Loader;
         private T? m_Value;
-        private bool m_Loaded;
+        private State m_State = State.Uninitialized;
 
         /// <summary>
         /// The value this property has
@@ -110,35 +136,39 @@ namespace CSToolbox
         {
             get
             {
-                if (!m_Loaded)
+                if (m_State == State.Uninitialized)
                 {
+                    bool beginLoad = false;
                     lock (WeakPropertyChanged)
-                    {
-                        if (!m_Loaded)
+                        if (m_State == State.Uninitialized)
                         {
-                            m_Loader(this);
+                            m_State = State.Loading;
+                            beginLoad = true;
                         }
-                    }
-                }
-                return m_Value;
-            }
-            set
-            {
-                if (m_Loaded)
-                    throw new InvalidOperationException();
-                lock (WeakPropertyChanged)
-                {
-                    if (!m_Loaded)
-                    {
-                        m_Value = value;
-                        m_Loaded = true;
-                        m_Loader = null;
-                    }
+                    if (beginLoad)
+                        m_Loader(ProvideValue);
                 }
                 
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Value)));
-                WeakPropertyChanged.Invoke(this);
+                return m_Value;
             }
+        }
+
+        private void ProvideValue(T value)
+        {
+            if (m_State == State.Initialized)
+                return;
+            lock (WeakPropertyChanged)
+            {
+                if (m_State == State.Initialized)
+                    return;
+                m_State = State.Initialized;
+            }
+
+            m_Value = value;
+            m_Loader = null;
+
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Value)));
+            WeakPropertyChanged.Invoke(this);
         }
 
         /// <summary>

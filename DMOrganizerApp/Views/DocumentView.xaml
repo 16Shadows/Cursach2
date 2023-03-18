@@ -4,9 +4,123 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:DMOrganizerApp.Views"
-             mc:Ignorable="d" 
+             xmlns:vm="clr-namespace:DMOrganizerViewModel;assembly=DMOrganizerViewModel"
+             xmlns:core="clr-namespace:System;assembly=mscorlib"
+             xmlns:toolbox="clr-namespace:WPFToolbox;assembly=WPFToolbox"
+             mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
-        <TextBlock Text="{Binding Name.Value}" />
-    </Grid>
+    <StackPanel Orientation="Vertical">
+        <TextBlock Text="{Binding Name.Value, Converter={StaticResource NullToLoading}}" FontSize="20"/>
+        <Separator />
+        <Grid Margin="5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <TextBlock Text="Tags:" VerticalAlignment="Center"/>
+            <ItemsControl Grid.Column="1" ItemsSource="{Binding Tags.Value, Converter={StaticResource NullToLoading}}" Margin="5, 0, 5, 0">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel Orientation="Horizontal" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="{x:Type core:String}">
+                        <Border BorderBrush="Black" BorderThickness="1" CornerRadius="10" Margin="2">
+                            <StackPanel Orientation="Horizontal" Margin="3">
+                                <TextBlock Margin="0, 0, 3, 0" Text="{Binding}" />
+                                <Button Width="15" Command="{Binding DataContext.DeleteTag, RelativeSource={RelativeSource AncestorType=local:DocumentView}}" CommandParameter="{Binding}">
+                                    <Button.Resources>
+                                        <Style TargetType="Border">
+                                            <Setter Property="CornerRadius" Value="10" />
+                                        </Style>
+                                    </Button.Resources>
+                                    <Button.Content>
+                                        <Image Width="7" Stretch="Uniform">
+                                            <Image.Source>
+                                                <DrawingImage>
+                                                    <DrawingImage.Drawing>
+                                                        <DrawingGroup>
+                                                            <GeometryDrawing>
+                                                                <GeometryDrawing.Pen>
+                                                                    <Pen Brush="Black" Thickness="1" />
+                                                                </GeometryDrawing.Pen>
+                                                                <GeometryDrawing.Geometry>
+                                                                    <LineGeometry StartPoint="0, 0" EndPoint="10, 10"/>
+                                                                </GeometryDrawing.Geometry>
+                                                            </GeometryDrawing>
+                                                            <GeometryDrawing>
+                                                                <GeometryDrawing.Pen>
+                                                                    <Pen Brush="Black" Thickness="1" />
+                                                                </GeometryDrawing.Pen>
+                                                                <GeometryDrawing.Geometry>
+                                                                    <LineGeometry StartPoint="0, 10" EndPoint="10, 0"/>
+                                                                </GeometryDrawing.Geometry>
+                                                            </GeometryDrawing>
+                                                        </DrawingGroup>
+                                                    </DrawingImage.Drawing>
+                                                </DrawingImage>
+                                            </Image.Source>
+                                        </Image>
+                                    </Button.Content>
+                                </Button>
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            <Button VerticalAlignment="Center" Grid.Column="2" Width="15" Height="15" Command="{Binding AddTag}">
+                <Button.Resources>
+                    <Style TargetType="Border">
+                        <Setter Property="CornerRadius" Value="10" />
+                    </Style>
+                </Button.Resources>
+                <Button.Content>
+                    <Image Width="7" Stretch="Uniform">
+                        <Image.Source>
+                            <DrawingImage>
+                                <DrawingImage.Drawing>
+                                    <DrawingGroup>
+                                        <GeometryDrawing>
+                                            <GeometryDrawing.Pen>
+                                                <Pen Brush="Black" Thickness="1" />
+                                            </GeometryDrawing.Pen>
+                                            <GeometryDrawing.Geometry>
+                                                <LineGeometry StartPoint="0, 5" EndPoint="10, 5"/>
+                                            </GeometryDrawing.Geometry>
+                                        </GeometryDrawing>
+                                        <GeometryDrawing>
+                                            <GeometryDrawing.Pen>
+                                                <Pen Brush="Black" Thickness="1" />
+                                            </GeometryDrawing.Pen>
+                                            <GeometryDrawing.Geometry>
+                                                <LineGeometry StartPoint="5, 0" EndPoint="5, 10"/>
+                                            </GeometryDrawing.Geometry>
+                                        </GeometryDrawing>
+                                    </DrawingGroup>
+                                </DrawingImage.Drawing>
+                            </DrawingImage>
+                        </Image.Source>
+                    </Image>
+                </Button.Content>
+            </Button>
+        </Grid>
+        <Separator />
+        <TextBlock Text="{Binding Content.Value, Converter={StaticResource NullToLoading}}" />
+        <ItemsControl ItemsSource="{Binding Items.Value, Converter={StaticResource NullToLoading}}">
+            <ItemsControl.ItemTemplateSelector>
+                <toolbox:TemplateSelectorEx>
+                    <toolbox:TemplateSelectorEx.Templates>
+                        <DataTemplate DataType="{x:Type vm:SectionViewModel}">
+                            <local:SectionView />
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type core:String}">
+                            <TextBlock Text="{Binding}" />
+                        </DataTemplate>
+                    </toolbox:TemplateSelectorEx.Templates>
+                </toolbox:TemplateSelectorEx>
+            </ItemsControl.ItemTemplateSelector>
+        </ItemsControl>
+    </StackPanel>
 </UserControl>
