@@ -864,7 +864,9 @@ namespace DMOrganizerModel.Implementation.Utility
                 cmd.Parameters.AddWithValue("@ParentBookID", parentBookID);
                 using SQLiteDataReader reader = cmd.ExecuteReader();
                 if (reader.Read())
-                { result = reader.GetInt32(0); }
+                {
+                    if (reader.HasRows) result = reader.GetInt32(0);
+                }
                 else result = 0;
             });
             return result;
