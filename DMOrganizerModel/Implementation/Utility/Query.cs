@@ -573,7 +573,8 @@ namespace DMOrganizerModel.Implementation.Utility
                 using SQLiteCommand cmd = con.CreateCommand();
 
                 cmd.CommandText = @"INSERT INTO Book (Title, ID_Parent_Category) 
-                                            VALUES (@BookName, @BookParentID);";
+                                            VALUES (@BookName, @BookParentID);
+                                    SELECT last_insert_rowid();";
 
                 cmd.Parameters.AddWithValue("@BookName", name);
                 cmd.Parameters.AddWithValue("@BookParentID", parentID);
@@ -593,7 +594,8 @@ namespace DMOrganizerModel.Implementation.Utility
                 using SQLiteCommand cmd = con.CreateCommand();
 
                 cmd.CommandText = @"INSERT INTO Book (Title, ID_Parent_Category) 
-                                            VALUES (@BookName, NULL);";
+                                            VALUES (@BookName, NULL);
+                                    SELECT last_insert_rowid();";
 
                 cmd.Parameters.AddWithValue("@BookName", name);
                 using SQLiteDataReader reader = cmd.ExecuteReader();
@@ -628,7 +630,8 @@ namespace DMOrganizerModel.Implementation.Utility
                 using SQLiteCommand cmd = con.CreateCommand();
 
                 cmd.CommandText = @"INSERT INTO Page (Position, ID_Parent_Book) 
-                                            VALUES (@Position, @BookParentID);"
+                                            VALUES (@Position, @BookParentID);
+                                    SELECT last_insert_rowid();"
                 ;
 
                 cmd.Parameters.AddWithValue("@Position", pagePosition);
@@ -761,7 +764,8 @@ namespace DMOrganizerModel.Implementation.Utility
                 using SQLiteCommand cmd = con.CreateCommand();
 
                 cmd.CommandText = @"INSERT INTO Page (Position, ID_Parent_Book) 
-                                            VALUES (@PagePosition, @BookParentID);";
+                                            VALUES (@PagePosition, @BookParentID);
+                                    SELECT last_insert_rowid();";
                 cmd.Parameters.AddWithValue("@PagePosition", position);
                 cmd.Parameters.AddWithValue("@BookParentID", parentID);
                 using SQLiteDataReader reader = cmd.ExecuteReader();
@@ -962,7 +966,8 @@ namespace DMOrganizerModel.Implementation.Utility
                 using SQLiteCommand cmd = con.CreateCommand();
 
                 cmd.CommandText = @"INSERT INTO Continer (Type) 
-                                            VALUES (@Type);";
+                                            VALUES (@Type);
+                                    SELECT last_insert_rowid();";
 
                 cmd.Parameters.AddWithValue("@Type", type);
                 using SQLiteDataReader reader = cmd.ExecuteReader();
@@ -1173,7 +1178,8 @@ namespace DMOrganizerModel.Implementation.Utility
                 using SQLiteCommand cmd = con.CreateCommand();
 
                 cmd.CommandText = @"INSERT INTO Object (Link_To_Object) 
-                                            VALUES (@Link);";
+                                            VALUES (@Link);
+                                    SELECT last_insert_rowid();";
 
                 cmd.Parameters.AddWithValue("@Link", link);
                 using SQLiteDataReader reader = cmd.ExecuteReader();
