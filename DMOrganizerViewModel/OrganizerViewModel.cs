@@ -44,11 +44,30 @@ namespace DMOrganizerViewModel
         private string? m_CreatedDocument;
         private string? m_CreatedBook;
 
-        public ObservableCollection<ViewModelBase> OpenedItems { get; } = new();
+
+        private DMOrganizerViewModelBase? m_ActiveViewModel;
+        public DMOrganizerViewModelBase? ActiveViewModel
+        {
+            get => m_ActiveViewModel;
+            set
+            {
+                if (m_ActiveViewModel == value)
+                    return;
+                DMOrganizerViewModelBase? oldvm = m_ActiveViewModel;
+                if (oldvm != null)
+                    Context.BeginInvoke(() => oldvm.Unload());
+                m_ActiveViewModel = value;
+                m_ActiveViewModel?.Load();
+                InvokePropertyChanged(nameof(ActiveViewModel));
+            }
+        }
+        public ObservableCollection<DMOrganizerViewModelBase> OpenedItems { get; } = new();
 
         public DeferredCommand CreateCategory { get; }
         public DeferredCommand CreateDocument { get; }
         public DeferredCommand CreateBook { get; }
+        public DeferredCommand<DMOrganizerViewModelBase> OpenItem { get; }
+        public DeferredCommand<DMOrganizerViewModelBase> CloseItem { get; }
 
         public OrganizerViewModel(IContext context, IServiceProvider serviceProvider, IOrganizer organizer) : base(context, serviceProvider, organizer, null)
         {
@@ -58,6 +77,9 @@ namespace DMOrganizerViewModel
             OrganizerNotificationService = (INotificationService<OrganizerNotificationScenarios>)serviceProvider.GetService( typeof(INotificationService<OrganizerNotificationScenarios>) ) ?? throw new MissingServiceException("Missing NotificationService.");
             CreateCategory = new DeferredCommand(CommandHandler_CreateCategory, () => !LockingOperation);
             CreateDocument = new DeferredCommand(CommandHandler_CreateDocument, () => !LockingOperation);
+
+            OpenItem = new DeferredCommand<DMOrganizerViewModelBase>(CommandHandler_Open);
+            CloseItem = new DeferredCommand<DMOrganizerViewModelBase>(CommandHandler_Close);
 
             Organizer.OrganizerItemCreated.Subscribe(OrganizerItemCreated);
         }
@@ -78,6 +100,22 @@ namespace DMOrganizerViewModel
         {
             CreateCategory.InvokeCanExecuteChanged();
             CreateDocument.InvokeCanExecuteChanged();
+        }
+        
+        private void CommandHandler_Open(DMOrganizerViewModelBase? target)
+        {
+            if (target == null)
+                return;
+            else if (!OpenedItems.Contains(target))
+                OpenedItems.Add(target);
+            ActiveViewModel = target;
+        }
+
+        private void CommandHandler_Close(DMOrganizerViewModelBase? target)
+        {
+            if (target == null)
+                return;
+            OpenedItems.Remove(target);
         }
 
         private void CommandHandler_CreateCategory()
