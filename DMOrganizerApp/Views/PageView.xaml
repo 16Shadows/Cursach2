@@ -7,8 +7,8 @@
              mc:Ignorable="d" 
              d:DesignHeight="1753" d:DesignWidth="1240" MinHeight="1753" MinWidth="1240" Background="Beige">
     <!-- Paper is a4 size for 150dpi -->
-    <Grid>
+    <Canvas>
         <TextBlock Text="TOP" FontSize="100"></TextBlock>
-        <TextBlock Text="BOTTOM" FontSize="100" VerticalAlignment="Bottom"></TextBlock>
-    </Grid>
+        <TextBlock Text="BOTTOM" FontSize="100" Canvas.Left="30" Canvas.Top="300"></TextBlock>
+    </Canvas>
 </UserControl>

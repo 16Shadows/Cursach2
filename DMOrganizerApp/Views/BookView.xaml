@@ -21,22 +21,13 @@
         </Grid.ColumnDefinitions>
         
         <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" Width="5"/>
-        <Grid Grid.Column="2">
-            <Grid.RowDefinitions>
-                <RowDefinition />
-                <RowDefinition Height="60" MinHeight="60"/>
-            </Grid.RowDefinitions>
-            <DockPanel  Grid.Row="1" LastChildFill="False">
-                <Button DockPanel.Dock="Bottom" Content="Create container"></Button>
-                <Button DockPanel.Dock="Bottom" Content="help"></Button>
-                <Button DockPanel.Dock="Bottom" Content="help"></Button>
-            </DockPanel>
+
             <!-- Tree -->
-            <TreeView Grid.Row="0" Grid.ColumnSpan="2" MinWidth="30"
+            <TreeView Grid.Row="0" Grid.Column="2" MinWidth="30"
                       ItemsSource="{Binding Items.Value, Converter={StaticResource NullToLoading}}" 
                       SelectedItemChanged="TreeView_SelectedItemChanged">
-                <TreeView.Resources>
-                    <!-- Page -->
+            <TreeView.Resources>
+                <!-- Page -->
                     <DataTemplate DataType="{x:Type vm:BookPageViewModel}">
                         <StackPanel Orientation="Horizontal">
                             <Image Height="{StaticResource NavTreeIconHeight}" VerticalAlignment="Center" HorizontalAlignment="Center" Stretch="Uniform" Source="{StaticResource PageIcon}"/>
@@ -44,24 +35,20 @@
                             <StackPanel.ContextMenu>
                                 <ContextMenu>
                                     <MenuItem Header="Delete" Command="{Binding Delete}" />
+                                    <MenuItem Header="Create container" Command="{Binding CreateContainer}" />
                                 </ContextMenu>
                             </StackPanel.ContextMenu>
                         </StackPanel>
                     </DataTemplate>
-                </TreeView.Resources>
+                
+            </TreeView.Resources>
                 <TreeView.ContextMenu>
                     <ContextMenu>
-                        <MenuItem Header="Create">
-                            <MenuItem Command="{Binding CreatePage}" Header="Page">
-                                <MenuItem.Icon>
-                                    <Image Source="{StaticResource PageIcon}" Stretch="Uniform"/>
-                                </MenuItem.Icon>
-                            </MenuItem>
-                        </MenuItem>
+                    <MenuItem Header="Create Page" Command="{Binding CreatePage}"></MenuItem>
                     </ContextMenu>
                 </TreeView.ContextMenu>
             </TreeView>
-        </Grid>
+
         <ScrollViewer Grid.Column="0">
             <Viewbox Margin="20">
                 <ContentPresenter Content="{Binding ActivePageViewModel}">

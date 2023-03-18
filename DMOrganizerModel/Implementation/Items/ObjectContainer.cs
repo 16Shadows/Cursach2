@@ -33,6 +33,26 @@ namespace DMOrganizerModel.Implementation.Items
             ObjectContainerViewInfo.Invoke(this, new ObjectContainerViewInfoEventArgs(width, height, coordX, coordY, type));
         }
 
+        public void AddObject()
+        {
+            CheckDeleted();
+            Task.Run(() =>
+            {
+                IObject item = null;
+                int newObjectID;
+                string link = "";
+                lock (Lock)
+                {
+                    newObjectID = Query.CreateObject(Organizer.Connection, link);
+                }
+                if (newObjectID != -1)
+                {
+                    item = Organizer.GetObject(newObjectID, this); //caching object
+                    // telling everyone that object is added
+                    InvokeItemContainerContentChanged(item, ItemContainerContentChangedEventArgs<IObject>.ChangeType.ItemAdded, ItemContainerContentChangedEventArgs<IObject>.ResultType.Success);
+                }
+            });
+        }
         public void AddObject(IReferenceable obj)
         {
             CheckDeleted();

@@ -129,8 +129,9 @@ namespace DMOrganizerModel.Interface.Items
         //void UpdateContent(int oldObjectID, int newObjectID);
 
         /// <summary>
-        /// Creates new object in container.
+        /// Creates new object in container with link.
         /// </summary>
         void AddObject(IReferenceable obj);
+        void AddObject();
     }
 }

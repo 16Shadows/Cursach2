@@ -966,7 +966,7 @@ namespace DMOrganizerModel.Implementation.Utility
             {
                 using SQLiteCommand cmd = con.CreateCommand();
 
-                cmd.CommandText = @"INSERT INTO Continer (Type) 
+                cmd.CommandText = @"INSERT INTO Container (Type) 
                                             VALUES (@Type);
                                     SELECT last_insert_rowid();";
 

@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Resources\box.png" />
     <None Remove="Resources\ClosedBookIcon.png" />
     <None Remove="Resources\CollapsedCategoryIcon.png" />
     <None Remove="Resources\DocumentIcon.png" />
@@ -33,6 +34,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Resources\Box.png" />
     <Resource Include="Resources\ClosedBookIcon.png">
       <CopyToOutputDirectory></CopyToOutputDirectory>
     </Resource>

@@ -9,6 +9,7 @@ namespace DMOrganizerViewModel
 {
     public class BookViewModel : NamedContainerViewModel<IPage>
     {
+        //to change opened pages views in book view
         private ViewModelBase? m_ActivePageViewModel;
         public ViewModelBase? ActivePageViewModel
         {
@@ -36,7 +37,7 @@ namespace DMOrganizerViewModel
             if (item is null) throw new ArgumentNullException(nameof(item));
             else Book = item;
 
-            Book.BookItemCreated.Subscribe(BookItemCreated);
+            Book.BookItemCreated.Subscribe(Book_ItemCreated);
 
             CreatePage = new DeferredCommand(CommandHandler_CreatePage, () => !LockingOperation);
         }
@@ -47,7 +48,7 @@ namespace DMOrganizerViewModel
             Book.AddPage();
         }
 
-        private void BookItemCreated(IBook sender, BookItemCreatedEventArgs e)
+        private void Book_ItemCreated(IBook sender, BookItemCreatedEventArgs e)
         {
             if (!LockingOperation)
                 return;
