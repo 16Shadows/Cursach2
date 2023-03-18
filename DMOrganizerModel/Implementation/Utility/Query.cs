@@ -857,17 +857,14 @@ namespace DMOrganizerModel.Implementation.Utility
             connection.Read(con =>
             {
                 using SQLiteCommand cmd = con.CreateCommand();
-                cmd.CommandText = @"SELECT MAX(Page.Position) 
+                cmd.CommandText = @"SELECT IFNULL(MAX(Page.Position), 0)
                                     FROM Page 
                                     WHERE Page.ID_Parent_Book is @ParentBookID;";
                 
                 cmd.Parameters.AddWithValue("@ParentBookID", parentBookID);
                 using SQLiteDataReader reader = cmd.ExecuteReader();
                 if (reader.Read())
-                {
-                    if (reader.HasRows) result = reader.GetInt32(0);
-                }
-                else result = 0;
+                    result = reader.GetInt32(0);
             });
             return result;
         }
