@@ -3,10 +3,12 @@ using DMOrganizerModel.Interface.Items;
 using DMOrganizerModel.Interface.Organizer;
 using MVVMToolbox;
 using MVVMToolbox.Services;
-using MVVMToolbox.ViewModel;
 using System;
 using System.Collections.ObjectModel;
 using MVVMToolbox.Command;
+using CSToolbox;
+using CSToolbox.Weak;
+using CSToolbox.Extensions;
 
 namespace DMOrganizerViewModel
 {
@@ -35,8 +37,10 @@ namespace DMOrganizerViewModel
         }
     }
 
-    public sealed class OrganizerViewModel : ContainerViewModel<IOrganizerItem>
+    public sealed class OrganizerViewModel : DMOrganizerViewModelBase
     {
+        public ReadOnlyLazyProperty<ObservableCollection<ItemViewModel>?> Items { get; }
+
         private IOrganizer Organizer { get; }
         private IInputBoxService<OrganizerInputBoxScenarios> OrganizerInputBoxService { get; }
         private INotificationService<OrganizerNotificationScenarios> OrganizerNotificationService { get; }
@@ -69,7 +73,7 @@ namespace DMOrganizerViewModel
         public DeferredCommand<DMOrganizerViewModelBase> OpenItem { get; }
         public DeferredCommand<DMOrganizerViewModelBase> CloseItem { get; }
 
-        public OrganizerViewModel(IContext context, IServiceProvider serviceProvider, IOrganizer organizer) : base(context, serviceProvider, organizer, null)
+        public OrganizerViewModel(IContext context, IServiceProvider serviceProvider, IOrganizer organizer) : base(context, serviceProvider)
         {
             Organizer = organizer ?? throw new ArgumentNullException(nameof(organizer));
             //Disabled until the service is implemented
@@ -82,10 +86,41 @@ namespace DMOrganizerViewModel
             OpenItem = new DeferredCommand<DMOrganizerViewModelBase>(CommandHandler_Open, target => target?.LockingOperation != true);
             CloseItem = new DeferredCommand<DMOrganizerViewModelBase>(CommandHandler_Close);
 
+            Items = new ReadOnlyLazyProperty<ObservableCollection<ItemViewModel>?>(p =>
+            {
+                /*
+                    WeakAction will hold a weak reference to the temporary class on which the lambda will be invokeds
+                    So unless we hold the actual lambda (and thus its temporary class), it may get GC-ed. Probably. Need to verify.
+                */
+                WeakAction<IItemContainer<IOrganizerItem>, ItemContainerCurrentContentEventArgs<IOrganizerItem>>.CallType handler = (_, e) => Context.Invoke(() =>
+                {
+                    //Skip other possible invocations of this event until the handler is GCd
+                    if (p.Value != null)
+                        return;
+                    p.Value = new ObservableCollection<ItemViewModel>();
+                    foreach (IOrganizerItem item in e.Content)
+                        p.Value.Add(CreateViewModel(item));
+                });
+                Organizer.ItemContainerCurrentContent.Subscribe( handler );
+                Organizer.RequestItemContainerCurrentContent();
+            });
+
+            Organizer.ItemContainerContentChanged.Subscribe(ItemContainer_ItemContainerContentChanged);
+
             Organizer.OrganizerItemCreated.Subscribe(OrganizerItemCreated);
         }
 
-        protected override DMOrganizerViewModelBase CreateViewModel(IOrganizerItem item)
+        private void ItemContainer_ItemContainerContentChanged(IItemContainer<IOrganizerItem> sender, ItemContainerContentChangedEventArgs<IOrganizerItem> e)
+        {
+            if (!e.HasChanged || Items.Value == null)
+                return;
+            else if (e.Type == ItemContainerContentChangedEventArgs<IOrganizerItem>.ChangeType.ItemAdded)
+                Context.Invoke(() => Items.Value.Add(CreateViewModel(e.Item)));
+            else
+                Context.Invoke(() => Items.Value.Remove(vm => vm.Item.Equals(e.Item)) );
+        }
+
+        private ItemViewModel CreateViewModel(IOrganizerItem item)
         {
             if (item is ICategory category)
                 return new CategoryViewModel(Context, ServiceProvider, category);

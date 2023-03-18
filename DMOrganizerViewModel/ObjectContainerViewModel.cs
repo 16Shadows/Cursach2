@@ -10,7 +10,7 @@ using System.Windows.Controls;
 
 namespace DMOrganizerViewModel
 {
-    public class ObjectContainerViewModel : ContainerViewModel<IObject>
+    public class ObjectContainerViewModel : ContainerItemViewModel<IObject>
     {
         //has INotifyPropertyChanged, method void InvokePropertyChanged(string name)
         // CreateViewModel
@@ -50,7 +50,7 @@ namespace DMOrganizerViewModel
                 Type.Value = e.Type;
             });
         }
-        protected override DMOrganizerViewModelBase CreateViewModel(IObject item)
+        protected override ItemViewModel CreateViewModel(IObject item)
         {
             return new ContainerObjectViewModel(Context, ServiceProvider, item, item);
         }

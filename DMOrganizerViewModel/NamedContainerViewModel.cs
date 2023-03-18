@@ -8,7 +8,7 @@ using MVVMToolbox.Command;
 
 namespace DMOrganizerViewModel
 {
-    public enum ItemMessageBoxScenarios
+    public enum NamedItemMessageBoxScenarios
     {
         Delete
     }
@@ -35,7 +35,7 @@ namespace DMOrganizerViewModel
         }
     }
 
-    public abstract class NamedContainerViewModel<ContentType> : ContainerViewModel<ContentType> where ContentType : IItem
+    public abstract class NamedContainerViewModel<ContentType> : ContainerItemViewModel<ContentType> where ContentType : IItem
     {
         public LazyProperty<string?> Name { get; }
 
@@ -43,11 +43,9 @@ namespace DMOrganizerViewModel
         protected INotificationService<NamedItemNotificationScenarios> NamedItemNotificationService { get; }
         protected IInputBoxService<NamedItemInputBoxScenarios> NamedItemInputBoxService { get; }
         
-        private string? m_Renaming;
-        private bool m_Deleting;
+        protected string? m_Renaming;
 
-        public DeferredCommand Rename { get; }
-        public DeferredCommand Delete { get; }
+        public DeferredCommand Rename { get; protected init; }
 
         protected NamedContainerViewModel(IContext context, IServiceProvider serviceProvider, INamedItem item, IItemContainer<ContentType> container) : base(context, serviceProvider, container, item)
         {
@@ -57,7 +55,6 @@ namespace DMOrganizerViewModel
             NamedItemNotificationService = (INotificationService<NamedItemNotificationScenarios>)serviceProvider.GetService(typeof(INotificationService<NamedItemNotificationScenarios>)) ?? throw new MissingServiceException("Missing NotificationService.");
 
             NamedItem.ItemNameChanged.Subscribe(NamedItem_ItemNameChanged);
-            NamedItem.ItemDeleted.Subscribe(Item_Deleted);
 
             Name = new LazyProperty<string?>( _ => NamedItem.RequestItemNameUpdate() );
 
@@ -65,7 +62,7 @@ namespace DMOrganizerViewModel
             Delete = new DeferredCommand(CommandHandler_Delete, () => !LockingOperation);
         }
 
-        private void NamedItem_ItemNameChanged(INamedItem sender, NamedItemNameChangedEventArgs e)
+        protected virtual void NamedItem_ItemNameChanged(INamedItem sender, NamedItemNameChangedEventArgs e)
         {
             Context.Invoke(() => Name.Value = e.Name);
             if (e.Name != m_Renaming)
@@ -79,12 +76,12 @@ namespace DMOrganizerViewModel
             });
         }
 
-        private void Item_Deleted(IItem sender, ItemDeletedResult result)
+        private void CommandHandler_Delete()
         {
-            if (!m_Deleting)
-                return;
-            NamedItemNotificationConfiguration config = new (NamedItemNotificationScenarios.ItemDeleted, Name.Value);
-            Context.Invoke(() => NamedItemNotificationService.Show(config));
+            //Need to add a confirmation message here, need to implement message box service
+            Context.Invoke(() => LockingOperation = true);
+            m_Deleting = true;
+            Item.DeleteItem();
         }
 
         private void CommandHandler_Rename()
@@ -98,14 +95,6 @@ namespace DMOrganizerViewModel
             Context.Invoke(() => LockingOperation = true);
             m_Renaming = config.UserInput;
             NamedItem.ChangeItemName(m_Renaming);
-        }
-
-        private void CommandHandler_Delete()
-        {
-            //Need to add a confirmation message here, need to implement message box service
-            Context.Invoke(() => LockingOperation = true);
-            m_Deleting = true;
-            NamedItem.DeleteItem();
         }
 
         protected override void UpdateCommandsExecutability()

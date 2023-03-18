@@ -3,23 +3,23 @@ using CSToolbox.Extensions;
 using CSToolbox.Weak;
 using DMOrganizerModel.Interface.Items;
 using MVVMToolbox;
-using MVVMToolbox.ViewModel;
 using System;
 using System.Collections.ObjectModel;
+using System.Xml.Linq;
 
 namespace DMOrganizerViewModel
 {
-    public abstract class ContainerViewModel<ContentType> : DMOrganizerViewModelBase where ContentType : IItem
+    public abstract class ContainerItemViewModel<ContentType> : ItemViewModel where ContentType : IItem
     {
-        public ReadOnlyLazyProperty<ObservableCollection<DMOrganizerViewModelBase>?> Items { get; }
+        public ReadOnlyLazyProperty<ObservableCollection<ItemViewModel>?> Items { get; }
 
         protected IItemContainer<ContentType> Container { get; }
 
-        protected ContainerViewModel(IContext context, IServiceProvider serviceProvider, IItemContainer<ContentType> container, IItem item) : base(context, serviceProvider, item)
+        protected ContainerItemViewModel(IContext context, IServiceProvider serviceProvider, IItemContainer<ContentType> container, IItem item) : base(context, serviceProvider, item)
         {
             Container = container ?? throw new ArgumentNullException(nameof(container));
             
-            Items = new ReadOnlyLazyProperty<ObservableCollection<DMOrganizerViewModelBase>?>(p =>
+            Items = new ReadOnlyLazyProperty<ObservableCollection<ItemViewModel>?>(p =>
             {
                 /*
                     WeakAction will hold a weak reference to the temporary class on which the lambda will be invokeds
@@ -30,7 +30,7 @@ namespace DMOrganizerViewModel
                     //Skip other possible invocations of this event until the handler is GCd
                     if (p.Value != null)
                         return;
-                    p.Value = new ObservableCollection<DMOrganizerViewModelBase>();
+                    p.Value = new ObservableCollection<ItemViewModel>();
                     foreach (ContentType item in e.Content)
                         p.Value.Add(CreateViewModel(item));
                 });
@@ -41,7 +41,7 @@ namespace DMOrganizerViewModel
             Container.ItemContainerContentChanged.Subscribe(ItemContainer_ItemContainerContentChanged);
         }
 
-        private void ItemContainer_ItemContainerContentChanged(IItemContainer<ContentType> sender, ItemContainerContentChangedEventArgs<ContentType> e)
+        protected virtual void ItemContainer_ItemContainerContentChanged(IItemContainer<ContentType> sender, ItemContainerContentChangedEventArgs<ContentType> e)
         {
             if (!e.HasChanged || Items.Value == null)
                 return;
@@ -51,6 +51,6 @@ namespace DMOrganizerViewModel
                 Context.Invoke(() => Items.Value.Remove(vm => vm.Item.Equals(e.Item)) );
         }
 
-        protected abstract DMOrganizerViewModelBase CreateViewModel(ContentType item);
+        protected abstract ItemViewModel CreateViewModel(ContentType item);
     }
 }

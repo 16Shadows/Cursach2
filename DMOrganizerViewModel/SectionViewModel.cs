@@ -26,6 +26,6 @@ namespace DMOrganizerViewModel
             Context.Invoke(() => Content.Value = e.Content);
         }
 
-        protected override DMOrganizerViewModelBase CreateViewModel(ISection item) => new SectionViewModel(Context, ServiceProvider, item);
+        protected override ItemViewModel CreateViewModel(ISection item) => new SectionViewModel(Context, ServiceProvider, item);
     }
 }
