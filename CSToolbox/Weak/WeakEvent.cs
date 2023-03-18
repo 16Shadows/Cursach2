@@ -62,10 +62,6 @@ namespace CSToolbox.Weak
             return this;
         }
         public WeakEvent Unsubscribe(Delegate target) => Unsubscribe(new WeakDelegate(target));
-
-        public static WeakEvent operator +(WeakEvent weakEvent, WeakDelegate target) => weakEvent.Subscribe(target);
-
-        public static WeakEvent operator -(WeakEvent weakEvent, WeakDelegate target) => weakEvent.Unsubscribe(target);
     }
 
     public sealed class WeakEvent<Arg1>
@@ -97,9 +93,6 @@ namespace CSToolbox.Weak
             Event.Unsubscribe(target);
             return this;
         }
-
-        public static WeakEvent<Arg1> operator +(WeakEvent<Arg1> weakEvent, WeakAction<Arg1> target) => weakEvent.Subscribe(target);
-        public static WeakEvent<Arg1> operator -(WeakEvent<Arg1> weakEvent, WeakAction<Arg1> target) => weakEvent.Unsubscribe(target);
     }
 
     public sealed class WeakEvent<Arg1, Arg2>
@@ -131,8 +124,5 @@ namespace CSToolbox.Weak
             Event.Unsubscribe(target);
             return this;
         }
-
-        public static WeakEvent<Arg1, Arg2> operator +(WeakEvent<Arg1, Arg2> weakEvent, WeakAction<Arg1, Arg2> target) => weakEvent.Subscribe(target);
-        public static WeakEvent<Arg1, Arg2> operator -(WeakEvent<Arg1, Arg2> weakEvent, WeakAction<Arg1, Arg2> target) => weakEvent.Unsubscribe(target);
     }
 }
