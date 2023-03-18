@@ -12,47 +12,27 @@
         <core:Double x:Key="NavTreeFontSize">20</core:Double>
         <core:Double x:Key="NavTreeIconHeight">40</core:Double>
     </UserControl.Resources>
-
+    
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
-            <ColumnDefinition/>
+            <ColumnDefinition Width="2*" MinWidth="200" />
+            <ColumnDefinition Width="5" />
+            <ColumnDefinition Width="*" MinWidth="100"/>
         </Grid.ColumnDefinitions>
-        <DockPanel Grid.Column="1" MinWidth="100" HorizontalAlignment="Right" >
-            <Grid DockPanel.Dock="Bottom">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition  Width="5"/>
-                    <ColumnDefinition  Width="*"/>
-                </Grid.ColumnDefinitions>
-            </Grid>
-            <GridSplitter Grid.Column="1" VerticalAlignment="Stretch"></GridSplitter>
-            <TreeView MinWidth="30" ItemsSource="{Binding Items.Value, Converter={StaticResource NullToLoading}}">
+        
+        <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" Width="5"/>
+        <Grid Grid.Column="2">
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition Height="60" MinHeight="60"/>
+            </Grid.RowDefinitions>
+            <DockPanel  Grid.Row="1" LastChildFill="False">
+                <Button DockPanel.Dock="Bottom" Content="Create container"></Button>
+                <Button DockPanel.Dock="Bottom" Content="help"></Button>
+                <Button DockPanel.Dock="Bottom" Content="help"></Button>
+            </DockPanel>
+            <TreeView Grid.Row="0" Grid.ColumnSpan="2" MinWidth="30" ItemsSource="{Binding Items.Value, Converter={StaticResource NullToLoading}}">
                 <TreeView.Resources>
-                    <!-- Book -->
-                    <HierarchicalDataTemplate DataType="{x:Type vm:BookViewModel}" ItemsSource="{Binding Items.Value}">
-                        <StackPanel Orientation="Horizontal">
-                            <Image Height="{StaticResource NavTreeIconHeight}" VerticalAlignment="Center" HorizontalAlignment="Center" Stretch="Uniform">
-                                <Image.Style>
-                                    <Style TargetType="Image">
-                                        <Setter Property="Source" Value="{StaticResource ClosedBookIcon}" />
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding IsExpanded, RelativeSource={RelativeSource AncestorType=TreeViewItem}, UpdateSourceTrigger=PropertyChanged}" Value="True">
-                                                <Setter Property="Source" Value="{StaticResource OpenedBookIcon}" />
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Image.Style>
-                            </Image>
-                            <TextBlock Text="{Binding Name.Value, Converter={StaticResource NullToLoading}}" FontSize="{StaticResource NavTreeFontSize}" VerticalAlignment="Center" HorizontalAlignment="Left"/>
-                            <StackPanel.ContextMenu>
-                                <ContextMenu>
-                                    <MenuItem Header="Rename" Command="{Binding Rename}"/>
-                                    <MenuItem Header="Delete" Command="{Binding Delete}" />
-                                </ContextMenu>
-                            </StackPanel.ContextMenu>
-                        </StackPanel>
-                    </HierarchicalDataTemplate>
                     <!-- Page -->
                     <DataTemplate DataType="{x:Type vm:BookPageViewModel}">
                         <StackPanel Orientation="Horizontal">
@@ -65,8 +45,8 @@
                             </StackPanel.ContextMenu>
                         </StackPanel>
                     </DataTemplate>
-
                 </TreeView.Resources>
+
                 <TreeView.ContextMenu>
                     <ContextMenu>
                         <MenuItem Header="Create">
@@ -74,11 +54,13 @@
                                 <MenuItem.Icon>
                                     <Image Source="{StaticResource PageIcon}" Stretch="Uniform"/>
                                 </MenuItem.Icon>
-                            </MenuItem>                            
+                            </MenuItem>
                         </MenuItem>
                     </ContextMenu>
                 </TreeView.ContextMenu>
             </TreeView>
-        </DockPanel>
+        </Grid>
+       
+
         </Grid>
 </UserControl>

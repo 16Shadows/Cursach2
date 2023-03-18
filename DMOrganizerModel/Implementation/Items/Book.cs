@@ -41,6 +41,10 @@ namespace DMOrganizerModel.Implementation.Items
                     InvokeItemContainerContentChanged(item, ItemContainerContentChangedEventArgs<IPage>.ChangeType.ItemAdded, ItemContainerContentChangedEventArgs<IPage>.ResultType.Success);
                     InvokeBookItemCreated(newPageID, BookItemCreatedEventArgs.ResultType.Success);
                 }
+                else
+                {
+                    InvokeBookItemCreated(newPageID, BookItemCreatedEventArgs.ResultType.Failure);
+                }
             });
         }
         public void MovePagesToInsertPage(int BookID, int position)
@@ -64,22 +68,31 @@ namespace DMOrganizerModel.Implementation.Items
                 }
             });
         }
+        public int GetLastAvailablePagePosition(int BookID)
+        {
+            CheckDeleted();
+            return Query.MaxPagePosition(Organizer.Connection, BookID)+1;
+        }
         public void AddPage(int position)
         {
             //check how many pages, if it is last or bigger - add at last,
             //if in middle - move all other pages(from end to avoid non-unique positions) +1 and add this page
             CheckDeleted();
+            int newPageID = -1;
+            IPage item = null;
+
             Task.Run(() =>
             {
                 MovePagesToInsertPage(ItemID, position); //need check if pages were moved
-                int newPageID = Query.CreatePadeInBook(Organizer.Connection, ItemID, position);
-                IPage item = null;
+                newPageID = Query.CreatePadeInBook(Organizer.Connection, ItemID, position);
                 item = Organizer.GetPage(newPageID, this); //caching object
-
+            });
+            if (newPageID != -1)
+            { 
                 // telling everyone that page is added
                 InvokeItemContainerContentChanged(item, ItemContainerContentChangedEventArgs<IPage>.ChangeType.ItemAdded, ItemContainerContentChangedEventArgs<IPage>.ResultType.Success);
+            }
 
-            });
         }
 
         public override string GetName()
