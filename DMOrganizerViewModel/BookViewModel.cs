@@ -22,7 +22,7 @@ namespace DMOrganizerViewModel
                     Context.BeginInvoke(() => oldvm.Unload());
                 m_ActivePageViewModel = value;
                 m_ActivePageViewModel?.Load();
-                InvokePropertyChanged(nameof(m_ActivePageViewModel));
+                InvokePropertyChanged(nameof(ActivePageViewModel));
             }
         }
         private IBook Book { get; }
