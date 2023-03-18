@@ -47,6 +47,11 @@ namespace CSToolbox.Weak
         }
 
         public override int GetHashCode() => base.GetHashCode();
+
+        public static implicit operator WeakDelegate(Delegate target)
+        {
+            return new WeakDelegate(target);
+        }
     }
 
     public sealed class WeakDelegate<RetType> : WeakDelegate
@@ -56,6 +61,11 @@ namespace CSToolbox.Weak
         public WeakDelegate(CallType del) : base(del) { }
 
         public RetType Invoke() => (RetType)Invoke(null);
+
+        public static implicit operator WeakDelegate<RetType>(CallType target)
+        {
+            return new WeakDelegate<RetType>(target);
+        }
     }
 
     public sealed class WeakDelegate<RetType, Arg1> : WeakDelegate
@@ -65,6 +75,11 @@ namespace CSToolbox.Weak
         public WeakDelegate(CallType del) : base(del) { }
 
         public RetType Invoke(Arg1 arg1) => (RetType)Invoke(new object[] { arg1 });
+
+        public static implicit operator WeakDelegate<RetType, Arg1>(CallType target)
+        {
+            return new WeakDelegate<RetType, Arg1>(target);
+        }
     }
 
     public sealed class WeakDelegate<RetType, Arg1, Arg2> : WeakDelegate
@@ -74,6 +89,11 @@ namespace CSToolbox.Weak
         public WeakDelegate(CallType del) : base(del) { }
 
         public RetType Invoke(Arg1 arg1, Arg2 arg2) => (RetType)Invoke(new object[] { arg1, arg2 });
+
+        public static implicit operator WeakDelegate<RetType, Arg1, Arg2>(CallType target)
+        {
+            return new WeakDelegate<RetType, Arg1, Arg2>(target);
+        }
     }
 
     public sealed class WeakDelegate<RetType, Arg1, Arg2, Arg3> : WeakDelegate
@@ -83,6 +103,11 @@ namespace CSToolbox.Weak
         public WeakDelegate(CallType del) : base(del) { }
 
         public RetType Invoke(Arg1 arg1, Arg2 arg2, Arg3 arg3) => (RetType)Invoke(new object[] { arg1, arg2, arg3 });
+
+        public static implicit operator WeakDelegate<RetType, Arg1, Arg2, Arg3>(CallType target)
+        {
+            return new WeakDelegate<RetType, Arg1, Arg2, Arg3>(target);
+        }
     }
 
     public sealed class WeakDelegate<RetType, Arg1, Arg2, Arg3, Arg4> : WeakDelegate
@@ -92,6 +117,11 @@ namespace CSToolbox.Weak
         public WeakDelegate(CallType del) : base(del) { }
 
         public RetType Invoke(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4) => (RetType)Invoke(new object[] { arg1, arg2, arg3, arg4 });
+
+        public static implicit operator WeakDelegate<RetType, Arg1, Arg2, Arg3, Arg4>(CallType target)
+        {
+            return new WeakDelegate<RetType, Arg1, Arg2, Arg3, Arg4>(target);
+        }
     }
 
     public sealed class WeakDelegate<RetType, Arg1, Arg2, Arg3, Arg4, Arg5> : WeakDelegate
@@ -101,6 +131,11 @@ namespace CSToolbox.Weak
         public WeakDelegate(CallType del) : base(del) { }
 
         public RetType Invoke(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5) => (RetType)Invoke(new object[] { arg1, arg2, arg3, arg4, arg5 });
+
+        public static implicit operator WeakDelegate<RetType, Arg1, Arg2, Arg3, Arg4, Arg5>(CallType target)
+        {
+            return new WeakDelegate<RetType, Arg1, Arg2, Arg3, Arg4, Arg5>(target);
+        }
     }
 
     public sealed class WeakDelegate<RetType, Arg1, Arg2, Arg3, Arg4, Arg5, Arg6> : WeakDelegate
@@ -110,6 +145,11 @@ namespace CSToolbox.Weak
         public WeakDelegate(CallType del) : base(del) { }
 
         public RetType Invoke(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6) => (RetType)Invoke(new object[] { arg1, arg2, arg3, arg4, arg5, arg6 });
+
+        public static implicit operator WeakDelegate<RetType, Arg1, Arg2, Arg3, Arg4, Arg5, Arg6>(CallType target)
+        {
+            return new WeakDelegate<RetType, Arg1, Arg2, Arg3, Arg4, Arg5, Arg6>(target);
+        }
     }
 
     public sealed class WeakDelegate<RetType, Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7> : WeakDelegate
@@ -119,6 +159,11 @@ namespace CSToolbox.Weak
         public WeakDelegate(CallType del) : base(del) { }
 
         public RetType Invoke(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7) => (RetType)Invoke(new object[] { arg1, arg2, arg3, arg4, arg5, arg6, arg7 });
+
+        public static implicit operator WeakDelegate<RetType, Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7>(CallType target)
+        {
+            return new WeakDelegate<RetType, Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7>(target);
+        }
     }
 
     public sealed class WeakDelegate<RetType, Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8> : WeakDelegate
@@ -128,6 +173,11 @@ namespace CSToolbox.Weak
         public WeakDelegate(CallType del) : base(del) { }
 
         public RetType Invoke(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8) => (RetType)Invoke(new object[] { arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8 });
+
+        public static implicit operator WeakDelegate<RetType, Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8>(CallType target)
+        {
+            return new WeakDelegate<RetType, Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8>(target);
+        }
     }
 
     public sealed class WeakAction : WeakDelegate
@@ -137,6 +187,11 @@ namespace CSToolbox.Weak
         public WeakAction(CallType del) : base(del) { }
 
         public void Invoke() => Invoke(null);
+
+        public static implicit operator WeakAction(CallType target)
+        {
+            return new WeakAction(target);
+        }
     }
 
     public sealed class WeakAction<Arg1> : WeakDelegate
@@ -146,6 +201,11 @@ namespace CSToolbox.Weak
         public WeakAction(CallType del) : base(del) { }
 
         public void Invoke(Arg1 arg1) => Invoke(new object[] { arg1 });
+
+        public static implicit operator WeakAction<Arg1>(CallType target)
+        {
+            return new WeakAction<Arg1>(target);
+        }
     }
 
     public sealed class WeakAction<Arg1, Arg2> : WeakDelegate
@@ -155,6 +215,11 @@ namespace CSToolbox.Weak
         public WeakAction(CallType del) : base(del) { }
 
         public void Invoke(Arg1 arg1, Arg2 arg2) => Invoke(new object[] { arg1, arg2 });
+
+        public static implicit operator WeakAction<Arg1, Arg2>(CallType target)
+        {
+            return new WeakAction<Arg1, Arg2>(target);
+        }
     }
 
     public sealed class WeakAction<Arg1, Arg2, Arg3> : WeakDelegate
@@ -164,6 +229,11 @@ namespace CSToolbox.Weak
         public WeakAction(CallType del) : base(del) { }
 
         public void Invoke(Arg1 arg1, Arg2 arg2, Arg3 arg3) => Invoke(new object[] { arg1, arg2, arg3 });
+
+        public static implicit operator WeakAction<Arg1, Arg2, Arg3>(CallType target)
+        {
+            return new WeakAction<Arg1, Arg2, Arg3>(target);
+        }
     }
 
     public sealed class WeakAction<Arg1, Arg2, Arg3, Arg4> : WeakDelegate
@@ -173,6 +243,11 @@ namespace CSToolbox.Weak
         public WeakAction(CallType del) : base(del) { }
 
         public void Invoke(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4) => Invoke(new object[] { arg1, arg2, arg3, arg4 });
+
+        public static implicit operator WeakAction<Arg1, Arg2, Arg3, Arg4>(CallType target)
+        {
+            return new WeakAction<Arg1, Arg2, Arg3, Arg4>(target);
+        }
     }
 
     public sealed class WeakAction<Arg1, Arg2, Arg3, Arg4, Arg5> : WeakDelegate
@@ -182,6 +257,11 @@ namespace CSToolbox.Weak
         public WeakAction(CallType del) : base(del) { }
 
         public void Invoke(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5) => Invoke(new object[] { arg1, arg2, arg3, arg4, arg5 });
+
+        public static implicit operator WeakAction<Arg1, Arg2, Arg3, Arg4, Arg5>(CallType target)
+        {
+            return new WeakAction<Arg1, Arg2, Arg3, Arg4, Arg5>(target);
+        }
     }
 
     public sealed class WeakAction<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6> : WeakDelegate
@@ -191,6 +271,11 @@ namespace CSToolbox.Weak
         public WeakAction(CallType del) : base(del) { }
 
         public void Invoke(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6) => Invoke(new object[] { arg1, arg2, arg3, arg4, arg5, arg6 });
+
+        public static implicit operator WeakAction<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6>(CallType target)
+        {
+            return new WeakAction<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6>(target);
+        }
     }
 
     public sealed class WeakAction<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7> : WeakDelegate
@@ -200,6 +285,11 @@ namespace CSToolbox.Weak
         public WeakAction(CallType del) : base(del) { }
 
         public void Invoke(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7) => Invoke(new object[] { arg1, arg2, arg3, arg4, arg5, arg6, arg7 });
+
+        public static implicit operator WeakAction<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7>(CallType target)
+        {
+            return new WeakAction<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7>(target);
+        }
     }
 
     public sealed class WeakAction<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8> : WeakDelegate
@@ -209,5 +299,10 @@ namespace CSToolbox.Weak
         public WeakAction(CallType del) : base(del) { }
 
         public void Invoke(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8) => Invoke(new object[] { arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8 });
+
+        public static implicit operator WeakAction<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8>(CallType target)
+        {
+            return new WeakAction<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8>(target);
+        }
     }
 }
