@@ -57,9 +57,7 @@ namespace DMOrganizerViewModel
             {
                 if (m_ActiveViewModel == value)
                     return;
-                DMOrganizerViewModelBase? oldvm = m_ActiveViewModel;
-                if (oldvm != null)
-                    Context.BeginInvoke(() => oldvm.Unload());
+                m_ActiveViewModel?.Unload();
                 m_ActiveViewModel = value;
                 m_ActiveViewModel?.Load();
                 InvokePropertyChanged(nameof(ActiveViewModel));
