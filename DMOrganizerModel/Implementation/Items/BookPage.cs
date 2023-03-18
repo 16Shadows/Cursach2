@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using DMOrganizerModel.Implementation.Utility;
 using CSToolbox.Weak;
+using System.Net;
 
 namespace DMOrganizerModel.Implementation.Items
 {
@@ -61,7 +62,6 @@ namespace DMOrganizerModel.Implementation.Items
                 }
             });
         }
-
         public void MovePagesAfterPageDeletion(int BookID, int position)
         {
             CheckDeleted();
@@ -107,7 +107,10 @@ namespace DMOrganizerModel.Implementation.Items
         //request page position no matter in what book it is, just by id
         public int RequestPagePosition()
         {
-            return Query.GetPagePosition(Organizer.Connection, ItemID);
+            int bookID = (this.Parent as Book).ItemID;
+            int pos = Query.GetPagePosition(Organizer.Connection, ItemID);
+            InvokePageActionCompleted(bookID, PageActionEventArgs.ActionType.ChangedPosition, pos, PageActionEventArgs.ResultType.Success);
+            return pos;
         }
 
 

@@ -97,6 +97,8 @@
                         <TextBlock Text="{Binding Name.Value, Converter={StaticResource NullToLoading}}" FontSize="{StaticResource NavTreeFontSize}" VerticalAlignment="Center" HorizontalAlignment="Left"/>
                         <StackPanel.ContextMenu>
                             <ContextMenu>
+                                <MenuItem Header="Open" Command="{Binding Context.OpenItem, Source={StaticResource BindingProxy}}" CommandParameter="{Binding}"/>
+                                <Separator />
                                 <MenuItem Header="Rename" Command="{Binding Rename}"/>
                                 <MenuItem Header="Delete" Command="{Binding Delete}" />
                             </ContextMenu>
@@ -170,6 +172,41 @@
                                 </Button>
                             </StackPanel>
                         </DataTemplate>
+                        <DataTemplate DataType="{x:Type vm:BookViewModel}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding Name.Value}" />
+                                <Button Margin="5, 0, 0, 0" Command="{Binding DataContext.CloseItem, RelativeSource={RelativeSource AncestorType=local:OrganizerView}}" CommandParameter="{Binding}">
+                                    <Button.Content>
+                                        <Image>
+                                            <Image.Source>
+                                                <DrawingImage>
+                                                    <DrawingImage.Drawing>
+                                                        <DrawingGroup>
+                                                            <GeometryDrawing>
+                                                                <GeometryDrawing.Pen>
+                                                                    <Pen Brush="Black" Thickness="1" />
+                                                                </GeometryDrawing.Pen>
+                                                                <GeometryDrawing.Geometry>
+                                                                    <LineGeometry StartPoint="0, 0" EndPoint="10, 10"/>
+                                                                </GeometryDrawing.Geometry>
+                                                            </GeometryDrawing>
+                                                            <GeometryDrawing>
+                                                                <GeometryDrawing.Pen>
+                                                                    <Pen Brush="Black" Thickness="1" />
+                                                                </GeometryDrawing.Pen>
+                                                                <GeometryDrawing.Geometry>
+                                                                    <LineGeometry StartPoint="0, 10" EndPoint="10, 0"/>
+                                                                </GeometryDrawing.Geometry>
+                                                            </GeometryDrawing>
+                                                        </DrawingGroup>
+                                                    </DrawingImage.Drawing>
+                                                </DrawingImage>
+                                            </Image.Source>
+                                        </Image>
+                                    </Button.Content>
+                                </Button>
+                            </StackPanel>
+                        </DataTemplate>
                     </toolbox:TemplateSelectorEx.Templates>
                 </toolbox:TemplateSelectorEx>
             </TabControl.ItemTemplateSelector>
@@ -178,6 +215,9 @@
                     <toolbox:TemplateSelectorEx.Templates>
                         <DataTemplate DataType="{x:Type vm:DocumentViewModel}">
                             <local:DocumentView />
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type vm:BookViewModel}">
+                            <local:BookView />
                         </DataTemplate>
                     </toolbox:TemplateSelectorEx.Templates>
                 </toolbox:TemplateSelectorEx>
