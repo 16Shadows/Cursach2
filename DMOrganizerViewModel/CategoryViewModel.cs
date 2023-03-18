@@ -40,12 +40,12 @@ namespace DMOrganizerViewModel
         private string? m_CreatingDocument;
         private string? m_CreatingBook;
 
-
         private ICategory Category { get; }
 
         public DeferredCommand CreateCategory { get; }
         public DeferredCommand CreateDocument { get; }
         public DeferredCommand CreateBook { get; }
+
 
         public CategoryViewModel(IContext context, IServiceProvider serviceProvider, ICategory category) : base(context, serviceProvider, category, category)
         {
@@ -55,7 +55,9 @@ namespace DMOrganizerViewModel
             CategoryNotificationService = (INotificationService<CategoryNotificationScenarios>)serviceProvider.GetService(typeof(INotificationService<CategoryNotificationScenarios>)) ?? throw new MissingServiceException("Missing NotificationService.");
 
             Category.CategoryItemCreated.Subscribe(CategoryItemCreated);
-
+        public DeferredCommand CreateBook { get; }
+        public DeferredCommand Rename { get; }
+        public DeferredCommand Delete { get; }
 
             CreateCategory = new DeferredCommand(CommandHandler_CreateCategory, () => !LockingOperation);
             CreateDocument = new DeferredCommand(CommandHandler_CreateDocument, () => !LockingOperation);

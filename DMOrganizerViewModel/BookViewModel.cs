@@ -1,10 +1,7 @@
 ﻿using System;
 using DMOrganizerModel.Interface.Items;
-using MVVMToolbox.Services;
 using MVVMToolbox;
 using MVVMToolbox.Command;
-using DMOrganizerModel.Implementation.Utility;
-using System.Windows.Controls;
 
 namespace DMOrganizerViewModel
 {

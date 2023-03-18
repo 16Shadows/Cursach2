@@ -2,7 +2,7 @@
 
 namespace WPFToolbox
 {
-    internal class BindingProxy : Freezable
+    public class BindingProxy : Freezable
     {
         public static readonly DependencyProperty ContextProperty = DependencyProperty.Register(nameof(Context), typeof(object), typeof(BindingProxy));
 
