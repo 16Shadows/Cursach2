@@ -14,6 +14,7 @@
     <None Remove="Resources\ExpandedCategoryIcon.png" />
     <None Remove="Resources\OpenedBookIcon.png" />
     <None Remove="Resources\Page.png" />
+    <None Remove="Resources\PlusIcon.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -33,6 +34,7 @@
     <Resource Include="Resources\ExpandedCategoryIcon.png" />
     <Resource Include="Resources\OpenedBookIcon.png" />
     <Resource Include="Resources\Page.png" />
+    <Resource Include="Resources\PlusIcon.png" />
   </ItemGroup>
 
   <ItemGroup>

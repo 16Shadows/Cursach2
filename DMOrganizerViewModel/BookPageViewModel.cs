@@ -13,13 +13,6 @@ namespace DMOrganizerViewModel
 {
     public class BookPageViewModel : ContainerViewModel<IObjectContainer>
     {
-        //has INotifyPropertyChanged, method void InvokePropertyChanged(string name)
-        // CreateViewModel
-        // readonly LazyProperty <ObservableCollection<> Items { get; }
-        // IItemContainer<IPage> Container { get; }
-        // event on container items change (add, remove) - ItemContainer_ItemContainerContentChanged
-        // ItemContainerContentChanged for events on add/remove item
-
         public LazyProperty<int> Position { get; }
         protected IPage Page { get; }
 
