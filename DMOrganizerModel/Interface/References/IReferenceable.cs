@@ -2,7 +2,7 @@
 
 namespace DMOrganizerModel.Interface.References
 {
-    public interface IReferenceable : IItem
+    public interface IReferenceable : INamedItem
     {
         /// <summary>
         /// Creates a reference to this item

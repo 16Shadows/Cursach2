@@ -3,11 +3,12 @@ using DMOrganizerModel.Implementation.Organizers;
 using DMOrganizerModel.Implementation.Utility;
 using DMOrganizerModel.Interface.Items;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace DMOrganizerModel.Implementation.Items
 {
-    internal sealed class Category : NamedContainerItem<IOrganizerItem>, ICategory
+    internal sealed class Category : NamedContainerItem<IOrganizerItem>, ICategory, IReferenceInfrastructure
     {
         public Category(int itemID, IItemContainerBase parent, Organizer organizer) : base(itemID, parent, organizer) {}
 
@@ -146,6 +147,13 @@ namespace DMOrganizerModel.Implementation.Items
         protected override void SetParentInternal(IItemContainerBase parent)
         {
             Query.SetCategoryParent(Organizer.Connection, ItemID, (parent as Category)?.ItemID);
+        }
+
+        public StringBuilder GetPath(int len)
+        {
+            if (Parent is Category cat)
+                return cat.GetPath(len + CachedName.Length + 1).Append('/').Append(CachedName);
+            return (new StringBuilder(CachedName.Length+1)).Append('/').Append(CachedName);
         }
     }
 }
