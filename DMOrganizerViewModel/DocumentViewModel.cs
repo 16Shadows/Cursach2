@@ -54,9 +54,9 @@ namespace DMOrganizerViewModel
             {
                 WeakAction<IDocument, DocumentCurrentTagsEventArgs>.CallType handler = (_, e) => Context.Invoke(() =>
                 {
-                    if (p.Value != null)
+                    if (Tags.Value != null)
                         return;
-                    p.Value = new ObservableCollection<string>(e.Tags);
+                    p(new ObservableCollection<string>(e.Tags));
                 });
                 Document.DocumentCurrentTags.Subscribe(handler);
                 Document.RequestDocumentCurrentTags();

@@ -28,11 +28,12 @@ namespace DMOrganizerViewModel
                 WeakAction<IItemContainer<ContentType>, ItemContainerCurrentContentEventArgs<ContentType>>.CallType handler = (_, e) => Context.Invoke(() =>
                 {
                     //Skip other possible invocations of this event until the handler is GCd
-                    if (p.Value != null)
+                    if (Items.Value != null)
                         return;
-                    p.Value = new ObservableCollection<ItemViewModel>();
+                    ObservableCollection<ItemViewModel> v = new ();
                     foreach (ContentType item in e.Content)
-                        p.Value.Add(CreateViewModel(item));
+                        v.Add(CreateViewModel(item));
+                    p(v);
                 });
                 Container.ItemContainerCurrentContent.Subscribe( handler );
                 Container.RequestItemContainerCurrentContent();

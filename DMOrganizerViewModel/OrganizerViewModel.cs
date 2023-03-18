@@ -93,11 +93,12 @@ namespace DMOrganizerViewModel
                 WeakAction<IItemContainer<IOrganizerItem>, ItemContainerCurrentContentEventArgs<IOrganizerItem>>.CallType handler = (_, e) => Context.Invoke(() =>
                 {
                     //Skip other possible invocations of this event until the handler is GCd
-                    if (p.Value != null)
+                    if (Items.Value != null)
                         return;
-                    p.Value = new ObservableCollection<ItemViewModel>();
+                    ObservableCollection<ItemViewModel> v = new ();
                     foreach (IOrganizerItem item in e.Content)
-                        p.Value.Add(CreateViewModel(item));
+                        v.Add(CreateViewModel(item));
+                    p(v);
                 });
                 Organizer.ItemContainerCurrentContent.Subscribe( handler );
                 Organizer.RequestItemContainerCurrentContent();
