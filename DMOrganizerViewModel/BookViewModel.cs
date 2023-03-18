@@ -38,12 +38,6 @@ namespace DMOrganizerViewModel
             if (!LockingOperation)
                 return;
 
-            //if (m_CreatingPage == e.Position)
-            //{
-            //    m_CreatingPage = 0;
-            //}
-            //else
-            //    return;
 
             Context.Invoke(() =>
             {
