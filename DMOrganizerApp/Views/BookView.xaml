@@ -31,7 +31,10 @@
                 <Button DockPanel.Dock="Bottom" Content="help"></Button>
                 <Button DockPanel.Dock="Bottom" Content="help"></Button>
             </DockPanel>
-            <TreeView Grid.Row="0" Grid.ColumnSpan="2" MinWidth="30" ItemsSource="{Binding Items.Value, Converter={StaticResource NullToLoading}}">
+            <!-- Tree -->
+            <TreeView Grid.Row="0" Grid.ColumnSpan="2" MinWidth="30"
+                      ItemsSource="{Binding Items.Value, Converter={StaticResource NullToLoading}}" 
+                      SelectedItemChanged="TreeView_SelectedItemChanged">
                 <TreeView.Resources>
                     <!-- Page -->
                     <DataTemplate DataType="{x:Type vm:BookPageViewModel}">
@@ -46,7 +49,6 @@
                         </StackPanel>
                     </DataTemplate>
                 </TreeView.Resources>
-
                 <TreeView.ContextMenu>
                     <ContextMenu>
                         <MenuItem Header="Create">
@@ -60,7 +62,18 @@
                 </TreeView.ContextMenu>
             </TreeView>
         </Grid>
-       
+        <ScrollViewer Grid.Column="0">
+            <Viewbox Margin="20">
+                <ContentPresenter Content="{Binding ActivePageViewModel}">
+                    <ContentPresenter.Resources>
+                        <DataTemplate DataType="{x:Type vm:BookPageViewModel}">
+                            <local:PageView />
+                        </DataTemplate>
+                    </ContentPresenter.Resources>
+                </ContentPresenter>
+            </Viewbox>
+            
+        </ScrollViewer>
 
         </Grid>
 </UserControl>

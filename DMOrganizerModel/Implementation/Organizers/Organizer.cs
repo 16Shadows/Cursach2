@@ -200,16 +200,6 @@ namespace DMOrganizerModel.Implementation.Organizers
                 BEGIN
                    SELECT
                       CASE
-	                WHEN Page.Position IN (SELECT Page.Position FROM Page WHERE Page.ID_Parent_Book = NEW.ID_Parent_Book) THEN
-   	                  RAISE (ABORT,'Invalid page position.')
-                       END;
-                END;
-
-                CREATE TRIGGER IF NOT EXISTS Validate_Page_Position_Before_Insert 
-                   BEFORE INSERT ON Page
-                BEGIN
-                   SELECT
-                      CASE
 	                WHEN NEW.Position IN (SELECT Page.Position FROM Page WHERE Page.ID_Parent_Book = NEW.ID_Parent_Book) THEN
    	                  RAISE (ABORT,'Invalid page position.')
                        END;
