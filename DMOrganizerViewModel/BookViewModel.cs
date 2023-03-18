@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using DMOrganizerModel.Interface.Items;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using MVVMToolbox;
-using CSToolbox;
-using WPFToolbox.Command;
+using MVVMToolbox.Command;
 
 namespace DMOrganizerViewModel
 {
@@ -22,8 +17,6 @@ namespace DMOrganizerViewModel
 
         //commands for TreeView
         public DeferredCommand CreateBook { get; }
-        public DeferredCommand Rename { get; }
-        public DeferredCommand Delete { get; }
 
         //base constructor makes property of book Name and subscribes events on it, +Items and events
         public BookViewModel(IContext context, IServiceProvider serviceProvider, INamedItem item, IItemContainer<IPage> container) : base(context, serviceProvider, item, container) { }
