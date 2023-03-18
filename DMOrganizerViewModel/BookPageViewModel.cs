@@ -43,7 +43,7 @@ namespace DMOrganizerViewModel
         }
         protected override DMOrganizerViewModelBase CreateViewModel(IObjectContainer item)
         {
-            return new ObjectContainerViewModel(Context, ServiceProvider, item);
+            return new ObjectContainerViewModel(Context, ServiceProvider, item, item);
         }
     }
 }

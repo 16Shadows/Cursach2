@@ -2,6 +2,7 @@
 using DMOrganizerModel.Interface.Items;
 using MVVMToolbox;
 using MVVMToolbox.Command;
+using MVVMToolbox.Services;
 
 namespace DMOrganizerViewModel
 {
