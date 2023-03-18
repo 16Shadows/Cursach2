@@ -99,6 +99,9 @@ namespace DMOrganizerViewModel
 
         private void Document_TagsChanged(IDocument sender, DocumentTagsChangedEventArgs e)
         {
+            if (Tags.Value == null)
+                return;
+
             if (m_TargetTag == e.Tag)
             {
                 Context.Invoke(() => LockingOperation = false);

@@ -1,13 +1,7 @@
 ﻿using DMOrganizerModel.Interface.Items;
 using MVVMToolbox;
 using MVVMToolbox.Command;
-using MVVMToolbox.Services;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
 
 namespace DMOrganizerViewModel
 {
@@ -46,6 +40,12 @@ namespace DMOrganizerViewModel
             Context.Invoke(() => LockingOperation = true);
             m_Deleting = true;
             Item.DeleteItem();
+        }
+
+        protected override void UpdateCommandsExecutability()
+        {
+            base.UpdateCommandsExecutability();
+            Delete.InvokeCanExecuteChanged();
         }
     }
 }

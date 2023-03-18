@@ -1,5 +1,4 @@
 ﻿using CSToolbox;
-using CSToolbox.Weak;
 using DMOrganizerModel.Interface.Items;
 using MVVMToolbox;
 using System;
