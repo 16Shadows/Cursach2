@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DMOrganizerViewModel;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,6 +16,7 @@ using System.Windows.Shapes;
 
 namespace DMOrganizerApp.Views
 {
+
     /// <summary>
     /// Логика взаимодействия для BookView.xaml
     /// </summary>
@@ -23,6 +25,11 @@ namespace DMOrganizerApp.Views
         public BookView()
         {
             InitializeComponent();
+        }
+
+        private void TreeView_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            (DataContext as BookViewModel).ActivePageViewModel = (MVVMToolbox.ViewModel.ViewModelBase?)e.NewValue;
         }
     }
 }
