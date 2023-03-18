@@ -1,27 +1,34 @@
 ﻿using System;
 using System.Windows.Input;
+using CSToolbox.Weak;
 
 namespace MVVMToolbox.Command
 {
     /// <summary>
-    /// Implementation of ICommand which defers Execute() and CanExecute() methods to provided methods
+    /// Implementation of ICommand which defers Execute() and CanExecute() methods to provided methods.
+    /// Uses WeakDelegate regardless of construction method.
     /// </summary>
     public sealed class DeferredCommand : ICommand
     {
         public event EventHandler? CanExecuteChanged;
 
-        private readonly Action m_Execute;
-        private readonly Func<bool> m_CanExecute;
+        private readonly WeakAction m_Execute;
+        private readonly WeakDelegate<bool>? m_CanExecute;
 
-        public DeferredCommand(Action? execute, Func<bool>? canExecute = null)
+        /// <summary>
+        /// Passes the task to Weak version
+        /// </summary>
+        public DeferredCommand(WeakAction.CallType  execute, WeakDelegate<bool>.CallType? canExecute = null) : this( new WeakAction(execute), canExecute != null ? new WeakDelegate<bool>(canExecute) : null) { }
+
+        public DeferredCommand(WeakAction execute, WeakDelegate<bool>? canExecute = null)
         {
-            m_Execute = execute ?? (() => { });
-            m_CanExecute = canExecute ?? (() => true);
+            m_Execute = execute ?? throw new ArgumentNullException(nameof(execute));
+            m_CanExecute = canExecute;
         }
 
         public bool CanExecute(object? parameter)
         {
-            return m_CanExecute.Invoke();
+            return m_CanExecute?.Invoke() != false;
         }
 
         public void Execute(object? parameter)
@@ -48,18 +55,20 @@ namespace MVVMToolbox.Command
     {
         public event EventHandler? CanExecuteChanged;
 
-        private readonly Action<T?> m_Execute;
-        private readonly Predicate<T?> m_CanExecute;
+        private readonly WeakAction<T?> m_Execute;
+        private readonly WeakDelegate<bool, T?>? m_CanExecute;
 
-        public DeferredCommand(Action<T?>? execute, Predicate<T?>? canExecute = null)
+        public DeferredCommand(WeakAction<T?>.CallType execute, WeakDelegate<bool, T?>.CallType? canExecute = null) : this(new WeakAction<T?>(execute), canExecute != null ? new WeakDelegate<bool, T?>(canExecute) : null) {}
+
+        public DeferredCommand(WeakAction<T?> execute, WeakDelegate<bool, T?>? canExecute = null)
         {
-            m_Execute = execute ?? (_ => { });
-            m_CanExecute = canExecute ?? (_ => true);
+            m_Execute = execute ?? throw new ArgumentNullException(nameof(execute));
+            m_CanExecute = canExecute;
         }
 
         public bool CanExecute(object? parameter)
         {
-            return m_CanExecute.Invoke(parameter != null ? (T)parameter : default);
+            return m_CanExecute?.Invoke((T?)parameter) != false;
         }
 
         public void Execute(object? parameter)
