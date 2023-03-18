@@ -7,7 +7,10 @@ using System.Windows;
 
 namespace DMOrganizerApp.Services
 {
-    internal class DMOrganizerAppInputBoxService : IInputBoxService<OrganizerInputBoxScenarios>, IInputBoxService<CategoryInputBoxScenarios>, IInputBoxService<NamedItemInputBoxScenarios>
+    internal class DMOrganizerAppInputBoxService : IInputBoxService<OrganizerInputBoxScenarios>,
+                                                   IInputBoxService<CategoryInputBoxScenarios>,
+                                                   IInputBoxService<NamedItemInputBoxScenarios>,
+                                                   IInputBoxService<DocumentInputBoxScenarios>
     {
         public InputBoxResult Show<ReturnType>(InputBoxConfiguration<OrganizerInputBoxScenarios, ReturnType> configuration)
         {
@@ -61,6 +64,23 @@ namespace DMOrganizerApp.Services
             };
             if (configuration.Scenario == NamedItemInputBoxScenarios.Rename)
                 box.InputPrompt = LocalizedStrings.InputNewName;
+
+            if (box.ShowDialog() != true)
+                return InputBoxResult.Canceled;
+            configuration.UserInput = configuration.Converter(box.Text, CultureInfo.CurrentCulture);
+            return InputBoxResult.Success;
+        }
+
+        public InputBoxResult Show<ReturnType>(InputBoxConfiguration<DocumentInputBoxScenarios, ReturnType> configuration)
+        {
+            ExclusiveInputBox box = new ()
+            {
+                Owner = Application.Current.MainWindow,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                Validator = (value, culture) => configuration.Validator(value, culture)
+            };
+            if (configuration.Scenario == DocumentInputBoxScenarios.Tag)
+                box.InputPrompt = LocalizedStrings.InputTag;
 
             if (box.ShowDialog() != true)
                 return InputBoxResult.Canceled;

@@ -141,5 +141,13 @@ namespace DMOrganizerViewModel
                 LockingOperation = false;
             });
         }
+
+        protected override void UpdateCommandsExecutability()
+        {
+            base.UpdateCommandsExecutability();
+            CreateDocument.InvokeCanExecuteChanged();
+            CreateCategory.InvokeCanExecuteChanged();
+            CreateBook.InvokeCanExecuteChanged();
+        }
     }
 }

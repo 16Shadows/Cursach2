@@ -107,5 +107,12 @@ namespace DMOrganizerViewModel
             m_Deleting = true;
             NamedItem.DeleteItem();
         }
+
+        protected override void UpdateCommandsExecutability()
+        {
+            base.UpdateCommandsExecutability();
+            Rename.InvokeCanExecuteChanged();
+            Delete.InvokeCanExecuteChanged();
+        }
     }
 }

@@ -79,7 +79,7 @@ namespace DMOrganizerViewModel
             CreateDocument = new DeferredCommand(CommandHandler_CreateDocument, () => !LockingOperation);
             CreateBook = new DeferredCommand(CommandHandler_CreateBook, () => !LockingOperation);
 
-            OpenItem = new DeferredCommand<DMOrganizerViewModelBase>(CommandHandler_Open);
+            OpenItem = new DeferredCommand<DMOrganizerViewModelBase>(CommandHandler_Open, target => target?.LockingOperation != true);
             CloseItem = new DeferredCommand<DMOrganizerViewModelBase>(CommandHandler_Close);
 
             Organizer.OrganizerItemCreated.Subscribe(OrganizerItemCreated);
@@ -99,9 +99,12 @@ namespace DMOrganizerViewModel
 
         protected override void UpdateCommandsExecutability()
         {
+            base.UpdateCommandsExecutability();
             CreateCategory.InvokeCanExecuteChanged();
             CreateDocument.InvokeCanExecuteChanged();
             CreateBook.InvokeCanExecuteChanged();
+            OpenItem.InvokeCanExecuteChanged();
+            CloseItem.InvokeCanExecuteChanged();
         }
         
         private void CommandHandler_Open(DMOrganizerViewModelBase? target)
