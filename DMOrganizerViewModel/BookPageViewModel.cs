@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace DMOrganizerViewModel
 {
-    internal class BookPageViewModel : ContainerViewModel<IObjectContainer>
+    public class BookPageViewModel : ContainerViewModel<IObjectContainer>
     {
         //has INotifyPropertyChanged, method void InvokePropertyChanged(string name)
         // CreateViewModel

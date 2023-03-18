@@ -15,6 +15,9 @@ namespace DMOrganizerApp.Services
                 MessageBox.Show(Application.Current.MainWindow, string.Format(LocalizedStrings.CategoryCreated, config.Name));
             else if (config.Scenario == OrganizerNotificationScenarios.CreateDocumentSuccess)
                 MessageBox.Show(Application.Current.MainWindow, string.Format(LocalizedStrings.DocumentCreated, config.Name));
+            else if (config.Scenario == OrganizerNotificationScenarios.CreateBookSuccess)
+                MessageBox.Show(Application.Current.MainWindow, string.Format(LocalizedStrings.BookCreated, config.Name));
+
             else if (config.Scenario == OrganizerNotificationScenarios.DuplicateItemName)
                 MessageBox.Show(Application.Current.MainWindow, string.Format(LocalizedStrings.DuplicateItemName, config.Name));
         }
@@ -27,6 +30,9 @@ namespace DMOrganizerApp.Services
                 MessageBox.Show(Application.Current.MainWindow, string.Format(LocalizedStrings.CategoryCreated, config.Name));
             else if (config.Scenario == CategoryNotificationScenarios.CreateDocumentSuccess)
                 MessageBox.Show(Application.Current.MainWindow, string.Format(LocalizedStrings.DocumentCreated, config.Name));
+            else if (config.Scenario == CategoryNotificationScenarios.CreateBookSuccess)
+                MessageBox.Show(Application.Current.MainWindow, string.Format(LocalizedStrings.BookCreated, config.Name));
+
             else if (config.Scenario == CategoryNotificationScenarios.DuplicateItemName)
                 MessageBox.Show(Application.Current.MainWindow, string.Format(LocalizedStrings.DuplicateItemName, config.Name));
         }

@@ -10,13 +10,15 @@ namespace DMOrganizerViewModel
     public enum CategoryInputBoxScenarios
     {
         CategoryName,
-        DocumentName
+        DocumentName,
+        BookName
     }
 
     public enum CategoryNotificationScenarios
     {
         CreateCategorySuccess,
         CreateDocumentSuccess,
+        CreateBookSuccess,
         DuplicateItemName
     }
 
@@ -36,12 +38,14 @@ namespace DMOrganizerViewModel
         private INotificationService<CategoryNotificationScenarios> CategoryNotificationService { get; }
         private string? m_CreatingCategory;
         private string? m_CreatingDocument;
+        private string? m_CreatingBook;
 
 
         private ICategory Category { get; }
 
         public DeferredCommand CreateCategory { get; }
         public DeferredCommand CreateDocument { get; }
+        public DeferredCommand CreateBook { get; }
 
         public CategoryViewModel(IContext context, IServiceProvider serviceProvider, ICategory category) : base(context, serviceProvider, category, category)
         {
@@ -51,12 +55,11 @@ namespace DMOrganizerViewModel
             CategoryNotificationService = (INotificationService<CategoryNotificationScenarios>)serviceProvider.GetService(typeof(INotificationService<CategoryNotificationScenarios>)) ?? throw new MissingServiceException("Missing NotificationService.");
 
             Category.CategoryItemCreated.Subscribe(CategoryItemCreated);
-        public DeferredCommand CreateBook { get; }
-        public DeferredCommand Rename { get; }
-        public DeferredCommand Delete { get; }
+
 
             CreateCategory = new DeferredCommand(CommandHandler_CreateCategory, () => !LockingOperation);
             CreateDocument = new DeferredCommand(CommandHandler_CreateDocument, () => !LockingOperation);
+            CreateBook = new DeferredCommand(CommandHandler_CreateBook, () => !LockingOperation);
         }
 
         protected override DMOrganizerViewModelBase CreateViewModel(IOrganizerItem item)
@@ -96,6 +99,19 @@ namespace DMOrganizerViewModel
             m_CreatingDocument = config.UserInput;
             Category.CreateDocument(m_CreatingDocument);            
         }
+        //book
+        private void CommandHandler_CreateBook()
+        {
+            var config = new InputBoxConfiguration<CategoryInputBoxScenarios, string>(CategoryInputBoxScenarios.BookName, (inV, _) => inV, (inV, _) => NamingRules.IsValidName(inV));
+            InputBoxResult res = default;
+            Context.Invoke(() => res = CategoryInputBoxService.Show(config));
+
+            if (res != InputBoxResult.Success)
+                return;
+            Context.Invoke(() => LockingOperation = true);
+            m_CreatingBook = config.UserInput;
+            Category.CreateBook(m_CreatingBook);
+        }
 
         private void CategoryItemCreated(ICategory sender, CategoryItemCreatedEventArgs e)
         {
@@ -112,6 +128,11 @@ namespace DMOrganizerViewModel
             {
                 config = new (e.Result == CategoryItemCreatedEventArgs.ResultType.Success ? CategoryNotificationScenarios.CreateDocumentSuccess : CategoryNotificationScenarios.DuplicateItemName, e.Name );
                 m_CreatingDocument = null;
+            }
+            else if (m_CreatingBook == e.Name)
+            {
+                config = new(e.Result == CategoryItemCreatedEventArgs.ResultType.Success ? CategoryNotificationScenarios.CreateBookSuccess : CategoryNotificationScenarios.DuplicateItemName, e.Name);
+                m_CreatingBook = null;
             }
             else
                 return;

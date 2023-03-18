@@ -347,6 +347,7 @@ namespace DMOrganizerModel.Implementation.Organizers
                         items.Add(GetDocument(id, this));
                     foreach (int id in Query.GetBooksInOrganizer(Connection))
                         items.Add(GetBook(id, this));
+
                 }
                 InvokeItemContainerCurrentContent(items);
             });

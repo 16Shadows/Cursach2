@@ -21,6 +21,8 @@ namespace DMOrganizerApp.Services
                 box.InputPrompt = LocalizedStrings.InputCategoryName;
             else if (configuration.Scenario == OrganizerInputBoxScenarios.DocumentName)
                 box.InputPrompt = LocalizedStrings.InputDocumentName;
+            else if (configuration.Scenario == OrganizerInputBoxScenarios.BookName)
+                box.InputPrompt = LocalizedStrings.InputBookName;
 
             if (box.ShowDialog() != true)
                 return InputBoxResult.Canceled;
@@ -40,6 +42,8 @@ namespace DMOrganizerApp.Services
                 box.InputPrompt = LocalizedStrings.InputCategoryName;
             else if (configuration.Scenario == CategoryInputBoxScenarios.DocumentName)
                 box.InputPrompt = LocalizedStrings.InputDocumentName;
+            else if (configuration.Scenario == CategoryInputBoxScenarios.BookName)
+                box.InputPrompt = LocalizedStrings.InputBookName;
 
             if (box.ShowDialog() != true)
                 return InputBoxResult.Canceled;

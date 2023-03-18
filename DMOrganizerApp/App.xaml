@@ -10,6 +10,7 @@
         <BitmapImage x:Key="DocumentIcon" UriSource="/DMOrganizerApp;component/Resources/DocumentIcon.png" />
         <BitmapImage x:Key="ClosedBookIcon" UriSource="/DMOrganizerApp;component/Resources/ClosedBookIcon.png" />
         <BitmapImage x:Key="OpenedBookIcon" UriSource="/DMOrganizerApp;component/Resources/OpenedBookIcon.png" />
+        <BitmapImage x:Key="PageIcon" UriSource="/DMOrganizerApp;component/Resources/Page.png" />
         <conv:NullToLoading x:Key="NullToLoading" />
     </Application.Resources>
 </Application>

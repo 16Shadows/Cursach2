@@ -55,6 +55,13 @@ namespace DMOrganizerModel.Interface.Organizer
         void CreateDocument(string name);
 
         /// <summary>
+        /// Creates a book in the organizer
+        /// </summary>
+        /// <param name="name">The name of the category</param>
+        /// <exception cref="ArgumentException">Can be throw if the IOrganizer already contains a book with the same name</exception>
+        void CreateBook(string name);
+
+        /// <summary>
         /// Converts a string representation of a reference to an instance
         /// </summary>
         /// <param name="">The reference to decode</param>

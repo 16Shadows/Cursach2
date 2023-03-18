@@ -61,7 +61,16 @@ namespace DMOrganizerApp.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Category &apos;%0&apos; was created successfully..
+        ///   Ищет локализованную строку, похожую на Book &apos;{0}&apos; was created successfully..
+        /// </summary>
+        internal static string BookCreated {
+            get {
+                return ResourceManager.GetString("BookCreated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Category &apos;{0}&apos; was created successfully..
         /// </summary>
         internal static string CategoryCreated {
             get {
@@ -70,7 +79,7 @@ namespace DMOrganizerApp.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &apos;{0}&apos; has been deleted..
+        ///   Ищет локализованную строку, похожую на &apos;{0}&apos; has been deleted..
         /// </summary>
         internal static string DeletedItem {
             get {
@@ -79,7 +88,7 @@ namespace DMOrganizerApp.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Document &apos;{0}&apos; was created successfully..
+        ///   Ищет локализованную строку, похожую на Document &apos;{0}&apos; was created successfully..
         /// </summary>
         internal static string DocumentCreated {
             get {
@@ -88,11 +97,20 @@ namespace DMOrganizerApp.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to There already is another item named &apos;{0}&apos;..
+        ///   Ищет локализованную строку, похожую на There already is another item named &apos;{0}&apos;..
         /// </summary>
         internal static string DuplicateItemName {
             get {
                 return ResourceManager.GetString("DuplicateItemName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Input a name for the new book:.
+        /// </summary>
+        internal static string InputBookName {
+            get {
+                return ResourceManager.GetString("InputBookName", resourceCulture);
             }
         }
         
@@ -115,7 +133,7 @@ namespace DMOrganizerApp.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Input a new name for this item:.
+        ///   Ищет локализованную строку, похожую на Input a new name for this item:.
         /// </summary>
         internal static string InputNewName {
             get {
@@ -124,7 +142,7 @@ namespace DMOrganizerApp.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Item&apos;s name has been changed to &apos;{0}&apos;..
+        ///   Ищет локализованную строку, похожую на Item&apos;s name has been changed to &apos;{0}&apos;..
         /// </summary>
         internal static string RenamedSuccessfully {
             get {

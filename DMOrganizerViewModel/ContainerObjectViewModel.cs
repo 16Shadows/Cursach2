@@ -14,13 +14,17 @@ using System.Windows.Controls;
 
 namespace DMOrganizerViewModel
 {
-    internal class ContainerObjectViewModel : ContainerViewModel<IReferenceable>
+    public sealed class ContainerObjectViewModel : ContainerViewModel<IReferenceable>
     {
+
         // ContainerViewModel already keeps all Object IReferenceable objects, we just need to show them in proper way
         public LazyProperty<IReferenceable> ReferenceableObjectType { get; }
         protected IObject ContainerObject { get; }
-        public ContainerObjectViewModel(IContext context, IServiceProvider serviceProvider, IItemContainer<IReferenceable> container, IObject obj) : base(context, serviceProvider, container) { }
-
+        public ContainerObjectViewModel(IContext context, IServiceProvider serviceProvider, IItemContainer<IReferenceable> container, IObject item) : base(context, serviceProvider, container, item)
+        {
+            if (item is null) throw new ArgumentNullException(nameof(item));
+            else ContainerObject = item;
+        }
         protected override DMOrganizerViewModelBase CreateViewModel(IReferenceable item)
         {
             //type check and creation of different child-objects

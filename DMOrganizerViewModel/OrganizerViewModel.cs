@@ -58,6 +58,7 @@ namespace DMOrganizerViewModel
             OrganizerNotificationService = (INotificationService<OrganizerNotificationScenarios>)serviceProvider.GetService( typeof(INotificationService<OrganizerNotificationScenarios>) ) ?? throw new MissingServiceException("Missing NotificationService.");
             CreateCategory = new DeferredCommand(CommandHandler_CreateCategory, () => !LockingOperation);
             CreateDocument = new DeferredCommand(CommandHandler_CreateDocument, () => !LockingOperation);
+            CreateBook = new DeferredCommand(CommandHandler_CreateBook, () => !LockingOperation);
 
             Organizer.OrganizerItemCreated.Subscribe(OrganizerItemCreated);
         }
@@ -78,6 +79,7 @@ namespace DMOrganizerViewModel
         {
             CreateCategory.InvokeCanExecuteChanged();
             CreateDocument.InvokeCanExecuteChanged();
+            CreateBook.InvokeCanExecuteChanged();
         }
 
         private void CommandHandler_CreateCategory()
@@ -104,6 +106,19 @@ namespace DMOrganizerViewModel
             Context.Invoke(() => LockingOperation = true);
             m_CreatedDocument = config.UserInput;
             Organizer.CreateDocument(m_CreatedDocument);            
+        }
+        // book
+        private void CommandHandler_CreateBook()
+        {
+            var config = new InputBoxConfiguration<OrganizerInputBoxScenarios, string>(OrganizerInputBoxScenarios.BookName, (inV, _) => inV, (inV, _) => NamingRules.IsValidName(inV));
+            InputBoxResult res = default;
+            Context.Invoke(() => res = OrganizerInputBoxService.Show(config));
+
+            if (res != InputBoxResult.Success)
+                return;
+            Context.Invoke(() => LockingOperation = true);
+            m_CreatedBook = config.UserInput;
+            Organizer.CreateBook(m_CreatedBook);
         }
 
         private void OrganizerItemCreated(IOrganizer sender, OrganizerItemCreatedEventArgs e)
