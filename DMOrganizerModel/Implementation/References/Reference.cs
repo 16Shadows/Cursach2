@@ -1,22 +1,28 @@
-﻿using DMOrganizerModel.Interface.References;
+﻿using DMOrganizerModel.Implementation.Items;
+using DMOrganizerModel.Implementation.Utility;
+using DMOrganizerModel.Interface.References;
+using System;
 
 namespace DMOrganizerModel.Implementation.References
 {
     internal class Reference : IReference
     {
         #region IReference
-        IReferenceable IReference.Item => Item;
-        protected IReferenceableBase Item { get; }
+        public IReferenceable Item { get; }
+        protected IReferenceInfrastructure ItemTyped { get; }
 
         public string Encode()
         {
-            throw new System.NotImplementedException();
+            return ItemTyped.GetPath(0).ToString();
         }
         #endregion
 
-        public Reference(IReferenceableBase item)
+        public Reference(IReferenceable item)
         {
-            Item = item;
+            if (item is not IReferenceInfrastructure itemTyped)
+                throw new ArgumentTypeException(nameof(item));
+            Item = item ?? throw new ArgumentNullException(nameof(item));
+            ItemTyped = itemTyped;
         }
     }
 }

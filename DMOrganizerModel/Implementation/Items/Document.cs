@@ -3,6 +3,8 @@ using DMOrganizerModel.Implementation.Organizers;
 using DMOrganizerModel.Implementation.Utility;
 using DMOrganizerModel.Interface.Items;
 using System.Collections.Generic;
+using System.Net.Http.Headers;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace DMOrganizerModel.Implementation.Items
@@ -73,6 +75,13 @@ namespace DMOrganizerModel.Implementation.Items
         protected override void SetParentInternal(IItemContainerBase parent)
         {
             Query.SetDocumentParent(Organizer.Connection, ItemID, (parent as Category).ItemID);
+        }
+
+        public override StringBuilder GetPath(int len)
+        {
+            if (Parent is Category cat)
+                return cat.GetPath(len + CachedName.Length + 1).Append('$').Append(CachedName);
+            return (new StringBuilder(CachedName.Length+1)).Append('$').Append(CachedName);
         }
     }
 }

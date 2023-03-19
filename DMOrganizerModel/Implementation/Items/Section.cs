@@ -7,10 +7,11 @@ using DMOrganizerModel.Implementation.Organizers;
 using DMOrganizerModel.Interface.References;
 using DMOrganizerModel.Implementation.References;
 using CSToolbox.Weak;
+using System.Text;
 
 namespace DMOrganizerModel.Implementation.Items
 {
-    internal class Section : NamedContainerItem<ISection>, ISection, IReferenceableBase
+    internal class Section : NamedContainerItem<ISection>, ISection, IReferenceInfrastructure
     {
         public Section(int itemID, IItemContainerBase parent, Organizer organizer) : base(itemID, parent, organizer) {}
 
@@ -122,6 +123,12 @@ namespace DMOrganizerModel.Implementation.Items
                 throw new ArgumentTypeException(nameof(parent), "Invalid parent type.");
 
             Query.SetSectionParent(Organizer.Connection, ItemID, sec.ItemID);
+        }
+
+        public virtual StringBuilder GetPath(int len)
+        {
+            Section sec = (Section)Parent;
+            return sec.GetPath(len+CachedName.Length+1).Append('#').Append(CachedName);
         }
     }
 }

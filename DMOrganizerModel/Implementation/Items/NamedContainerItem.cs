@@ -3,13 +3,19 @@ using DMOrganizerModel.Implementation.Organizers;
 using DMOrganizerModel.Implementation.Utility;
 using DMOrganizerModel.Interface;
 using DMOrganizerModel.Interface.Items;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace DMOrganizerModel.Implementation.Items
 {
     internal abstract class NamedContainerItem<ContentType> : ContainerItem<ContentType>, INamedItem, INamedItemBase where ContentType : IItem
     {
-        protected NamedContainerItem(int itemID, IItemContainerBase parent, Organizer organizer) : base(itemID, parent, organizer) {}
+        protected string CachedName { get; private set; }
+
+        protected NamedContainerItem(int itemID, IItemContainerBase parent, Organizer organizer) : base(itemID, parent, organizer)
+        {
+            CachedName = GetName();
+        }
 
         #region INamedItem
         public WeakEvent<INamedItem, NamedItemNameChangedEventArgs> ItemNameChanged { get; } = new();
@@ -36,7 +42,10 @@ namespace DMOrganizerModel.Implementation.Items
                     isUnique = Parent.CanHaveItemWithName(newName);
 
                     if (isUnique)
+                    {
                         SetName(newName);
+                        CachedName = newName;
+                    }
                 }
                 InvokeItemNameChanged(newName, isUnique ? NamedItemNameChangedEventArgs.ResultType.Success : NamedItemNameChangedEventArgs.ResultType.DuplicateName);
             });
