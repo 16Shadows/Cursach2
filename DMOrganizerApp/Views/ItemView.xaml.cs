@@ -16,14 +16,13 @@ using System.Windows.Shapes;
 namespace DMOrganizerApp.Views
 {
     /// <summary>
-    /// Логика взаимодействия для PageView.xaml
+    /// Логика взаимодействия для ItemView.xaml
     /// </summary>
-    public partial class PageView : UserControl
+    public partial class ItemView : UserControl
     {
-        public PageView()
+        public ItemView()
         {
             InitializeComponent();
         }
     }
-
 }

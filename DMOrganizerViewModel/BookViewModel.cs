@@ -57,10 +57,6 @@ namespace DMOrganizerViewModel
                 LockingOperation = false;
             });
         }
-        private void SelectedPageChanged()
-        {
-
-        }
 
         //creation of child page(view model ot this page)
         protected override ItemViewModel CreateViewModel(IPage item)

@@ -26,6 +26,27 @@ namespace DMOrganizerApp.Views
             InitializeComponent();
         }
 
+        private void ResizeThumb_DragDelta(object sender, System.Windows.Controls.Primitives.DragDeltaEventArgs e)
+        {
 
+        }
+
+        private void ResizeThumb_DragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
+        {
+
+        }
+
+        private void Thumb_DragDelta(object sender, System.Windows.Controls.Primitives.DragDeltaEventArgs e)
+        {
+                UIElement thumb = e.Source as UIElement;
+
+                Canvas.SetLeft(thumb, Canvas.GetLeft(thumb) + e.HorizontalChange);
+                Canvas.SetTop(thumb, Canvas.GetTop(thumb) + e.VerticalChange);
+        }
+
+        private void Thumb_DragDelta_1(object sender, System.Windows.Controls.Primitives.DragDeltaEventArgs e)
+        {
+
+        }
     }
 }
