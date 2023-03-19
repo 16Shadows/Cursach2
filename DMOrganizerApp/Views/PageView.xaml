@@ -10,5 +10,30 @@
     <Canvas>
         <TextBlock Text="TOP" FontSize="100"></TextBlock>
         <TextBlock Text="BOTTOM" FontSize="100" Canvas.Left="30" Canvas.Top="300"></TextBlock>
+
+        <ItemsControl ItemsSource="{Binding Items}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate DataType="local:ContainerView">
+                    <local:ContainerView />
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Canvas />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+
+            <ItemsControl.ItemContainerStyle>
+                <Style TargetType="ContentPresenter">
+
+                    <Setter Property="Canvas.Left" Value="{Binding CoordX}" />
+                    <Setter Property="Canvas.Top" Value="{Binding CoordY}" />
+                </Style>
+            </ItemsControl.ItemContainerStyle>
+        </ItemsControl>
+
     </Canvas>
+    
+
 </UserControl>

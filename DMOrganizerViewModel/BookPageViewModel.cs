@@ -26,7 +26,8 @@ namespace DMOrganizerViewModel
 
             // Lazy property will be called after initialization once, when we'll ask to get Position and then will be collected with GC,
             // we need to subsribe our updater-method for further Position updates 
-            Page.PageActionCompleted.Subscribe(Page_ItemCreated);
+            //Page.PageActionCompleted.Subscribe(Page_ItemCreated);
+            Page.ItemContainerContentChanged.Subscribe(Page_ItemCreated);
             Page.PageActionCompleted.Subscribe(Page_PositionChanged);
             Position = new LazyProperty<int>(_ => Page.RequestPagePosition());
 
@@ -40,7 +41,7 @@ namespace DMOrganizerViewModel
             int type = 1;
             Page.AddContainer(type);
         }
-        private void Page_ItemCreated(IPage sender, PageActionEventArgs e)
+        private void Page_ItemCreated(IItemContainer<IObjectContainer> sender, ItemContainerContentChangedEventArgs<IObjectContainer> e)
         {
             if (!LockingOperation)
                 return;

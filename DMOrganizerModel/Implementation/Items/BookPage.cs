@@ -70,12 +70,13 @@ namespace DMOrganizerModel.Implementation.Items
                 // lock problems , need to make lock somehow                                                                   !!!
                 
                 //get all page's positions that we need to change (> position)
-                List<int> changePositions = Query.GetPagesPositionsToChange(Organizer.Connection, ItemID, position);
+                List<int> changePositions = Query.GetPagesPositionsToChange(Organizer.Connection, BookID, position);
                 changePositions.Sort();
                 //changing positions from beginig to avoid unique pos exception
-                for (int i = changePositions.Count; i < changePositions.Count; i++)
+                for (int i = 0; i < changePositions.Count; i++)
                 {
-                    ChangePagePosition(BookID, changePositions[i], changePositions[i] - 1);
+                    BookPage p = Organizer.GetPage(Query.GetPageID(Organizer.Connection, BookID, changePositions[i]), Parent);
+                    p.ChangePagePosition(BookID, changePositions[i], changePositions[i] - 1);
                 }
             });
         }
@@ -90,7 +91,7 @@ namespace DMOrganizerModel.Implementation.Items
                     bool res = false;
                     lock (Lock)
                     {
-                       res = Query.SetPagePosition(Organizer.Connection, ItemID, oldPosition, newPosition);
+                       res = Query.SetPagePosition(Organizer.Connection, (Parent as Item).ItemID, oldPosition, newPosition);
                     }
                     if (res )InvokePageActionCompleted(bookID, PageActionEventArgs.ActionType.ChangedPosition, newPosition, PageActionEventArgs.ResultType.Success);
                     else InvokePageActionCompleted(bookID, PageActionEventArgs.ActionType.ChangedPosition, oldPosition, PageActionEventArgs.ResultType.Failure);

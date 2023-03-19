@@ -9,17 +9,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace DMOrganizerViewModel
 {
     public class ObjectContainerViewModel : ContainerItemViewModel<IObject>
     {
-        //has INotifyPropertyChanged, method void InvokePropertyChanged(string name)
-        // CreateViewModel
-        // readonly LazyProperty <ObservableCollection<> Items { get; }
-        // IItemContainer<IObject> Container { get; }
-        // event on container items change (add, remove) - ItemContainer_ItemContainerContentChanged
-        // ItemContainerContentChanged for events on add/remove item
         public LazyProperty<int> Width { get; }
         public LazyProperty<int> Height { get; }
         public LazyProperty<int> CoordX { get; }
@@ -27,7 +22,6 @@ namespace DMOrganizerViewModel
         public LazyProperty<int> Type { get; }
         protected IObjectContainer ObjectContainer { get; }
         public DeferredCommand CreateObject { get; }
-
         public ObjectContainerViewModel(IContext context, IServiceProvider serviceProvider, IObjectContainer item) : base(context, serviceProvider, item, item) 
         {
             if (item is null) throw new ArgumentNullException(nameof(item));

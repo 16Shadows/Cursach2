@@ -699,7 +699,7 @@ namespace DMOrganizerModel.Implementation.Utility
         }
 
         //check if book has item <IPage> a
-        public static bool BookHasPage(SyncronizedSQLiteConnection connection, int bookID, int pageID)
+        public static bool BookHasPage(SyncronizedSQLiteConnection connection, int bookID, int pagePosition)
         {
             int result = -1;
             connection.Read(con =>
@@ -708,9 +708,9 @@ namespace DMOrganizerModel.Implementation.Utility
                 cmd.CommandText = @"SELECT Page.ID
                                     FROM Page
                                     WHERE Page.ID_Parent_Book is @BookParentID 
-                                    AND Page.ID is @PageID;";
+                                    AND Page.Position is @PagePos;";
                 cmd.Parameters.AddWithValue("@BookParentID", bookID);
-                cmd.Parameters.AddWithValue("@PageID", pageID);
+                cmd.Parameters.AddWithValue("@PagePos", pagePosition);
                 using SQLiteDataReader reader = cmd.ExecuteReader();
                 if (reader.Read())
                     result = reader.GetInt32(0);
@@ -945,7 +945,7 @@ namespace DMOrganizerModel.Implementation.Utility
                 cmd.CommandText = @"SELECT Page.Position 
                                     FROM Page 
                                     WHERE Page.ID_Parent_Book = @ParentBookID
-                                    AND Page.ID >= @BorderPagePos;";
+                                    AND Page.Position > @BorderPagePos;";
                 cmd.Parameters.AddWithValue("@ParentBookID", bookID);
                 cmd.Parameters.AddWithValue("@BorderPagePos", borderPosition);
                 using SQLiteDataReader reader = cmd.ExecuteReader();
