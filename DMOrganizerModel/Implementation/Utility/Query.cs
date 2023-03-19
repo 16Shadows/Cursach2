@@ -1041,20 +1041,24 @@ namespace DMOrganizerModel.Implementation.Utility
         /// <returns></returns>
         public static List<int> GetContainerViewInfo(SyncronizedSQLiteConnection connection, int containerID)
         {
-            List<int> res = new List<int>(4);
+            //List<int> res = new List<int>(4);
+            List<int> res = new List<int> { 0, 0, 0, 0, 0 };
             connection.Read(con =>
             {
                 using SQLiteCommand cmd = con.CreateCommand();
-                cmd.CommandText = @"SELECT Container.Width, Container.Height, Container.CoordinateX, Container.CoordinateY
+                cmd.CommandText = @"SELECT Container.Width, Container.Height, Container.CoordinateX, Container.CoordinateY, Container.Type
                                     FROM  Container
                                     WHERE Container.ID is @ContainerID;";
                 cmd.Parameters.AddWithValue("@ContainerID", containerID);
                 using SQLiteDataReader reader = cmd.ExecuteReader();
-                reader.Read();
-                res[0] = reader.GetInt32(0);
-                res[1] = reader.GetInt32(1);
-                res[2] = reader.GetInt32(2);
-                res[3] = reader.GetInt32(3);
+                if (reader.Read() && reader.FieldCount > 0 )
+                {
+                    res[0] = reader.GetInt32(0);
+                    res[1] = reader.GetInt32(1);
+                    res[2] = reader.GetInt32(2);
+                    res[3] = reader.GetInt32(3);
+                    res[3] = reader.GetInt32(3);
+                }
             });
             return res;
         }
