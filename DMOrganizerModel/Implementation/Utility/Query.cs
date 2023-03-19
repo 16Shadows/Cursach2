@@ -279,7 +279,7 @@ namespace DMOrganizerModel.Implementation.Utility
             connection.Read(con =>
             {
                 using SQLiteCommand cmd = con.CreateCommand();
-                cmd.CommandText = $"(SELECT ID FROM Section WHERE Title=$title AND Parent={sectionID})";
+                cmd.CommandText = $"SELECT ID FROM Section WHERE Title=$title AND Parent={sectionID}";
                 cmd.Parameters.AddWithValue("$title", name);
                 success = cmd.ExecuteScalar() != null;
             });

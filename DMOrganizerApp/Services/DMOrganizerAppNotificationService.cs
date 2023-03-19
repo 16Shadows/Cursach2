@@ -8,7 +8,8 @@ namespace DMOrganizerApp.Services
     internal sealed class DMOrganizerAppNotificationService : INotificationService<OrganizerNotificationScenarios>, 
                                                               INotificationService<CategoryNotificationScenarios>,
                                                               INotificationService<NamedItemNotificationScenarios>,
-                                                              INotificationService<DocumentNotificationScenarios>
+                                                              INotificationService<DocumentNotificationScenarios>,
+                                                              INotificationService<SectionNotificationScenarios>
     {
         public void Show(NotificationConfiguration<OrganizerNotificationScenarios> configuration)
         {
@@ -58,6 +59,14 @@ namespace DMOrganizerApp.Services
                 return;
             else if (config.Scenario == DocumentNotificationScenarios.DuplicateTag)
                 MessageBox.Show(Application.Current.MainWindow, string.Format(LocalizedStrings.DuplicateTag, config.Tag));
+        }
+
+        public void Show(NotificationConfiguration<SectionNotificationScenarios> configuration)
+        {
+            if (configuration is not SectionNotificationConfiguration config)
+                return;
+            else if (config.Scenario == SectionNotificationScenarios.DuplicateName)
+                MessageBox.Show(Application.Current.MainWindow, string.Format(LocalizedStrings.DuplicateSectionName, config.Name));
         }
     }
 }

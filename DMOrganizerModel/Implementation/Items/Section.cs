@@ -108,7 +108,7 @@ namespace DMOrganizerModel.Implementation.Items
 
         public override bool CanHaveItemWithName(string name)
         {
-            return Query.HasNameInSection(Organizer.Connection, name, ItemID);
+            return !Query.HasNameInSection(Organizer.Connection, name, ItemID);
         }
 
 

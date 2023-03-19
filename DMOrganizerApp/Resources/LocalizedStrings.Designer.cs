@@ -106,6 +106,15 @@ namespace DMOrganizerApp.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to There already is a section named &apos;{0}&apos;..
+        /// </summary>
+        internal static string DuplicateSectionName {
+            get {
+                return ResourceManager.GetString("DuplicateSectionName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There already is a tag &apos;{0}&apos;..
         /// </summary>
         internal static string DuplicateTag {
@@ -147,6 +156,15 @@ namespace DMOrganizerApp.Resources {
         internal static string InputNewName {
             get {
                 return ResourceManager.GetString("InputNewName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Input a name for the new section:.
+        /// </summary>
+        internal static string InputSectonName {
+            get {
+                return ResourceManager.GetString("InputSectonName", resourceCulture);
             }
         }
         

@@ -10,81 +10,70 @@ namespace DMOrganizerApp.Services
     internal class DMOrganizerAppInputBoxService : IInputBoxService<OrganizerInputBoxScenarios>,
                                                    IInputBoxService<CategoryInputBoxScenarios>,
                                                    IInputBoxService<NamedItemInputBoxScenarios>,
-                                                   IInputBoxService<DocumentInputBoxScenarios>
+                                                   IInputBoxService<DocumentInputBoxScenarios>,
+                                                   IInputBoxService<SectionInputBoxScenarios>
     {
         public InputBoxResult Show<ReturnType>(InputBoxConfiguration<OrganizerInputBoxScenarios, ReturnType> configuration)
         {
-            ExclusiveInputBox box = new ()
-            {
-                Owner = Application.Current.MainWindow,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner,
-                Validator = (value, culture) => configuration.Validator(value, culture)
-            };
             if (configuration.Scenario == OrganizerInputBoxScenarios.CategoryName)
-                box.InputPrompt = LocalizedStrings.InputCategoryName;
+                return Show(configuration, LocalizedStrings.InputCategoryName);
             else if (configuration.Scenario == OrganizerInputBoxScenarios.DocumentName)
-                box.InputPrompt = LocalizedStrings.InputDocumentName;
+                return Show(configuration, LocalizedStrings.InputDocumentName);
             else if (configuration.Scenario == OrganizerInputBoxScenarios.BookName)
-                box.InputPrompt = LocalizedStrings.InputBookName;
+                return Show(configuration, LocalizedStrings.InputBookName); 
 
-            if (box.ShowDialog() != true)
-                return InputBoxResult.Canceled;
-            configuration.UserInput = configuration.Converter(box.Text, CultureInfo.CurrentCulture);
-            return InputBoxResult.Success;
+            return InputBoxResult.UnsupportedScenario;
         }
 
         public InputBoxResult Show<ReturnType>(InputBoxConfiguration<CategoryInputBoxScenarios, ReturnType> configuration)
         {
-            ExclusiveInputBox box = new ()
-            {
-                Owner = Application.Current.MainWindow,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner,
-                Validator = (value, culture) => configuration.Validator(value, culture)
-            };
             if (configuration.Scenario == CategoryInputBoxScenarios.CategoryName)
-                box.InputPrompt = LocalizedStrings.InputCategoryName;
+                return Show(configuration, LocalizedStrings.InputCategoryName);
             else if (configuration.Scenario == CategoryInputBoxScenarios.DocumentName)
-                box.InputPrompt = LocalizedStrings.InputDocumentName;
+                return Show(configuration, LocalizedStrings.InputDocumentName);
             else if (configuration.Scenario == CategoryInputBoxScenarios.BookName)
-                box.InputPrompt = LocalizedStrings.InputBookName;
+                return Show(configuration, LocalizedStrings.InputBookName);                
 
-            if (box.ShowDialog() != true)
-                return InputBoxResult.Canceled;
-            configuration.UserInput = configuration.Converter(box.Text, CultureInfo.CurrentCulture);
-            return InputBoxResult.Success;
+            return InputBoxResult.UnsupportedScenario;
         }
 
         public InputBoxResult Show<ReturnType>(InputBoxConfiguration<NamedItemInputBoxScenarios, ReturnType> configuration)
         {
-            ExclusiveInputBox box = new ()
-            {
-                Owner = Application.Current.MainWindow,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner,
-                Validator = (value, culture) => configuration.Validator(value, culture)
-            };
             if (configuration.Scenario == NamedItemInputBoxScenarios.Rename)
-                box.InputPrompt = LocalizedStrings.InputNewName;
+                return Show(configuration, LocalizedStrings.InputNewName);
 
-            if (box.ShowDialog() != true)
-                return InputBoxResult.Canceled;
-            configuration.UserInput = configuration.Converter(box.Text, CultureInfo.CurrentCulture);
-            return InputBoxResult.Success;
+            return InputBoxResult.UnsupportedScenario;
         }
 
         public InputBoxResult Show<ReturnType>(InputBoxConfiguration<DocumentInputBoxScenarios, ReturnType> configuration)
+        {
+            if (configuration.Scenario == DocumentInputBoxScenarios.Tag)
+                return Show(configuration, LocalizedStrings.InputTag);
+
+            return InputBoxResult.UnsupportedScenario;
+        }
+
+        public InputBoxResult Show<ReturnType>(InputBoxConfiguration<SectionInputBoxScenarios, ReturnType> configuration)
+        {
+            if (configuration.Scenario == SectionInputBoxScenarios.SetionName)
+                return Show(configuration, LocalizedStrings.InputSectonName);
+
+            return InputBoxResult.UnsupportedScenario;
+        }
+
+        private InputBoxResult Show<ScenarioType, ReturnType>(InputBoxConfiguration<ScenarioType, ReturnType> config, string prompt) where ScenarioType : System.Enum
         {
             ExclusiveInputBox box = new ()
             {
                 Owner = Application.Current.MainWindow,
                 WindowStartupLocation = WindowStartupLocation.CenterOwner,
-                Validator = (value, culture) => configuration.Validator(value, culture)
+                Validator = (value, culture) => config.Validator(value, culture),
+                InputPrompt = prompt
             };
-            if (configuration.Scenario == DocumentInputBoxScenarios.Tag)
-                box.InputPrompt = LocalizedStrings.InputTag;
 
             if (box.ShowDialog() != true)
                 return InputBoxResult.Canceled;
-            configuration.UserInput = configuration.Converter(box.Text, CultureInfo.CurrentCulture);
+            config.UserInput = config.Converter(box.Text, CultureInfo.CurrentCulture);
             return InputBoxResult.Success;
         }
     }

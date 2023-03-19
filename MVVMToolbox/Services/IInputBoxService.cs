@@ -69,7 +69,11 @@ namespace MVVMToolbox.Services
         /// <summary>
         /// The user canceled input.
         /// </summary>
-        Canceled
+        Canceled,
+        /// <summary>
+        /// This scenario is not supported
+        /// </summary>
+        UnsupportedScenario
     }
 
     /// <summary>

@@ -132,6 +132,9 @@
   <data name="DuplicateItemName" xml:space="preserve">
     <value>There already is another item named '{0}'.</value>
   </data>
+  <data name="DuplicateSectionName" xml:space="preserve">
+    <value>There already is a section named '{0}'.</value>
+  </data>
   <data name="DuplicateTag" xml:space="preserve">
     <value>There already is a tag '{0}'.</value>
   </data>
@@ -146,6 +149,9 @@
   </data>
   <data name="InputNewName" xml:space="preserve">
     <value>Input a new name for this item:</value>
+  </data>
+  <data name="InputSectonName" xml:space="preserve">
+    <value>Input a name for the new section:</value>
   </data>
   <data name="InputTag" xml:space="preserve">
     <value>Input a new tag:</value>
