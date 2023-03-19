@@ -9,6 +9,7 @@ using DMOrganizerModel.Implementation.Items;
 using DMOrganizerModel.Interface.References;
 using System.Threading.Tasks;
 using CSToolbox.Weak;
+using DMOrganizerModel.Implementation.References;
 
 namespace DMOrganizerModel.Implementation.Organizers
 {
@@ -224,22 +225,28 @@ namespace DMOrganizerModel.Implementation.Organizers
 
         #region IOrganizer
         public WeakEvent<IOrganizer, OrganizerItemCreatedEventArgs> OrganizerItemCreated { get; } = new();
+        public WeakEvent<IOrganizer, ReferenceDecodedEventArgs> ReferenceDecoded { get; } = new();
         public WeakEvent<IItemContainer<IOrganizerItem>, ItemContainerCurrentContentEventArgs<IOrganizerItem>> ItemContainerCurrentContent { get; } = new();
         public WeakEvent<IItemContainer<IOrganizerItem>, ItemContainerContentChangedEventArgs<IOrganizerItem>> ItemContainerContentChanged { get; } = new();
         
+        private void InvokeReferenceDecoded(string reference, ReferenceDecodedEventArgs.ResultType result, IReference instance)
+        {
+            ReferenceDecoded.Invoke(this, new ReferenceDecodedEventArgs(result, reference, instance));
+        }
+
         private void InvokeOrganizerItemCreated(string name, OrganizerItemCreatedEventArgs.ResultType result)
         {
-            OrganizerItemCreated?.Invoke(this, new OrganizerItemCreatedEventArgs(name, result));
+            OrganizerItemCreated.Invoke(this, new OrganizerItemCreatedEventArgs(name, result));
         }
 
         private void InvokeItemContainerCurrentContent(IEnumerable<IOrganizerItem> items)
         {
-            ItemContainerCurrentContent?.Invoke(this, new ItemContainerCurrentContentEventArgs<IOrganizerItem>(items));
+            ItemContainerCurrentContent.Invoke(this, new ItemContainerCurrentContentEventArgs<IOrganizerItem>(items));
         }
 
         private void InvokeItemContainerContentChanged(IOrganizerItem item, ItemContainerContentChangedEventArgs<IOrganizerItem>.ChangeType type, ItemContainerContentChangedEventArgs<IOrganizerItem>.ResultType result)
         {
-            ItemContainerContentChanged?.Invoke(this, new ItemContainerContentChangedEventArgs<IOrganizerItem>(item, type, result));
+            ItemContainerContentChanged.Invoke(this, new ItemContainerContentChangedEventArgs<IOrganizerItem>(item, type, result));
         }
 
         public void CreateCategory(string name)
@@ -359,9 +366,78 @@ namespace DMOrganizerModel.Implementation.Organizers
             });
         }
 
-        public IReference DecodeReference(string reference)
+        /// <summary>
+        /// Internal (in terms of model) syncronyous reference decoder
+        /// </summary>
+        /// <param name="reference">The string reference to decode</param>
+        /// <returns>A reference instance if the provided reference was valid, null otherwise.</returns>
+        /// <exception cref="ArgumentNullException">May be thrown if reference is null</exception>
+        public IReference? DecodeReferenceInternal(string reference)
         {
-            throw new NotImplementedException();
+            if (reference == null)
+                throw new ArgumentNullException(nameof(reference));
+            else if (reference.Length == 0 || (reference[0] != '/' && reference[0] != '$'))
+                return null;
+
+            string[] components = reference.Split("$");
+            if (components.Length != 2 || components[1].Trim().Length == 0)
+                return null;
+            int id = -1;
+            IItemContainerBase parent = this;
+            if (components[0].Length > 0)
+            {
+                string[] path = components[0].Split('/');
+                id = Query.GetCategoryByName(Connection, path[1], null);
+                for (int i = 2; i < path.Length; i++)
+                {
+                    if (id == -1)
+                        break;
+                    parent = GetCategory(id, parent);
+                    id = Query.GetCategoryByName(Connection, path[i], id);
+                }
+
+                if (id == -1)
+                    return null;
+                parent = GetCategory(id, parent);
+            }
+            components = components[1].Split('#');
+            id = Query.GetDocumentByName(Connection, components[0], id == -1 ? null : id);
+            if (id == -1)
+                return null;
+            IReference instance = null;
+            if (components.Length > 1)
+            {
+                parent = GetDocument(id, parent);
+                id = Query.GetSectionByName(Connection, components[1], id);
+                for (int i = 2; i < components.Length; i++)
+                {
+                    if (id == -1)
+                        break;
+                    parent = GetSection(id, parent);
+                    id = Query.GetSectionByName(Connection, components[i], id);
+                }
+
+                if (id == -1)
+                    return null;
+
+                instance = new Reference(GetSection(id, parent));
+            }
+            else
+                instance = new Reference(GetDocument(id, parent));
+
+            return instance;
+        }
+
+        public void DecodeReference(string reference)
+        {
+            if (reference == null)
+                throw new ArgumentNullException(nameof(reference));
+
+            Task.Run(() =>
+            {
+                IReference instance = DecodeReferenceInternal(reference);
+                InvokeReferenceDecoded(reference, instance != null ? ReferenceDecodedEventArgs.ResultType.Success : ReferenceDecodedEventArgs.ResultType.InvalidReference, instance);
+            });
         }
         #endregion
 

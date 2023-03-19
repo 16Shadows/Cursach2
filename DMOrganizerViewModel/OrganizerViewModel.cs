@@ -74,7 +74,7 @@ namespace DMOrganizerViewModel
         public OrganizerViewModel(IContext context, IServiceProvider serviceProvider, IOrganizer organizer) : base(context, serviceProvider)
         {
             Organizer = organizer ?? throw new ArgumentNullException(nameof(organizer));
-            //Disabled until the service is implemented
+
             OrganizerInputBoxService = (IInputBoxService<OrganizerInputBoxScenarios>)serviceProvider.GetService( typeof(IInputBoxService<OrganizerInputBoxScenarios>) ) ?? throw new MissingServiceException("Missing InputBoxService.");
             OrganizerNotificationService = (INotificationService<OrganizerNotificationScenarios>)serviceProvider.GetService( typeof(INotificationService<OrganizerNotificationScenarios>) ) ?? throw new MissingServiceException("Missing NotificationService.");
             CreateCategory = new DeferredCommand(CommandHandler_CreateCategory, () => !LockingOperation);

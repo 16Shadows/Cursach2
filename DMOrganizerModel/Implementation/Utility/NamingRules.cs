@@ -5,12 +5,12 @@
         public static bool IsValidName(string name)
         {
             //TODO: implement actual checks
-            return name.Length > 0;
+            return name.Trim().Length > 0 && !name.Contains('$') && !name.Contains('#') && !name.Contains('/');
         }
 
         public static bool IsValidTag(string tag)
         {
-            return tag.Length > 0;
+            return tag.Trim().Length > 0;
         }
     }
 }
