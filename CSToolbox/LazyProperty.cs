@@ -4,19 +4,19 @@ using System.ComponentModel;
 
 namespace CSToolbox
 {
+    public enum LazyPropertyState
+    {
+        Uninitialized,
+        Loading,
+        Initialized
+    }
+
     /// <summary>
     /// Represents a lazy property which doesn't have a value until it's fetched or set for the first time
     /// </summary>
     /// <typeparam name="T">The type of this property</typeparam>
     public class LazyProperty<T> : INotifyPropertyChanged
     {
-        private enum State
-        {
-            Uninitialized,
-            Loading,
-            Initialized
-        }
-
         /// <summary>
         /// The method to use for initialization. May never be called if the value is set before first fetch.
         /// </summary>
@@ -32,7 +32,7 @@ namespace CSToolbox
 
         private LoaderType m_Loader;
         private T? m_Value;
-        private State m_State = State.Uninitialized;
+        public LazyPropertyState CurrentState { get; private set; } = LazyPropertyState.Uninitialized;
 
         /// <summary>
         /// The value this property has
@@ -41,13 +41,13 @@ namespace CSToolbox
         {
             get
             {
-                if (m_State == State.Uninitialized)
+                if (CurrentState == LazyPropertyState.Uninitialized)
                 {
                     bool beginLoad = false;
                     lock (WeakPropertyChanged)
-                        if (m_State == State.Uninitialized)
+                        if (CurrentState == LazyPropertyState.Uninitialized)
                         {
-                            m_State = State.Loading;
+                            CurrentState = LazyPropertyState.Loading;
                             beginLoad = true;
                         }
                     if (beginLoad)
@@ -60,7 +60,7 @@ namespace CSToolbox
             {
                 if (m_Value?.Equals(value) == true)
                     return;
-                else if (m_State != State.Initialized)
+                else if (CurrentState != LazyPropertyState.Initialized)
                 {
                     ProvideValue(value);
                     return;
@@ -74,13 +74,13 @@ namespace CSToolbox
 
         private void ProvideValue(T value)
         {
-            if (m_State == State.Initialized)
+            if (CurrentState == LazyPropertyState.Initialized)
                 return;
             lock (WeakPropertyChanged)
             {
-                if (m_State == State.Initialized)
+                if (CurrentState == LazyPropertyState.Initialized)
                     return;
-                m_State = State.Initialized;
+                CurrentState = LazyPropertyState.Initialized;
             }
 
             m_Loader = null;
@@ -104,13 +104,6 @@ namespace CSToolbox
     /// <typeparam name="T">The type of this property</typeparam>
     public class ReadOnlyLazyProperty<T> : INotifyPropertyChanged
     {
-        private enum State
-        {
-            Uninitialized,
-            Loading,
-            Initialized
-        }
-
         /// <summary>
         /// The method to use for initialization.
         /// </summary>
@@ -126,7 +119,7 @@ namespace CSToolbox
 
         private LoaderType m_Loader;
         private T? m_Value;
-        private State m_State = State.Uninitialized;
+        public LazyPropertyState CurrentState { get; private set; } = LazyPropertyState.Uninitialized;
 
         /// <summary>
         /// The value this property has
@@ -136,13 +129,13 @@ namespace CSToolbox
         {
             get
             {
-                if (m_State == State.Uninitialized)
+                if (CurrentState == LazyPropertyState.Uninitialized)
                 {
                     bool beginLoad = false;
                     lock (WeakPropertyChanged)
-                        if (m_State == State.Uninitialized)
+                        if (CurrentState == LazyPropertyState.Uninitialized)
                         {
-                            m_State = State.Loading;
+                            CurrentState = LazyPropertyState.Loading;
                             beginLoad = true;
                         }
                     if (beginLoad)
@@ -155,13 +148,13 @@ namespace CSToolbox
 
         private void ProvideValue(T value)
         {
-            if (m_State == State.Initialized)
+            if (CurrentState == LazyPropertyState.Initialized)
                 return;
             lock (WeakPropertyChanged)
             {
-                if (m_State == State.Initialized)
+                if (CurrentState == LazyPropertyState.Initialized)
                     return;
-                m_State = State.Initialized;
+                CurrentState = LazyPropertyState.Initialized;
             }
 
             m_Value = value;
