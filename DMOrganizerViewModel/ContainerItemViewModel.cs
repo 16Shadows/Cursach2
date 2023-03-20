@@ -55,8 +55,9 @@ namespace DMOrganizerViewModel
 
         protected override void Item_Deleted(IItem sender, ItemDeletedResult result)
         {
-            foreach (ItemViewModel item in Items.Value)
-                ItemDeleted.Invoke(item);
+            if (Items.CurrentState == LazyPropertyState.Initialized)
+                foreach (ItemViewModel item in Items.Value)
+                    ItemDeleted.Invoke(item);
             base.Item_Deleted(sender, result);
         }
 
