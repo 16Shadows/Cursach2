@@ -15,9 +15,7 @@ namespace DMOrganizerModel.Implementation.Items
         {
             ObjectUpdateLink.Invoke(this, new ObjectUpdateLinkEventArgs(link, result));
         }
-
-        // check if all child-objects are valid and can be displayed            !!!
-        // (if link to item is not valid or item was deleted - show error) 
+        
         public ContainerObject(int itemID, IItemContainerBase parent, Organizer organizer) : base(itemID, parent, organizer){}
 
         public void UpdateContent(IReference newLink)

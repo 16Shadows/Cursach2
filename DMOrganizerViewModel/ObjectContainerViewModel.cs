@@ -98,8 +98,8 @@ namespace DMOrganizerViewModel
             //open tree window to chose object: if success - set new object by link, is cansel - nothing and no object created 
             IReferenceSelector s = ServiceProvider.GetService(typeof(IReferenceSelector)) as IReferenceSelector;
             OrganizerViewModel org = OrganizerReference.Target as OrganizerViewModel;
-            
-            IReferenceable item = s.Select(org) as IReferenceable;
+
+            IReferenceable item = s.Select(org).Item as IReferenceable;
             //need to give IReferenceable objects to add object
             if (item != null) { ObjectContainer.AddObject(item); }
             else

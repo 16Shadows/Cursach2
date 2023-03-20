@@ -9,16 +9,20 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800" Background="Bisque">
 
-    <Viewbox>
-        <ContentPresenter Content="{Binding ActivePageViewModel}">
-            <ContentPresenter.Resources>
-                <DataTemplate DataType="{x:Type vm:DocumentViewModel}">
-                    <views:DocumentView />
-                </DataTemplate>
-                <DataTemplate DataType="{x:Type vm:SectionViewModel}">
-                    <views:SectionView />
-                </DataTemplate>
-            </ContentPresenter.Resources>
-        </ContentPresenter>
-    </Viewbox>
+    <ScrollViewer Grid.Column="0">
+        <Viewbox Margin="20">
+            <ContentPresenter Content="{Binding ActivePageViewModel}">
+                <ContentPresenter.Resources>
+                    <DataTemplate DataType="{x:Type vm:DocumentViewModel}">
+                        <local:DocumentView />
+                    </DataTemplate>
+                    <!-- For debug -->
+                    <DataTemplate DataType="{x:Type vm:SectionViewModel}">
+                        <local:SectionView />
+                    </DataTemplate>
+                    <!-- For debug -->
+                </ContentPresenter.Resources>
+            </ContentPresenter>
+        </Viewbox>
+    </ScrollViewer>
 </UserControl>

@@ -43,6 +43,12 @@ namespace DMOrganizerApp.Views
             SelectedItem = (ItemViewModel)RefTree.SelectedValue;
             Close();
         }
+
+        private void RefTree_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            if (e.NewValue is DocumentViewModel || e.NewValue is SectionViewModel ) SetButton.IsEnabled= true;
+            else SetButton.IsEnabled=false;
+        }
     }
 
 }

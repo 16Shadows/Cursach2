@@ -53,7 +53,6 @@ namespace DMOrganizerViewModel
         }
         protected override ItemViewModel CreateViewModel(IObjectContainer item)
         {
-            OrganizerViewModel org;
             return new ObjectContainerViewModel(Context, ServiceProvider, item, OrganizerReference.Target as OrganizerViewModel);
         }
     }

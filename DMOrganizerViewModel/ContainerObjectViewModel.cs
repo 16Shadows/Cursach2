@@ -36,11 +36,20 @@ namespace DMOrganizerViewModel
             OrganizerReference = new WeakReference(org, false);
             if (item is null) throw new ArgumentNullException(nameof(item));
             else ContainerObject = item;
-
-            ContainerObject.ItemContainerContentChanged.Subscribe(ContainerObject_SetActiveObject);
-            ContainerObject.ItemContainerCurrentContent.Subscribe(ContainerObject_SetActiveObjectCurrent);
+            ContainerObject.ItemContainerContentChanged.Subscribe(ContainerObject_ItemCreated);
+            //ContainerObject.ItemContainerContentChanged.Subscribe(ContainerObject_SetActiveObject);
+            //ContainerObject.ItemContainerCurrentContent.Subscribe(ContainerObject_SetActiveObjectCurrent);
+            ContainerObject.RequestItemContainerCurrentContent();
         }
-
+        public void ContainerObject_ItemCreated(IItemContainer<IReferenceable> sender, ItemContainerContentChangedEventArgs<IReferenceable> e)
+        {
+            if (!LockingOperation)
+                return;
+            Context.Invoke(() =>
+            {
+                LockingOperation = false;
+            });
+        }
         public void ContainerObject_SetActiveObject(IItemContainer<IReferenceable> sender, ItemContainerContentChangedEventArgs<IReferenceable> e)
         {
             if (e.Type == ItemContainerContentChangedEventArgs<IReferenceable>.ChangeType.ItemAdded
