@@ -25,9 +25,11 @@ namespace DMOrganizerApp.Views
     /// </summary>
     public partial class ContainerView : UserControl
     {
+        public ObjectContainerViewModel dc;
 
         public ContainerView()
         {
+            dc = this.DataContext as ObjectContainerViewModel;
             InitializeComponent();
 
         }
@@ -39,20 +41,13 @@ namespace DMOrganizerApp.Views
             double xadjust = this.Width + e.HorizontalChange;
             //hard coded page values, need to fix
             if ((xadjust >= this.MinWidth) && (yadjust >= MinHeight) 
-            && (xadjust + (double)model.Width.Value + (double)model.CoordX.Value <= 1240) 
-            && (yadjust + (double)model.Height.Value + (double)model.CoordY.Value <= 1753))
+            && (xadjust  + (double)model.CoordX.Value <= 1240) 
+            && (yadjust  + (double)model.CoordY.Value <= 1753))
             {
-            this.Width = xadjust;
-            this.Height = yadjust;
+                this.Width = xadjust;
+                this.Height = yadjust;
             }
-
         }
-
-        private void ResizeThumb_DragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
-        {
-
-        }
-
         private void Thumb_DragDelta(object sender, System.Windows.Controls.Primitives.DragDeltaEventArgs e)
         {
                 UIElement thumb = e.Source as UIElement;
@@ -68,14 +63,17 @@ namespace DMOrganizerApp.Views
         private void MoveThumb_DragDelta(object sender, DragDeltaEventArgs e)
         {
             ObjectContainerViewModel model = this.DataContext as ObjectContainerViewModel;
-            
-            //double left = Canvas.GetLeft(item);
-            //double top = Canvas.GetTop(item);
-
-            //Canvas.SetLeft(item, left + e.HorizontalChange);
-            //Canvas.SetTop(item, top + e.VerticalChange);
-            model.CoordX.Value = model.CoordX.Value + (int)e.HorizontalChange;
-            model.CoordY.Value = model.CoordX.Value + (int)e.VerticalChange;
+            double yadjust = model.CoordY.Value + e.VerticalChange;
+            double xadjust = model.CoordX.Value + e.HorizontalChange;
+            //hard coded page values, need to fix
+            if ((xadjust >= 0) && (xadjust + model.Width.Value <= 1240)
+                && (yadjust >= 0) && (yadjust + model.Height.Value <= 1240))
+            {
+                model.CoordX.Value = (int)xadjust;
+                model.CoordY.Value = (int)yadjust;
+            }
+            //model.CoordX.Value = model.CoordX.Value + (int)e.HorizontalChange;
+            //model.CoordY.Value = model.CoordX.Value + (int)e.VerticalChange;
         }
 
         private void MoveThumb_DragCompleted(object sender, DragCompletedEventArgs e)
@@ -85,25 +83,4 @@ namespace DMOrganizerApp.Views
 
         
     }
-    //public class MoveThumb : Thumb
-    //{
-    //    public MoveThumb()
-    //    {
-    //        DragDelta += new DragDeltaEventHandler(this.MoveThumb_DragDelta);
-    //    }
-
-    //    private void MoveThumb_DragDelta(object sender, DragDeltaEventArgs e)
-    //    {
-    //        Control item = this.DataContext as Control;
-
-    //        if (item != null)
-    //        {
-    //            double left = Canvas.GetLeft(item);
-    //            double top = Canvas.GetTop(item);
-
-    //            Canvas.SetLeft(item, left + e.HorizontalChange);
-    //            Canvas.SetTop(item, top + e.VerticalChange);
-    //        }
-    //    }
-    //}
 }

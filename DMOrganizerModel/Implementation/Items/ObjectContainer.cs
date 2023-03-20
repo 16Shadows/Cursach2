@@ -112,7 +112,7 @@ namespace DMOrganizerModel.Implementation.Items
                 bool res = false;
                 lock (Lock)
                 {
-                    res = Query.SetContainerCoordinates(Organizer.Connection, ItemID, newWidth, newHeight);
+                    res = Query.SetContainerSize(Organizer.Connection, ItemID, newWidth, newHeight);
                 }
                 if (res) InvokeObjectContainerUpdatedSize(newWidth, newHeight, ObjectContainerUpdateSizeEventArgs.ResultType.Success);
                 else InvokeObjectContainerUpdatedSize(newWidth, newHeight, ObjectContainerUpdateSizeEventArgs.ResultType.IncorrectSize);

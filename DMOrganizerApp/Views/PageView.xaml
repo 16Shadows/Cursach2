@@ -14,7 +14,7 @@
     <ItemsControl ItemsSource="{Binding Items.Value}">
         <ItemsControl.ItemTemplate>
             <DataTemplate DataType="{x:Type vm:ObjectContainerViewModel}">
-                <local:ContainerView Width="{Binding Width.Value}" Height="{Binding Height.Value}"/>
+                <local:ContainerView Width="{Binding Width.Value, Mode=TwoWay}" Height="{Binding Height.Value, Mode=TwoWay}"/>
             </DataTemplate>
         </ItemsControl.ItemTemplate>
         
