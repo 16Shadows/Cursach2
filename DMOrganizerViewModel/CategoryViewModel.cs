@@ -55,9 +55,9 @@ namespace DMOrganizerViewModel
 
             Category.CategoryItemCreated.Subscribe(CategoryItemCreated);
 
-            CreateCategory = new DeferredCommand(CommandHandler_CreateCategory, () => !LockingOperation);
-            CreateDocument = new DeferredCommand(CommandHandler_CreateDocument, () => !LockingOperation);
-            CreateBook = new DeferredCommand(CommandHandler_CreateBook, () => !LockingOperation);
+            CreateCategory = new DeferredCommand(CommandHandler_CreateCategory, CanExecuteLockingOperation);
+            CreateDocument = new DeferredCommand(CommandHandler_CreateDocument, CanExecuteLockingOperation);
+            CreateBook = new DeferredCommand(CommandHandler_CreateBook, CanExecuteLockingOperation);
         }
 
         protected override ItemViewModel CreateViewModel(IOrganizerItem item)

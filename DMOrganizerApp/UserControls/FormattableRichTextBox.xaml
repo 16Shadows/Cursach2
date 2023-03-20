@@ -11,7 +11,6 @@
              d:DesignHeight="450" d:DesignWidth="800" Loaded="UserControl_Loaded">
     <UserControl.Resources>
         <conv:DoubleToString x:Key="DoubleToString" />
-        <conv:BoolInverter x:Key="BoolInverter" />
         <core:Double x:Key="ButtonsHeight">30</core:Double>
     </UserControl.Resources>
     <Grid>

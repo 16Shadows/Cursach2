@@ -24,7 +24,7 @@ namespace DMOrganizerViewModel
 
             Item.ItemDeleted.Subscribe(Item_Deleted);
 
-            Delete = new DeferredCommand(CommandHandler_Delete, () => !LockingOperation);
+            Delete = new DeferredCommand(CommandHandler_Delete, CanExecuteLockingOperation);
         }
 
         protected virtual void Item_Deleted(IItem sender, ItemDeletedResult result)

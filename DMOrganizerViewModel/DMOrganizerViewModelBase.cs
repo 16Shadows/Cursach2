@@ -24,5 +24,6 @@ namespace DMOrganizerViewModel
         protected DMOrganizerViewModelBase(IContext context, IServiceProvider serviceProvider) : base(context, serviceProvider) { }
 
         protected virtual void UpdateCommandsExecutability() {}
+        protected bool CanExecuteLockingOperation() => !LockingOperation;
     }
 }

@@ -54,7 +54,7 @@ namespace DMOrganizerViewModel
             Section.SectionItemCreated.Subscribe(Section_ItemCreated);
             Content.WeakPropertyChanged.Subscribe(Content_PropertyChanged);
 
-            CreateSection = new DeferredCommand(CommandHandler_CreateSection, () => !LockingOperation);
+            CreateSection = new DeferredCommand(CommandHandler_CreateSection, CanExecuteLockingOperation);
         }
 
         private void CommandHandler_CreateSection()

@@ -39,7 +39,7 @@ namespace DMOrganizerViewModel
 
             Book.BookItemCreated.Subscribe(Book_ItemCreated);
 
-            CreatePage = new DeferredCommand(CommandHandler_CreatePage, () => !LockingOperation);
+            CreatePage = new DeferredCommand(CommandHandler_CreatePage, CanExecuteLockingOperation);
         }
 
         private void CommandHandler_CreatePage()

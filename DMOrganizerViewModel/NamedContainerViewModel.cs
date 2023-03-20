@@ -58,8 +58,8 @@ namespace DMOrganizerViewModel
 
             Name = new LazyProperty<string?>( _ => NamedItem.RequestItemNameUpdate() );
 
-            Rename = new DeferredCommand(CommandHandler_Rename, () => !LockingOperation);
-            Delete = new DeferredCommand(CommandHandler_Delete, () => !LockingOperation);
+            Rename = new DeferredCommand(CommandHandler_Rename, CanExecuteLockingOperation);
+            Delete = new DeferredCommand(CommandHandler_Delete, CanExecuteLockingOperation);
         }
 
         protected virtual void NamedItem_ItemNameChanged(INamedItem sender, NamedItemNameChangedEventArgs e)

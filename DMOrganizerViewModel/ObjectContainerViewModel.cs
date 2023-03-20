@@ -62,7 +62,7 @@ namespace DMOrganizerViewModel
 
             CanHaveObject = new LazyProperty<bool>(_ => ObjectContainer.RequestItemContainerCurrentContent());
             ObjectContainer.RequestItemContainerCurrentContent();
-            CreateObject = new DeferredCommand(CommandHandler_CreateObject, () => !LockingOperation);
+            CreateObject = new DeferredCommand(CommandHandler_CreateObject, CanExecuteLockingOperation);
 
             CoordX.WeakPropertyChanged.Subscribe(CommandHandler_ContainerCoordinatesChanged);
             CoordY.WeakPropertyChanged.Subscribe(CommandHandler_ContainerCoordinatesChanged);

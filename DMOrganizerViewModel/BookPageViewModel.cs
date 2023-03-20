@@ -31,7 +31,7 @@ namespace DMOrganizerViewModel
             Page.PageActionCompleted.Subscribe(Page_PositionChanged);
             Position = new LazyProperty<int>(_ => Page.RequestPagePosition());
 
-            CreateContainer = new DeferredCommand(CommandHandler_CreateContainer, () => !LockingOperation);
+            CreateContainer = new DeferredCommand(CommandHandler_CreateContainer, CanExecuteLockingOperation);
         }
 
         public void CommandHandler_CreateContainer()
