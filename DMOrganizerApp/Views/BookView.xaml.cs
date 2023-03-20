@@ -29,7 +29,8 @@ namespace DMOrganizerApp.Views
 
         private void TreeView_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
-            (DataContext as BookViewModel).ActivePageViewModel = (MVVMToolbox.ViewModel.ViewModelBase?)e.NewValue;
+            if (DataContext is null || DataContext is not BookViewModel) { return; }
+            else (DataContext as BookViewModel).ActivePageViewModel = (MVVMToolbox.ViewModel.ViewModelBase?)e.NewValue;
         }
     }
 }

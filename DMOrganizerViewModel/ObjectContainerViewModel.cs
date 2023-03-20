@@ -39,6 +39,7 @@ namespace DMOrganizerViewModel
         public LazyProperty<int> CoordY { get; }
         public LazyProperty<int> Type { get; }
         public LazyProperty<bool> CanHaveObject { get; }
+        public UserControl parentPage { get; }
 
         protected IObjectContainer ObjectContainer { get; }
         public DeferredCommand CreateObject { get; }

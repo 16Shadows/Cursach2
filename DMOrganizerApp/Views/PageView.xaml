@@ -11,14 +11,14 @@
    <!-- <local:ContainerView Width="600" Height="200"></local:ContainerView> -->
 
 
-    <ItemsControl ItemsSource="{Binding Items}">
+    <ItemsControl ItemsSource="{Binding Items.Value}">
         <ItemsControl.ItemTemplate>
             <DataTemplate DataType="{x:Type vm:ObjectContainerViewModel}">
-                <local:ItemView />
+                <local:ContainerView Width="{Binding Width.Value}" Height="{Binding Height.Value}"/>
             </DataTemplate>
         </ItemsControl.ItemTemplate>
         
-        <!--
+
         <ItemsControl.ItemsPanel>
             <ItemsPanelTemplate>
                 <Canvas />
@@ -27,11 +27,9 @@
 
         <ItemsControl.ItemContainerStyle>
             <Style TargetType="ContentPresenter">
-                <Setter Property="Canvas.Left" Value="{Binding CoordX}" />
-                <Setter Property="Canvas.Top" Value="{Binding CoordY}" />
+                <Setter Property="Canvas.Left" Value="{Binding CoordX.Value}" />
+                <Setter Property="Canvas.Top" Value="{Binding CoordY.Value}" />
             </Style>
         </ItemsControl.ItemContainerStyle>
-        -->
-       
     </ItemsControl> 
 </UserControl>
