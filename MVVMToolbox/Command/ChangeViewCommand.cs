@@ -1,6 +1,6 @@
-﻿using System;
+﻿using MVVMToolbox.ViewModel;
+using System;
 using System.Windows.Input;
-using MVVMToolbox.ViewModel;
 
 namespace MVVMToolbox.Command
 {

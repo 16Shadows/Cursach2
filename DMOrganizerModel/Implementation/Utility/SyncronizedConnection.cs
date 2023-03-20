@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Data.Common;
-using System.Data.SQLite;
 using System.Threading;
 
 namespace DMOrganizerModel.Implementation.Utility

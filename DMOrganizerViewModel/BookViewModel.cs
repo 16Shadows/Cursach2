@@ -1,9 +1,8 @@
-﻿using System;
-using DMOrganizerModel.Interface.Items;
+﻿using DMOrganizerModel.Interface.Items;
 using MVVMToolbox;
 using MVVMToolbox.Command;
-using MVVMToolbox.Services;
 using MVVMToolbox.ViewModel;
+using System;
 
 namespace DMOrganizerViewModel
 {

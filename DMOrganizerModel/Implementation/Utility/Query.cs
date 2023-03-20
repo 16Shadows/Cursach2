@@ -1,6 +1,5 @@
-﻿using System.Data.SQLite;
-using System.Collections.Generic;
-using DMOrganizerModel.Implementation.Items;
+﻿using System.Collections.Generic;
+using System.Data.SQLite;
 
 namespace DMOrganizerModel.Implementation.Utility
 {

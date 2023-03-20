@@ -1,14 +1,9 @@
 ﻿using CSToolbox.Weak;
 using DMOrganizerModel.Implementation.Organizers;
+using DMOrganizerModel.Implementation.Utility;
 using DMOrganizerModel.Interface.Items;
 using DMOrganizerModel.Interface.References;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Net.Mime;
-using DMOrganizerModel.Implementation.Utility;
 
 namespace DMOrganizerModel.Implementation.Items
 {

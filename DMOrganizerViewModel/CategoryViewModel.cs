@@ -1,11 +1,11 @@
+using CSToolbox.Extensions;
 using DMOrganizerModel.Implementation.Utility;
 using DMOrganizerModel.Interface.Items;
 using MVVMToolbox;
+using MVVMToolbox.Command;
 using MVVMToolbox.Services;
 using System;
-using MVVMToolbox.Command;
 using System.Collections.Generic;
-using CSToolbox.Extensions;
 
 namespace DMOrganizerViewModel
 {

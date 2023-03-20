@@ -1,16 +1,15 @@
-﻿using DMOrganizerModel.Implementation.Utility;
+﻿using CSToolbox;
+using CSToolbox.Extensions;
+using CSToolbox.Weak;
+using DMOrganizerModel.Implementation.Utility;
 using DMOrganizerModel.Interface.Items;
 using DMOrganizerModel.Interface.Organizer;
 using MVVMToolbox;
+using MVVMToolbox.Command;
 using MVVMToolbox.Services;
 using System;
-using System.Collections.ObjectModel;
-using MVVMToolbox.Command;
-using CSToolbox;
-using CSToolbox.Weak;
-using CSToolbox.Extensions;
 using System.Collections.Generic;
-using System.Security.Cryptography.X509Certificates;
+using System.Collections.ObjectModel;
 
 namespace DMOrganizerViewModel
 {

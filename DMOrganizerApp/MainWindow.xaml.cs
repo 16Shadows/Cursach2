@@ -1,7 +1,7 @@
-﻿using System.Windows;
-using ClockApp.Utility.Context;
+﻿using ClockApp.Utility.Context;
 using DMOrganizerApp.Services;
 using DMOrganizerApp.ViewModels;
+using System.Windows;
 
 namespace DMOrganizerApp
 {

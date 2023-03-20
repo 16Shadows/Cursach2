@@ -1,16 +1,8 @@
-﻿using MVVMToolbox.ViewModel;
-using CSToolbox;
-using CSToolbox.Weak;
+﻿using CSToolbox;
 using DMOrganizerModel.Interface.Items;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MVVMToolbox;
-using System.ComponentModel;
 using DMOrganizerModel.Interface.References;
-using System.Windows.Controls;
+using MVVMToolbox;
+using System;
 
 namespace DMOrganizerViewModel
 {
