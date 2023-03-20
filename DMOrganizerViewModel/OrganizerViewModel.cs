@@ -9,6 +9,8 @@ using MVVMToolbox.Command;
 using CSToolbox;
 using CSToolbox.Weak;
 using CSToolbox.Extensions;
+using System.Collections.Generic;
+using System.Security.Cryptography.X509Certificates;
 
 namespace DMOrganizerViewModel
 {
@@ -100,7 +102,7 @@ namespace DMOrganizerViewModel
                     {
                         ItemViewModel vm = CreateViewModel(item);
                         vm.ItemDeleted.Subscribe(CommandHandler_Close);
-                        v.Add(vm);
+                        v.Insert(GetViewModelPlacementIndex(vm, v), vm);
                     }
                     p(v);
                 });
@@ -121,7 +123,7 @@ namespace DMOrganizerViewModel
             {
                 ItemViewModel vm = CreateViewModel(e.Item);
                 vm.ItemDeleted.Subscribe(CommandHandler_Close);
-                Context.Invoke(() => Items.Value.Add(vm));
+                Context.Invoke(() => Items.Value.Insert(GetViewModelPlacementIndex(vm, Items.Value), vm));
             }
             else
                 Context.Invoke(() => Items.Value.Remove(vm => vm.Item.Equals(e.Item)) );
@@ -137,6 +139,28 @@ namespace DMOrganizerViewModel
                 return new BookViewModel(Context, ServiceProvider, book, book);
             else
                 throw new ArgumentException("Unsupported item type", nameof(item));
+        }
+
+        private int GetViewModelPlacementIndex(ItemViewModel item, IList<ItemViewModel> collection)
+        {
+            if (item is CategoryViewModel)
+            {
+                int index = collection.LastIndexOf(x => x is CategoryViewModel);
+                return index + 1;
+            }
+            else if (item is DocumentViewModel)
+            {
+                int index = collection.LastIndexOf(x => x is DocumentViewModel);
+                return index == -1 ? collection.LastIndexOf(x => x is CategoryViewModel) + 1 : index + 1;
+            }   
+            else if (item is BookViewModel)
+            {
+                int index = collection.LastIndexOf(x => x is BookViewModel);
+                if (index == -1)
+                    index = collection.LastIndexOf(x => x is DocumentViewModel);
+                return index == -1 ? collection.LastIndexOf(x => x is CategoryViewModel) : index + 1;
+            }
+            return Items.Value.Count - 1;
         }
 
         protected override void UpdateCommandsExecutability()

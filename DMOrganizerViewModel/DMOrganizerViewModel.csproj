@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\CSToolbox\CSToolbox.csproj" />
     <ProjectReference Include="..\DMOrganizerModel\DMOrganizerModel.csproj" />
     <ProjectReference Include="..\WPFToolbox\WPFToolbox.csproj" />
   </ItemGroup>

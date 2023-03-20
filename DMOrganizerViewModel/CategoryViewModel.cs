@@ -4,6 +4,8 @@ using MVVMToolbox;
 using MVVMToolbox.Services;
 using System;
 using MVVMToolbox.Command;
+using System.Collections.Generic;
+using CSToolbox.Extensions;
 
 namespace DMOrganizerViewModel
 {
@@ -70,6 +72,28 @@ namespace DMOrganizerViewModel
                 return new BookViewModel(Context, ServiceProvider, book, book);
             else
                 throw new ArgumentException("Unsupported item type", nameof(item));
+        }
+
+        protected override int GetViewModelPlacementIndex(ItemViewModel item, IList<ItemViewModel> collection)
+        {
+            if (item is CategoryViewModel)
+            {
+                int index = collection.LastIndexOf(x => x is CategoryViewModel);
+                return index + 1;
+            }
+            else if (item is DocumentViewModel)
+            {
+                int index = collection.LastIndexOf(x => x is DocumentViewModel);
+                return index == -1 ? collection.LastIndexOf(x => x is CategoryViewModel) + 1 : index + 1;
+            }   
+            else if (item is BookViewModel)
+            {
+                int index = collection.LastIndexOf(x => x is BookViewModel);
+                if (index == -1)
+                    index = collection.LastIndexOf(x => x is DocumentViewModel);
+                return index == -1 ? collection.LastIndexOf(x => x is CategoryViewModel) : index + 1;
+            }
+            return Items.Value.Count - 1;
         }
 
         private void CommandHandler_CreateCategory()
