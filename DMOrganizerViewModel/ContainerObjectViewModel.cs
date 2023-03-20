@@ -2,7 +2,9 @@
 using DMOrganizerModel.Interface.Items;
 using DMOrganizerModel.Interface.References;
 using MVVMToolbox;
+using MVVMToolbox.ViewModel;
 using System;
+using System.Linq;
 
 namespace DMOrganizerViewModel
 {

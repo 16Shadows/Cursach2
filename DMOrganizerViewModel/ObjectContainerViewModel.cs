@@ -1,5 +1,6 @@
 ﻿using CSToolbox;
 using DMOrganizerModel.Interface.Items;
+using DMOrganizerModel.Interface.References;
 using MVVMToolbox;
 using MVVMToolbox.Command;
 using MVVMToolbox.Services;
@@ -61,9 +62,7 @@ namespace DMOrganizerViewModel
             Type = new LazyProperty<int>(_ => ObjectContainer.RequestContainerViewInfo());
 
             ObjectContainer.RequestItemContainerCurrentContent();
-            CreateObject = new DeferredCommand(CommandHandler_CreateObject, CanExecuteLockingOperation);
-
-            SetObject = new DeferredCommand(CommandHandler_SetObject, () => !LockingOperation);
+            SetObject = new DeferredCommand(CommandHandler_SetObject, CanExecuteLockingOperation);
 
             CoordX.WeakPropertyChanged.Subscribe(CommandHandler_ContainerCoordinatesChanged);
             CoordY.WeakPropertyChanged.Subscribe(CommandHandler_ContainerCoordinatesChanged);

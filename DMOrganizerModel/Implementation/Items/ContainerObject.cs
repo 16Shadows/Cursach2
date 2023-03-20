@@ -25,7 +25,7 @@ namespace DMOrganizerModel.Implementation.Items
             string link = newLink.Encode();
             IReferenceable oldItem = null;
             IReferenceable newItem = null;
-            if (Query.GetObjectContent(Organizer.Connection, ItemID).Any())
+            if (Query.GetObjectContent(Organizer.Connection, ItemID).Count > 0)
             {
                 oldItem = (Organizer.DecodeReferenceInternal(Query.GetObjectContent(Organizer.Connection, ItemID)[0])).Item;
             }
