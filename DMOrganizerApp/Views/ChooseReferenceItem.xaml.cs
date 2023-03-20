@@ -22,30 +22,26 @@ namespace DMOrganizerApp.Views
     /// </summary>
     public partial class ChooseReferenceItem : Window
     {
-        public OrganizerViewModel Organizer;
-        public ItemViewModel SelectedItem = null;
-        public ChooseReferenceItem()
-        {
-            InitializeComponent();
-        }
+        public OrganizerViewModel Organizer { get; }
+        public ItemViewModel? SelectedItem { get; private set; }
+        
         public ChooseReferenceItem(OrganizerViewModel organizer)
         {
             Organizer = organizer;
             InitializeComponent();
         }
-        private void TreeView_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+
+        private void CanselButton_Click(object sender, RoutedEventArgs e)
         {
-            if (DataContext is null || DataContext is not ContainerObjectViewModel || e.NewValue is not ItemViewModel) { return; }
-            else SelectedItem = (ItemViewModel)e.NewValue;
+            DialogResult = false;
+            Close();
+        }
 
-            if (e.NewValue is DocumentViewModel || e.NewValue is SectionViewModel) this.SetButton.IsEnabled = true;
-            else this.SetButton.IsEnabled = false;
-
-            //if (DataContext is null || DataContext is not ContainerObjectViewModel || e.NewValue is not MVVMToolbox.ViewModel.ViewModelBase) { return; }
-            //else (DataContext as ContainerObjectViewModel).ActivePageViewModel = (MVVMToolbox.ViewModel.ViewModelBase?)e.NewValue;
-
-            //if (e.NewValue is DocumentViewModel || e.NewValue is SectionViewModel) this.SetButton.IsEnabled = true;
-            //else this.SetButton.IsEnabled = false;
+        private void SetButton_Click(object sender, RoutedEventArgs e)
+        {
+            DialogResult = true;
+            SelectedItem = (ItemViewModel)RefTree.SelectedValue;
+            Close();
         }
     }
 
