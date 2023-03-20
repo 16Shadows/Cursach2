@@ -23,7 +23,7 @@
         <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
             <TreeView ItemsSource="{Binding Items.Value, Converter={StaticResource NullToLoading}}">
                 <TreeView.Resources>
-                    <HierarchicalDataTemplate DataType="{x:Type vm:CategoryViewModel}" ItemsSource="{Binding Items.Value}">
+                    <HierarchicalDataTemplate DataType="{x:Type vm:CategoryViewModel}" ItemsSource="{Binding Items.Value, Converter={StaticResource NullToLoading}}">
                         <StackPanel Orientation="Horizontal">
                             <Image Height="{StaticResource NavTreeIconHeight}" VerticalAlignment="Center" HorizontalAlignment="Center" Stretch="Uniform">
                                 <Image.Style>
