@@ -18,17 +18,13 @@
                 <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" FlowDirection="RightToLeft" Margin="0,0,20,0">
                     <Button x:Name="Close" Background="DarkRed" MinWidth="60" Content="Delete" Command="{Binding Delete}"/>
                     <!-- If no objects - we'll create new, else change existing one-->
-                    <Button x:Name="AddObject" Content="Set Object" MinWidth="100" Command="{Binding SetObject}" Background="White" />
+                    <Button x:Name="AddObject" Content="Set Object" MinWidth="100" Command="{Binding SetObject}" Background="White" Click="AddObject_Click"/>
                 </StackPanel>
             </DockPanel>
-            <Thumb x:Name="MoveThumb" DockPanel.Dock="Bottom" 
-                   DragDelta="MoveThumb_DragDelta"
-                   DragCompleted="MoveThumb_DragCompleted"/>
+            <Thumb x:Name="MoveThumb" DockPanel.Dock="Bottom" DragDelta="MoveThumb_DragDelta"/>
         </DockPanel>
-        <Thumb x:Name="ResizeThumb" Width="20" Height="20" VerticalAlignment="Bottom" HorizontalAlignment="Right" Cursor="SizeNWSE" 
-                   DragDelta="ResizeThumb_DragDelta"
+        <Thumb x:Name="ResizeThumb" Width="20" Height="20" VerticalAlignment="Bottom" HorizontalAlignment="Right" Cursor="SizeNWSE" DragDelta="ResizeThumb_DragDelta"
                Background="White">
-           
         </Thumb>
 
         <Viewbox Margin="20, 40, 20, 20">
@@ -38,8 +34,8 @@
                             <views:ObjectView />
                         </DataTemplate>
                     </ContentPresenter.Resources>
-                </ContentPresenter>
-            </Viewbox>
+            </ContentPresenter>
+        </Viewbox>
 
     </Grid>
 </UserControl>

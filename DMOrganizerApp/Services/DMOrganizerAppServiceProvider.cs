@@ -9,11 +9,13 @@ namespace DMOrganizerApp.Services
     {
         private DMOrganizerAppInputBoxService InputBoxService { get; }
         private DMOrganizerAppNotificationService NotificationService { get; }
+        private ReferenceSelector ReferenceSelectorService { get; }
 
         public DMOrganizerAppServiceProvider()
         {
             InputBoxService = new DMOrganizerAppInputBoxService();
             NotificationService = new DMOrganizerAppNotificationService();
+            ReferenceSelectorService = new ReferenceSelector();
         }
 
         public object? GetService(Type serviceType)
@@ -30,6 +32,8 @@ namespace DMOrganizerApp.Services
                      serviceType.Is(typeof(IInputBoxService<DocumentInputBoxScenarios>)) ||
                      serviceType.Is(typeof(IInputBoxService<SectionInputBoxScenarios>)))
                 return InputBoxService;
+            else if (serviceType.Is(typeof(IReferenceSelector)))
+                return ReferenceSelectorService;
             return null;
         }
     }

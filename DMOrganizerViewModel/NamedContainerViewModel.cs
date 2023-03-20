@@ -47,8 +47,9 @@ namespace DMOrganizerViewModel
 
         public DeferredCommand Rename { get; protected init; }
 
-        protected NamedContainerViewModel(IContext context, IServiceProvider serviceProvider, INamedItem item, IItemContainer<ContentType> container) : base(context, serviceProvider, container, item)
+        protected NamedContainerViewModel(IContext context, IServiceProvider serviceProvider, INamedItem item, IItemContainer<ContentType> container, OrganizerViewModel org) : base(context, serviceProvider, container, item, org)
         {
+            OrganizerReference = new WeakReference(org, false);
             NamedItem = item ?? throw new ArgumentNullException(nameof(item));
 
             NamedItemInputBoxService = (IInputBoxService<NamedItemInputBoxScenarios>)serviceProvider.GetService(typeof(IInputBoxService<NamedItemInputBoxScenarios>)) ?? throw new MissingServiceException("Missing InputBoxService.");

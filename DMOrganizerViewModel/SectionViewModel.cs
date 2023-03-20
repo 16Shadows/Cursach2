@@ -39,8 +39,9 @@ namespace DMOrganizerViewModel
         public DeferredCommand CreateSection { get; protected init; }
         private string? m_CreatingSection = null;
 
-        public SectionViewModel(IContext context, IServiceProvider serviceProvider, ISection section) : base(context, serviceProvider, section, section)
+        public SectionViewModel(IContext context, IServiceProvider serviceProvider, ISection section, OrganizerViewModel org) : base(context, serviceProvider, section, section, org)
         {
+            OrganizerReference = new WeakReference(org, false);
             Section = section ?? throw new ArgumentNullException(nameof(section));
 
             SectionInputBoxService = (IInputBoxService<SectionInputBoxScenarios>)serviceProvider.GetService(typeof(IInputBoxService<SectionInputBoxScenarios>)) ?? throw new MissingServiceException("Missing InputBoxService.");
@@ -84,6 +85,6 @@ namespace DMOrganizerViewModel
             Context.Invoke(() => Content.Value = e.Content);
         }
 
-        protected override ItemViewModel CreateViewModel(ISection item) => new SectionViewModel(Context, ServiceProvider, item);
+        protected override ItemViewModel CreateViewModel(ISection item) => new SectionViewModel(Context, ServiceProvider, item, OrganizerReference.Target as OrganizerViewModel);
     }
 }

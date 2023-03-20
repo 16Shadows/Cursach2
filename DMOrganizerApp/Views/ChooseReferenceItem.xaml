@@ -1,0 +1,76 @@
+﻿<Window x:Class="DMOrganizerApp.Views.ChooseReferenceItem"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:vm="clr-namespace:DMOrganizerViewModel;assembly=DMOrganizerViewModel"
+             xmlns:core="clr-namespace:System;assembly=mscorlib"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:toolbox="clr-namespace:WPFToolbox;assembly=WPFToolbox"
+             xmlns:local="clr-namespace:DMOrganizerApp.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="400" MaxHeight="300" MaxWidth="400" Background="LightGray" ResizeMode="NoResize">
+    <Window.Resources>
+        <core:Double x:Key="NavTreeFontSize">20</core:Double>
+        <core:Double x:Key="NavTreeIconHeight">40</core:Double>
+    </Window.Resources>
+    <Grid>
+        <DockPanel>
+            <StackPanel DockPanel.Dock="Bottom" VerticalAlignment="Center" Orientation="Horizontal" >
+                <Button x:Name="CanselButton" Content="Cancel" Width="100" Height="30" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="50,0,50,20" Background="DarkRed" IsCancel="True"></Button>
+                <Button x:Name="SetButton" Content="Set" Width="100" Height="30" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="50,0,50,20" ></Button>
+            </StackPanel>
+            <ScrollViewer Margin="20">
+                <TreeView ItemsSource="{Binding OrganizerReference.Target.Items.Value, Converter={StaticResource NullToLoading}}" DockPanel.Dock="Top" 
+                      SelectedItemChanged="TreeView_SelectedItemChanged">
+                    <TreeView.Resources>
+                        <HierarchicalDataTemplate DataType="{x:Type vm:CategoryViewModel}" ItemsSource="{Binding Items.Value}">
+                            <StackPanel Orientation="Horizontal">
+                                <Image Height="{StaticResource NavTreeIconHeight}" VerticalAlignment="Center" HorizontalAlignment="Center" Stretch="Uniform">
+                                    <Image.Style>
+                                        <Style TargetType="Image">
+                                            <Setter Property="Source" Value="{StaticResource CollapsedCategoryIcon}" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsExpanded, RelativeSource={RelativeSource AncestorType=TreeViewItem}, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                                                    <Setter Property="Source" Value="{StaticResource ExpandedCategoryIcon}" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Image.Style>
+                                </Image>
+                                <TextBlock Text="{Binding Name.Value, Converter={StaticResource NullToLoading}}" FontSize="{StaticResource NavTreeFontSize}" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                            </StackPanel>
+                        </HierarchicalDataTemplate>
+
+                        <HierarchicalDataTemplate DataType="{x:Type vm:SectionViewModel}" ItemsSource="{Binding Items.Value}">
+                            <StackPanel Orientation="Horizontal">
+                                <Image Height="{StaticResource NavTreeIconHeight}" VerticalAlignment="Center" HorizontalAlignment="Center" Stretch="Uniform">
+                                    <Image.Style>
+                                        <Style TargetType="Image">
+                                            <Setter Property="Source" Value="{StaticResource SectionIcon}" />
+                                        </Style>
+                                    </Image.Style>
+                                </Image>
+                                <TextBlock Text="{Binding Name.Value, Converter={StaticResource NullToLoading}}" FontSize="{StaticResource NavTreeFontSize}" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                            </StackPanel>
+                        </HierarchicalDataTemplate>
+
+                        <HierarchicalDataTemplate DataType="{x:Type vm:DocumentViewModel}" ItemsSource="{Binding Items.Value}">
+                            <StackPanel Orientation="Horizontal">
+                                <Image Height="{StaticResource NavTreeIconHeight}" VerticalAlignment="Center" HorizontalAlignment="Center" Stretch="Uniform">
+                                    <Image.Style>
+                                        <Style TargetType="Image">
+                                            <Setter Property="Source" Value="{StaticResource DocumentIcon}" />
+                                        </Style>
+                                    </Image.Style>
+                                </Image>
+                                <TextBlock Text="{Binding Name.Value, Converter={StaticResource NullToLoading}}" FontSize="{StaticResource NavTreeFontSize}" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                            </StackPanel>
+                        </HierarchicalDataTemplate>
+
+                    </TreeView.Resources>
+                </TreeView>
+            </ScrollViewer>
+            
+        </DockPanel>
+    </Grid>
+</Window>

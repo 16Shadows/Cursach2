@@ -86,11 +86,6 @@
                             <Image.Style>
                                 <Style TargetType="Image">
                                     <Setter Property="Source" Value="{StaticResource ClosedBookIcon}" />
-                                    <!--<Style.Triggers>
-                                        <DataTrigger Binding="{Binding IsExpanded, RelativeSource={RelativeSource AncestorType=TreeViewItem}, UpdateSourceTrigger=PropertyChanged}" Value="True">
-                                            <Setter Property="Source" Value="{StaticResource ExpandedCategoryIcon}" />
-                                        </DataTrigger>
-                                    </Style.Triggers> -->
                                 </Style>
                             </Image.Style>
                         </Image>

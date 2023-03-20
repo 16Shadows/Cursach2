@@ -12,19 +12,22 @@ namespace DMOrganizerViewModel
 
     public class ItemViewModel : DMOrganizerViewModelBase
     {
+        public WeakReference OrganizerReference;
         public IItem Item { get; }
 
         protected bool m_Deleting;
 
         public DeferredCommand Delete { get; protected init; }
 
-        protected ItemViewModel(IContext context, IServiceProvider serviceProvider, IItem item) : base(context, serviceProvider)
+        protected ItemViewModel(IContext context, IServiceProvider serviceProvider, IItem item, OrganizerViewModel org) : base(context, serviceProvider)
         {
             Item = item;
 
             Item.ItemDeleted.Subscribe(Item_Deleted);
 
             Delete = new DeferredCommand(CommandHandler_Delete, () => !LockingOperation);
+
+            OrganizerReference = new WeakReference(org, false);
         }
 
         protected virtual void Item_Deleted(IItem sender, ItemDeletedResult result)

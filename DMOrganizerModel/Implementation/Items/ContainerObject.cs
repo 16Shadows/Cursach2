@@ -27,18 +27,22 @@ namespace DMOrganizerModel.Implementation.Items
 
         public void UpdateContent(IReference newLink)
         {
-            //need to get item by link
             string link = newLink.Encode();
-            IReferenceable oldItem = (Organizer.DecodeReferenceInternal(Query.GetObjectContent(Organizer.Connection, ItemID)[0])).Item;
+            IReferenceable oldItem = null;
+            IReferenceable newItem = null;
+            if (Query.GetObjectContent(Organizer.Connection, ItemID).Any())
+            {
+                oldItem = (Organizer.DecodeReferenceInternal(Query.GetObjectContent(Organizer.Connection, ItemID)[0])).Item;
+            }
             if (Query.SetObjectLink(Organizer.Connection, ItemID, link))
             {
-                InvokeItemContainerContentChanged(oldItem, ItemContainerContentChangedEventArgs<IReferenceable>.ChangeType.ItemRemoved, ItemContainerContentChangedEventArgs<IReferenceable>.ResultType.Success);
+                if (oldItem != null) InvokeItemContainerContentChanged(oldItem, ItemContainerContentChangedEventArgs<IReferenceable>.ChangeType.ItemRemoved, ItemContainerContentChangedEventArgs<IReferenceable>.ResultType.Success);
                 
-                IReferenceable newItem = (Organizer.DecodeReferenceInternal(Query.GetObjectContent(Organizer.Connection, ItemID)[0])).Item;
+                newItem = (Organizer.DecodeReferenceInternal(Query.GetObjectContent(Organizer.Connection, ItemID)[0])).Item;
                 InvokeItemContainerContentChanged(newItem, ItemContainerContentChangedEventArgs<IReferenceable>.ChangeType.ItemAdded, ItemContainerContentChangedEventArgs<IReferenceable>.ResultType.Success);
-                InvokeObjectUpdateLink(ItemID, oldItem.GetReference().Encode(), ObjectUpdateLinkEventArgs.ResultType.Success);
+                InvokeObjectUpdateLink(ItemID, newItem.GetReference().Encode(), ObjectUpdateLinkEventArgs.ResultType.Success);
             }
-            else InvokeObjectUpdateLink(ItemID, oldItem.GetReference().Encode(), ObjectUpdateLinkEventArgs.ResultType.IncorrectLink);
+            else InvokeObjectUpdateLink(ItemID, newItem.GetReference().Encode(), ObjectUpdateLinkEventArgs.ResultType.IncorrectLink);
         }
         public string GetObjectLink()
         {

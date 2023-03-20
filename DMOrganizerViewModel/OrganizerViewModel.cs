@@ -122,11 +122,11 @@ namespace DMOrganizerViewModel
         private ItemViewModel CreateViewModel(IOrganizerItem item)
         {
             if (item is ICategory category)
-                return new CategoryViewModel(Context, ServiceProvider, category);
+                return new CategoryViewModel(Context, ServiceProvider, category, this);
             else if (item is IDocument document)
-                return new DocumentViewModel(Context, ServiceProvider, document);
+                return new DocumentViewModel(Context, ServiceProvider, document, this);
             else if (item is IBook book)
-                return new BookViewModel(Context, ServiceProvider, book, book);
+                return new BookViewModel(Context, ServiceProvider, book, book, this);
             else
                 throw new ArgumentException("Unsupported item type", nameof(item));
         }

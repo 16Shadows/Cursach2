@@ -19,8 +19,9 @@ namespace DMOrganizerViewModel
         public DeferredCommand CreateContainer { get; } 
 
         //base constructor only creates Container for page items, we need to make page Position and property for it, subscription on events
-        public BookPageViewModel(IContext context, IServiceProvider serviceProvider, IItemContainer<IObjectContainer> container, IPage page) : base(context, serviceProvider, container, page) 
+        public BookPageViewModel(IContext context, IServiceProvider serviceProvider, IItemContainer<IObjectContainer> container, IPage page, OrganizerViewModel org) : base(context, serviceProvider, container, page, org) 
         {
+            OrganizerReference = new WeakReference(org, false);
             if (page is null) throw new ArgumentNullException(nameof(page));
             else Page = page;
 
@@ -58,7 +59,8 @@ namespace DMOrganizerViewModel
         }
         protected override ItemViewModel CreateViewModel(IObjectContainer item)
         {
-            return new ObjectContainerViewModel(Context, ServiceProvider, item);
+            OrganizerViewModel org;
+            return new ObjectContainerViewModel(Context, ServiceProvider, item, OrganizerReference.Target as OrganizerViewModel);
         }
     }
 }

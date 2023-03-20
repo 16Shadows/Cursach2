@@ -25,13 +25,9 @@ namespace DMOrganizerApp.Views
     /// </summary>
     public partial class ContainerView : UserControl
     {
-        public ObjectContainerViewModel dc;
-
         public ContainerView()
         {
-            dc = this.DataContext as ObjectContainerViewModel;
             InitializeComponent();
-
         }
 
         private void ResizeThumb_DragDelta(object sender, DragDeltaEventArgs e)
@@ -48,18 +44,6 @@ namespace DMOrganizerApp.Views
                 this.Height = yadjust;
             }
         }
-        private void Thumb_DragDelta(object sender, System.Windows.Controls.Primitives.DragDeltaEventArgs e)
-        {
-                UIElement thumb = e.Source as UIElement;
-                Canvas.SetLeft(thumb, Canvas.GetLeft(thumb) + e.HorizontalChange);
-                Canvas.SetTop(thumb, Canvas.GetTop(thumb) + e.VerticalChange);
-        }
-
-        private void Thumb_DragDelta_1(object sender, System.Windows.Controls.Primitives.DragDeltaEventArgs e)
-        {
-
-        }
-
         private void MoveThumb_DragDelta(object sender, DragDeltaEventArgs e)
         {
             ObjectContainerViewModel model = this.DataContext as ObjectContainerViewModel;
@@ -72,15 +56,10 @@ namespace DMOrganizerApp.Views
                 model.CoordX.Value = (int)xadjust;
                 model.CoordY.Value = (int)yadjust;
             }
-            //model.CoordX.Value = model.CoordX.Value + (int)e.HorizontalChange;
-            //model.CoordY.Value = model.CoordX.Value + (int)e.VerticalChange;
         }
 
-        private void MoveThumb_DragCompleted(object sender, DragCompletedEventArgs e)
+        private void AddObject_Click(object sender, RoutedEventArgs e)
         {
-
         }
-
-        
     }
 }

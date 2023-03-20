@@ -4,9 +4,21 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:DMOrganizerApp.Views"
+             xmlns:views="clr-namespace:DMOrganizerApp.Views"
+             xmlns:vm="clr-namespace:DMOrganizerViewModel;assembly=DMOrganizerViewModel"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800" Background="Bisque">
+
     <Viewbox>
-        <TextBlock Text="Need to add references.." FontSize="30"></TextBlock>
+        <ContentPresenter Content="{Binding ActivePageViewModel}">
+            <ContentPresenter.Resources>
+                <DataTemplate DataType="{x:Type vm:DocumentViewModel}">
+                    <views:DocumentView />
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type vm:SectionViewModel}">
+                    <views:SectionView />
+                </DataTemplate>
+            </ContentPresenter.Resources>
+        </ContentPresenter>
     </Viewbox>
 </UserControl>

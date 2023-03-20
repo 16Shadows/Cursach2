@@ -1,22 +1,31 @@
 ﻿using CSToolbox;
 using DMOrganizerModel.Interface.Items;
+using DMOrganizerModel.Interface.Organizer;
 using DMOrganizerModel.Interface.References;
 using MVVMToolbox;
 using MVVMToolbox.Command;
+using MVVMToolbox.Services;
 using MVVMToolbox.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace DMOrganizerViewModel
-{
+{    
+    //service provided by ServiceProvider
+    public interface IReferenceSelector
+    {
+        ItemViewModel Select(OrganizerViewModel organizer);
+    }
+
     public class ObjectContainerViewModel : ContainerItemViewModel<IObject>
     {
-        //to change opened pages views in book view
+        //to change opened object views in container view
         private ViewModelBase? m_ActivePageViewModel;
         public ViewModelBase? ActivePageViewModel
         {
@@ -38,21 +47,19 @@ namespace DMOrganizerViewModel
         public LazyProperty<int> CoordX { get; }
         public LazyProperty<int> CoordY { get; }
         public LazyProperty<int> Type { get; }
-        public LazyProperty<bool> CanHaveObject { get; }
-        public UserControl parentPage { get; }
 
         protected IObjectContainer ObjectContainer { get; }
-        public DeferredCommand CreateObject { get; }
-        public ObjectContainerViewModel(IContext context, IServiceProvider serviceProvider, IObjectContainer item) : base(context, serviceProvider, item, item) 
+        public DeferredCommand SetObject { get; }
+        public ObjectContainerViewModel(IContext context, IServiceProvider serviceProvider, IObjectContainer item, OrganizerViewModel org) : base(context, serviceProvider, item, item, org) 
         {
+            OrganizerReference = new WeakReference(org, false);
             if (item is null) throw new ArgumentNullException(nameof(item));
             else ObjectContainer = item;
             //need to set properties for Width, Height, X, Y, Type and subscribe our updater-method to listen to the model
             ObjectContainer.ObjectContainerViewInfo.Subscribe(ObjectContainer_RequestContainerViewInfo);
             ObjectContainer.ItemContainerContentChanged.Subscribe(ObjectContainer_ItemCreated);
-            ObjectContainer.ItemContainerCurrentContent.Subscribe(ObjectContainer_HasObjectUpdate);
-            ObjectContainer.ItemContainerContentChanged.Subscribe(ObjectContainer_SetActiveObject);
-            ObjectContainer.ItemContainerCurrentContent.Subscribe(ObjectContainer_SetActiveObjectCurrent);
+            //ObjectContainer.ItemContainerContentChanged.Subscribe(ObjectContainer_SetActiveObject);
+            //ObjectContainer.ItemContainerCurrentContent.Subscribe(ObjectContainer_SetActiveObjectCurrent);
 
             Width = new LazyProperty<int>(_ => ObjectContainer.RequestContainerViewInfo());
             Height = new LazyProperty<int>(_ => ObjectContainer.RequestContainerViewInfo());
@@ -60,9 +67,9 @@ namespace DMOrganizerViewModel
             CoordY = new LazyProperty<int>(_ => ObjectContainer.RequestContainerViewInfo());
             Type = new LazyProperty<int>(_ => ObjectContainer.RequestContainerViewInfo());
 
-            CanHaveObject = new LazyProperty<bool>(_ => ObjectContainer.RequestItemContainerCurrentContent());
             ObjectContainer.RequestItemContainerCurrentContent();
-            CreateObject = new DeferredCommand(CommandHandler_CreateObject, () => !LockingOperation);
+
+            SetObject = new DeferredCommand(CommandHandler_SetObject, () => !LockingOperation);
 
             CoordX.WeakPropertyChanged.Subscribe(CommandHandler_ContainerCoordinatesChanged);
             CoordY.WeakPropertyChanged.Subscribe(CommandHandler_ContainerCoordinatesChanged);
@@ -79,8 +86,12 @@ namespace DMOrganizerViewModel
         }
         public void ObjectContainer_SetActiveObject(IItemContainer<IObject> sender, ItemContainerContentChangedEventArgs<IObject> e)
         {
-            if (e.Type == ItemContainerContentChangedEventArgs<IObject>.ChangeType.ItemAdded && e.Result == ItemContainerContentChangedEventArgs<IObject>.ResultType.Success) { ActivePageViewModel = Items.Value.Last(); }
-            else if (e.Type == ItemContainerContentChangedEventArgs<IObject>.ChangeType.ItemRemoved && Items.Value.Any()) ActivePageViewModel = Items.Value.Last();
+            if (e.Type == ItemContainerContentChangedEventArgs<IObject>.ChangeType.ItemAdded
+                && e.Result == ItemContainerContentChangedEventArgs<IObject>.ResultType.Success) { ActivePageViewModel = Items.Value.Last(); }
+            
+            else if (e.Type == ItemContainerContentChangedEventArgs<IObject>.ChangeType.ItemRemoved 
+                && Items.Value.Any()) ActivePageViewModel = Items.Value.Last();
+
             else ActivePageViewModel = null;
         }
         public void ObjectContainer_SetActiveObjectCurrent(IItemContainer<IObject> sender, ItemContainerCurrentContentEventArgs<IObject> e)
@@ -88,11 +99,23 @@ namespace DMOrganizerViewModel
             if (e.Content.Any()) ActivePageViewModel = Items.Value.Last();
             else ActivePageViewModel = null;
         }
-        public void CommandHandler_CreateObject()
+        public void CommandHandler_SetObject()
         {
             Context.Invoke(() => LockingOperation = true);
+            //open tree window to chose object: if success - set new object by link, is cansel - nothing and no object created 
+            IReferenceSelector s = ServiceProvider.GetService(typeof(IReferenceSelector)) as IReferenceSelector;
+            OrganizerViewModel org = OrganizerReference.Target as OrganizerViewModel;
+            
+            IReferenceable item = s.Select(org) as IReferenceable;
             //need to give IReferenceable objects to add object
-            ObjectContainer.AddObject();
+            if (item != null) { ObjectContainer.AddObject(item); }
+            else
+            {
+                Context.Invoke(() =>
+                {
+                    LockingOperation = false;
+                });
+            }
         }
 
         private void ObjectContainer_ItemCreated(IItemContainer<IObject> sender, ItemContainerContentChangedEventArgs<IObject> e)
@@ -115,18 +138,10 @@ namespace DMOrganizerViewModel
                 Type.Value = e.Type;
             });
         }
-        public void ObjectContainer_HasObjectUpdate(IItemContainer<IObject> sender, ItemContainerCurrentContentEventArgs<IObject> e)
-        {
-            Context.Invoke(() =>
-            {
-                if (e.Content.Count() > 0) CanHaveObject.Value = false;
-                else CanHaveObject.Value = true;
-            });
-        }
         // SetObject method
         protected override ItemViewModel CreateViewModel(IObject item)
         {
-            return new ContainerObjectViewModel(Context, ServiceProvider, item, item);
+            return new ContainerObjectViewModel(Context, ServiceProvider, item, item, OrganizerReference.Target as OrganizerViewModel);
         }
     }
 }

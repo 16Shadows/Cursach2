@@ -15,8 +15,9 @@ namespace DMOrganizerViewModel
 
         protected IItemContainer<ContentType> Container { get; }
 
-        protected ContainerItemViewModel(IContext context, IServiceProvider serviceProvider, IItemContainer<ContentType> container, IItem item) : base(context, serviceProvider, item)
+        protected ContainerItemViewModel(IContext context, IServiceProvider serviceProvider, IItemContainer<ContentType> container, IItem item, OrganizerViewModel org) : base(context, serviceProvider, item, org)
         {
+            OrganizerReference = new WeakReference(org, false);
             Container = container ?? throw new ArgumentNullException(nameof(container));
             
             Items = new ReadOnlyLazyProperty<ObservableCollection<ItemViewModel>?>(p =>

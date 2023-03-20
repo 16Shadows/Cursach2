@@ -32,8 +32,9 @@ namespace DMOrganizerViewModel
         public DeferredCommand CreatePage { get; }
 
         //base constructor makes property of book Name and subscribes events on it, +Items and events
-        public BookViewModel(IContext context, IServiceProvider serviceProvider, IBook item, IItemContainer<IPage> container) : base(context, serviceProvider, item, container) 
+        public BookViewModel(IContext context, IServiceProvider serviceProvider, IBook item, IItemContainer<IPage> container, OrganizerViewModel org) : base(context, serviceProvider, item, container, org) 
         {
+            OrganizerReference = new WeakReference(org, false);
             if (item is null) throw new ArgumentNullException(nameof(item));
             else Book = item;
 
@@ -61,7 +62,7 @@ namespace DMOrganizerViewModel
         //creation of child page(view model ot this page)
         protected override ItemViewModel CreateViewModel(IPage item)
         {
-            return new BookPageViewModel(Context, ServiceProvider, item, item);
+            return new BookPageViewModel(Context, ServiceProvider, item, item, OrganizerReference.Target as OrganizerViewModel);
         }
     }
 }

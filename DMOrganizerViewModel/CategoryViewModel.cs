@@ -46,8 +46,9 @@ namespace DMOrganizerViewModel
         public DeferredCommand CreateDocument { get; }
         public DeferredCommand CreateBook { get; }
 
-        public CategoryViewModel(IContext context, IServiceProvider serviceProvider, ICategory category) : base(context, serviceProvider, category, category)
+        public CategoryViewModel(IContext context, IServiceProvider serviceProvider, ICategory category, OrganizerViewModel org) : base(context, serviceProvider, category, category, org)
         {
+            OrganizerReference = new WeakReference(org, false);
             Category = category ?? throw new ArgumentNullException(nameof(category));
 
             CategoryInputBoxService = (IInputBoxService<CategoryInputBoxScenarios>)serviceProvider.GetService(typeof(IInputBoxService<CategoryInputBoxScenarios>)) ?? throw new MissingServiceException("Missing InputBoxService.");
@@ -63,11 +64,11 @@ namespace DMOrganizerViewModel
         protected override ItemViewModel CreateViewModel(IOrganizerItem item)
         {
             if (item is ICategory category)
-                return new CategoryViewModel(Context, ServiceProvider, category);
+                return new CategoryViewModel(Context, ServiceProvider, category, OrganizerReference.Target as OrganizerViewModel);
             else if (item is IDocument document)
-                return new DocumentViewModel(Context, ServiceProvider, document);
+                return new DocumentViewModel(Context, ServiceProvider, document, OrganizerReference.Target as OrganizerViewModel);
             else if (item is IBook book)
-                return new BookViewModel(Context, ServiceProvider, book, book);
+                return new BookViewModel(Context, ServiceProvider, book, book, OrganizerReference.Target as OrganizerViewModel);
             else
                 throw new ArgumentException("Unsupported item type", nameof(item));
         }

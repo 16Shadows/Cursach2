@@ -43,8 +43,9 @@ namespace DMOrganizerViewModel
         public DeferredCommand AddTag { get; }
         public DeferredCommand<string> DeleteTag { get; }
 
-        public DocumentViewModel(IContext context, IServiceProvider serviceProvider, IDocument document) : base(context, serviceProvider, document)
+        public DocumentViewModel(IContext context, IServiceProvider serviceProvider, IDocument document, OrganizerViewModel org) : base(context, serviceProvider, document, org)
         {
+            OrganizerReference = new WeakReference(org, false);
             Document = document ?? throw new ArgumentNullException(nameof(document));
 
             DocumentInputBoxService = (IInputBoxService<DocumentInputBoxScenarios>)serviceProvider.GetService(typeof(IInputBoxService<DocumentInputBoxScenarios>)) ?? throw new MissingServiceException("Missing InputBoxService.");
