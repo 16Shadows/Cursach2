@@ -1,8 +1,6 @@
 ﻿using System.Data.SQLite;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System;
-using System.Data;
+using DMOrganizerModel.Implementation.Items;
 
 namespace DMOrganizerModel.Implementation.Utility
 {
@@ -122,6 +120,24 @@ namespace DMOrganizerModel.Implementation.Utility
         #endregion
 
         #region Document
+        public static int GetDocumentByName(SyncronizedSQLiteConnection connection, string name, int? parentID)
+        {
+            int res = -1;
+            connection.Read(con =>
+            {
+                using SQLiteCommand cmd = con.CreateCommand();
+                if (parentID.HasValue)
+                    cmd.CommandText = $"SELECT Section.ID FROM (Document INNER JOIN Section ON Section.ID = Document.SectionID) WHERE Section.Title=@title AND Document.CategoryID={parentID.Value}";
+                else
+                    cmd.CommandText = $"SELECT Section.ID FROM (Document INNER JOIN Section ON Section.ID = Document.SectionID) WHERE Section.Title=@title AND Document.CategoryID IS NULL";
+                cmd.Parameters.AddWithValue("@title", name);
+                using SQLiteDataReader reader = cmd.ExecuteReader();
+                while (reader.Read())
+                    res = reader.GetInt32(0);
+            });
+            return res;
+        }
+
         public static int CreateDocument(SyncronizedSQLiteConnection connecton, string name, int? parentID)
         {
             int res = -1;
@@ -228,6 +244,21 @@ namespace DMOrganizerModel.Implementation.Utility
         #endregion
 
         #region Section
+        public static int GetSectionByName(SyncronizedSQLiteConnection connection, string name, int parentID)
+        {
+            int res = -1;
+            connection.Read(con =>
+            {
+                using SQLiteCommand cmd = con.CreateCommand();
+                cmd.CommandText = $"SELECT ID FROM Section WHERE Title=@title AND Parent={parentID}";
+                cmd.Parameters.AddWithValue("@title", name);
+                using SQLiteDataReader reader = cmd.ExecuteReader();
+                while (reader.Read())
+                    res = reader.GetInt32(0);
+            });
+            return res;
+        }
+
         public static List<int> GetSectionsInSection(SyncronizedSQLiteConnection connection, int sectionID)
         {
             List<int> res = new List<int>();
@@ -248,7 +279,7 @@ namespace DMOrganizerModel.Implementation.Utility
             connection.Read(con =>
             {
                 using SQLiteCommand cmd = con.CreateCommand();
-                cmd.CommandText = $"(SELECT ID FROM Section WHERE Title=$title AND Parent={sectionID})";
+                cmd.CommandText = $"SELECT ID FROM Section WHERE Title=$title AND Parent={sectionID}";
                 cmd.Parameters.AddWithValue("$title", name);
                 success = cmd.ExecuteScalar() != null;
             });
@@ -413,6 +444,24 @@ namespace DMOrganizerModel.Implementation.Utility
                 cmd.Parameters.AddWithValue("$title", name);
                 using SQLiteDataReader reader = cmd.ExecuteReader();
                 if (reader.Read())
+                    res = reader.GetInt32(0);
+            });
+            return res;
+        }
+
+        public static int GetCategoryByName(SyncronizedSQLiteConnection connection, string name, int? parentID)
+        {
+            int res = -1;
+            connection.Read(con =>
+            {
+                using SQLiteCommand cmd = con.CreateCommand();
+                if (parentID.HasValue)
+                    cmd.CommandText = $"SELECT ID FROM Category WHERE Title=@title AND Parent={parentID.Value}";
+                else
+                    cmd.CommandText = $"SELECT ID FROM Category WHERE Title=@title AND Parent IS NULL";
+                cmd.Parameters.AddWithValue("@title", name);
+                using SQLiteDataReader reader = cmd.ExecuteReader();
+                while (reader.Read())
                     res = reader.GetInt32(0);
             });
             return res;

@@ -2,6 +2,7 @@
 using DMOrganizerModel.Implementation.Organizers;
 using DMOrganizerModel.Interface;
 using DMOrganizerModel.Interface.Items;
+using DMOrganizerModel.Interface.Organizer;
 using System;
 using System.Threading.Tasks;
 
@@ -20,6 +21,7 @@ namespace DMOrganizerModel.Implementation.Items
 
         #region IItem
         public WeakEvent<IItem, ItemDeletedResult> ItemDeleted { get; } = new();
+        IOrganizer IItem.Organizer => Organizer;
 
         protected void InvokeItemDeleted(ItemDeletedResult result)
         {
@@ -103,6 +105,5 @@ namespace DMOrganizerModel.Implementation.Items
         /// <param name="parent">The parent to set</param>
         protected abstract void SetParentInternal(IItemContainerBase parent);
         protected abstract bool DeleteItemInternal();
-        
     }
 }

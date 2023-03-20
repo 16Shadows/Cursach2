@@ -33,12 +33,37 @@ namespace DMOrganizerModel.Interface.Organizer
         }
     }
 
+    public class ReferenceDecodedEventArgs : EventArgs
+    {
+        public enum ResultType
+        {
+            Success,
+            InvalidReference
+        }
+
+        public string EncodedReference { get; }
+        public IReference Instance { get; }
+        public ResultType Result { get; }
+
+        public ReferenceDecodedEventArgs(ResultType result, string encodedReference, IReference reference)
+        {
+            EncodedReference = encodedReference ?? throw new ArgumentNullException(nameof(encodedReference));
+            Result = result;
+            Instance = reference;
+        }
+    }
+
     public interface IOrganizer : IItemContainer<IOrganizerItem>
     {
         /// <summary>
-        /// Is invoked when a create operation is completed
+        /// Is invoked when a create operation is completed.
         /// </summary>
         WeakEvent<IOrganizer, OrganizerItemCreatedEventArgs> OrganizerItemCreated { get; }
+
+        /// <summary>
+        /// Is invoked when a reference has been decoded.
+        /// </summary>
+        WeakEvent<IOrganizer, ReferenceDecodedEventArgs> ReferenceDecoded { get; }
 
         /// <summary>
         /// Creates a category in the organizer
@@ -66,6 +91,6 @@ namespace DMOrganizerModel.Interface.Organizer
         /// </summary>
         /// <param name="">The reference to decode</param>
         /// <returns>An instance referncing the item the encoded reference references</returns>
-        IReference DecodeReference(string reference);
+        void DecodeReference(string reference);
     }
 }

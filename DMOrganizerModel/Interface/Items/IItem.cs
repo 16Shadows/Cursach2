@@ -1,4 +1,5 @@
 ﻿using CSToolbox.Weak;
+using DMOrganizerModel.Interface.Organizer;
 using System;
 
 namespace DMOrganizerModel.Interface.Items
@@ -17,6 +18,8 @@ namespace DMOrganizerModel.Interface.Items
 
     public interface IItem
     {
+        public IOrganizer Organizer { get; }
+
         /// <summary>
         /// Is invoked when the DeleteItem is completed
         /// </summary>

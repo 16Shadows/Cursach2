@@ -122,5 +122,6 @@
                 </toolbox:TemplateSelectorEx>
             </ItemsControl.ItemTemplateSelector>
         </ItemsControl>
+        <Button Content="Add new" HorizontalContentAlignment="Center" HorizontalAlignment="Stretch" Command="{Binding CreateSection}" />
     </StackPanel>
 </UserControl>
