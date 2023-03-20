@@ -8,13 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="UserControls\**" />
-    <EmbeddedResource Remove="UserControls\**" />
-    <None Remove="UserControls\**" />
-    <Page Remove="UserControls\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Remove="Resources\box.png" />
     <None Remove="Resources\ClosedBookIcon.png" />
     <None Remove="Resources\CollapsedCategoryIcon.png" />
@@ -24,7 +17,7 @@
     <None Remove="Resources\Page.png" />
     <None Remove="Resources\PlusIcon.png" />
   </ItemGroup>
-
+  
   <ItemGroup>
     <None Include="..\.editorconfig" Link=".editorconfig" />
   </ItemGroup>
