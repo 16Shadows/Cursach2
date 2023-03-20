@@ -63,13 +63,13 @@ namespace DMOrganizerViewModel
                 InvokePropertyChanged(nameof(ActiveViewModel));
             }
         }
-        public ObservableCollection<DMOrganizerViewModelBase> OpenedItems { get; } = new();
+        public ObservableCollection<ItemViewModel> OpenedItems { get; } = new();
 
         public DeferredCommand CreateCategory { get; }
         public DeferredCommand CreateDocument { get; }
         public DeferredCommand CreateBook { get; }
-        public DeferredCommand<DMOrganizerViewModelBase> OpenItem { get; }
-        public DeferredCommand<DMOrganizerViewModelBase> CloseItem { get; }
+        public DeferredCommand<ItemViewModel> OpenItem { get; }
+        public DeferredCommand<ItemViewModel> CloseItem { get; }
 
         public OrganizerViewModel(IContext context, IServiceProvider serviceProvider, IOrganizer organizer) : base(context, serviceProvider)
         {
@@ -81,8 +81,8 @@ namespace DMOrganizerViewModel
             CreateDocument = new DeferredCommand(CommandHandler_CreateDocument, CanExecuteLockingOperation);
             CreateBook = new DeferredCommand(CommandHandler_CreateBook, CanExecuteLockingOperation);
 
-            OpenItem = new DeferredCommand<DMOrganizerViewModelBase>(CommandHandler_Open, target => target?.LockingOperation != true);
-            CloseItem = new DeferredCommand<DMOrganizerViewModelBase>(CommandHandler_Close);
+            OpenItem = new DeferredCommand<ItemViewModel>(CommandHandler_Open, target => target?.LockingOperation != true);
+            CloseItem = new DeferredCommand<ItemViewModel>(CommandHandler_Close);
 
             Items = new ReadOnlyLazyProperty<ObservableCollection<ItemViewModel>?>(p =>
             {
@@ -97,7 +97,11 @@ namespace DMOrganizerViewModel
                         return;
                     ObservableCollection<ItemViewModel> v = new ();
                     foreach (IOrganizerItem item in e.Content)
-                        v.Add(CreateViewModel(item));
+                    {
+                        ItemViewModel vm = CreateViewModel(item);
+                        vm.ItemDeleted.Subscribe(CommandHandler_Close);
+                        v.Add(vm);
+                    }
                     p(v);
                 });
                 Organizer.ItemContainerCurrentContent.Subscribe( handler );
@@ -114,7 +118,11 @@ namespace DMOrganizerViewModel
             if (!e.HasChanged || Items.Value == null)
                 return;
             else if (e.Type == ItemContainerContentChangedEventArgs<IOrganizerItem>.ChangeType.ItemAdded)
-                Context.Invoke(() => Items.Value.Add(CreateViewModel(e.Item)));
+            {
+                ItemViewModel vm = CreateViewModel(e.Item);
+                vm.ItemDeleted.Subscribe(CommandHandler_Close);
+                Context.Invoke(() => Items.Value.Add(vm));
+            }
             else
                 Context.Invoke(() => Items.Value.Remove(vm => vm.Item.Equals(e.Item)) );
         }
@@ -141,20 +149,20 @@ namespace DMOrganizerViewModel
             CloseItem.InvokeCanExecuteChanged();
         }
         
-        private void CommandHandler_Open(DMOrganizerViewModelBase? target)
+        private void CommandHandler_Open(ItemViewModel? target)
         {
             if (target == null)
                 return;
             else if (!OpenedItems.Contains(target))
-                OpenedItems.Add(target);
-            ActiveViewModel = target;
+                Context.Invoke(() => OpenedItems.Add(target));
+            Context.Invoke(() => ActiveViewModel = target);
         }
 
-        private void CommandHandler_Close(DMOrganizerViewModelBase? target)
+        private void CommandHandler_Close(ItemViewModel? target)
         {
             if (target == null)
                 return;
-            OpenedItems.Remove(target);
+            Context.Invoke(() => OpenedItems.Remove(target));
         }
 
         private void CommandHandler_CreateCategory()
@@ -167,7 +175,7 @@ namespace DMOrganizerViewModel
                 return;
             Context.Invoke(() => LockingOperation = true);
             m_CreatedCategory = config.UserInput;
-            Organizer.CreateCategory(m_CreatedCategory);            
+            Organizer.CreateCategory(m_CreatedCategory);
         }
 
         private void CommandHandler_CreateDocument()

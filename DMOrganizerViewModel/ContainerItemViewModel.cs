@@ -32,7 +32,11 @@ namespace DMOrganizerViewModel
                         return;
                     ObservableCollection<ItemViewModel> v = new ();
                     foreach (ContentType item in e.Content)
-                        v.Add(CreateViewModel(item));
+                    {
+                        ItemViewModel vm = CreateViewModel(item);
+                        vm.ItemDeleted.Subscribe(HandleItemDeleted);
+                        v.Add(vm);
+                    }
                     p(v);
                 });
                 Container.ItemContainerCurrentContent.Subscribe( handler );
@@ -42,12 +46,28 @@ namespace DMOrganizerViewModel
             Container.ItemContainerContentChanged.Subscribe(ItemContainer_ItemContainerContentChanged);
         }
 
+        private void HandleItemDeleted(ItemViewModel item)
+        {
+            ItemDeleted.Invoke(item);
+        }
+
+        protected override void Item_Deleted(IItem sender, ItemDeletedResult result)
+        {
+            foreach (ItemViewModel item in Items.Value)
+                ItemDeleted.Invoke(item);
+            base.Item_Deleted(sender, result);
+        }
+
         protected virtual void ItemContainer_ItemContainerContentChanged(IItemContainer<ContentType> sender, ItemContainerContentChangedEventArgs<ContentType> e)
         {
             if (!e.HasChanged || Items.Value == null)
                 return;
             else if (e.Type == ItemContainerContentChangedEventArgs<ContentType>.ChangeType.ItemAdded)
-                Context.Invoke(() => Items.Value.Add(CreateViewModel(e.Item)));
+            {
+                ItemViewModel vm = CreateViewModel(e.Item);
+                vm.ItemDeleted.Subscribe(HandleItemDeleted);
+                Context.Invoke(() => Items.Value.Add(vm));
+            }
             else
                 Context.Invoke(() => Items.Value.Remove(vm => vm.Item.Equals(e.Item)) );
         }

@@ -1,4 +1,5 @@
-﻿using DMOrganizerModel.Interface.Items;
+﻿using CSToolbox.Weak;
+using DMOrganizerModel.Interface.Items;
 using MVVMToolbox;
 using MVVMToolbox.Command;
 using System;
@@ -16,6 +17,7 @@ namespace DMOrganizerViewModel
 
         protected bool m_Deleting;
 
+        public WeakEvent<ItemViewModel> ItemDeleted { get; } = new();
         public DeferredCommand Delete { get; protected init; }
 
         protected ItemViewModel(IContext context, IServiceProvider serviceProvider, IItem item) : base(context, serviceProvider)
@@ -32,6 +34,7 @@ namespace DMOrganizerViewModel
             if (!m_Deleting)
                 return;
             m_Deleting = false;
+            ItemDeleted.Invoke(this);
         }
 
         private void CommandHandler_Delete()
