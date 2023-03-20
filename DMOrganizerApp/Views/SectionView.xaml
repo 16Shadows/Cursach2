@@ -6,12 +6,18 @@
              xmlns:local="clr-namespace:DMOrganizerApp.Views"
              xmlns:vm="clr-namespace:DMOrganizerViewModel;assembly=DMOrganizerViewModel"
              xmlns:toolbox="clr-namespace:WPFToolbox;assembly=WPFToolbox"
+             xmlns:toolboxc="clr-namespace:WPFToolbox.Converter;assembly=WPFToolbox"
+             xmlns:c="clr-namespace:DMOrganizerApp.Converter"
+             xmlns:uc="clr-namespace:DMOrganizerApp.UserControls"
              xmlns:core="clr-namespace:System;assembly=mscorlib"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <toolbox:BindingProxy x:Key="SectionViewBindingProxy" Context="{Binding RelativeSource={RelativeSource AncestorType=local:SectionView}}" />
+    </UserControl.Resources>
     <Expander>
         <Expander.Header>
-            <TextBlock Text="{Binding Name.Value, Converter={StaticResource NullToLoading}}" />
+            <TextBlock Text="{Binding Name.Value, Converter={StaticResource NullToLoading}}" FontSize="25"/>
         </Expander.Header>
         <Grid>
             <Grid.ColumnDefinitions>
@@ -22,7 +28,55 @@
             </Grid.ColumnDefinitions>
             <Border Grid.Column="1" BorderBrush="Black" BorderThickness="1" />
             <StackPanel Grid.Column="3" Orientation="Vertical">
-                <TextBlock Text="{Binding Content.Value, Converter={StaticResource NullToLoading}}" />
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition>
+                            <RowDefinition.Style>
+                                <Style TargetType="RowDefinition">
+                                    <Setter Property="Height" Value="0" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding EditMode, RelativeSource={RelativeSource AncestorType=local:SectionView}}" Value="True">
+                                            <Setter Property="Height" Value="Auto" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </RowDefinition.Style>
+                        </RowDefinition>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <uc:FormattableRichTextBox x:Name="ContentEditBox" Grid.ColumnSpan="2" >
+                        <uc:FormattableRichTextBox.Document>
+                            <Binding Path="Content.Value" UpdateSourceTrigger="Explicit" Mode="TwoWay">
+                                <Binding.Converter>
+                                    <toolboxc:ConverterChain>
+                                        <c:RtfToFlowDocument />
+                                        <toolboxc:NullToLoading />
+                                    </toolboxc:ConverterChain>
+                                </Binding.Converter>
+                            </Binding>
+                        </uc:FormattableRichTextBox.Document>
+                        <uc:FormattableRichTextBox.Style>
+                            <Style TargetType="{x:Type uc:FormattableRichTextBox}">
+                                <Setter Property="IsReadOnly" Value="True" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding EditMode, RelativeSource={RelativeSource AncestorType=local:SectionView}}" Value="True">
+                                        <Setter Property="IsReadOnly" Value="False" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </uc:FormattableRichTextBox.Style>
+                        <uc:FormattableRichTextBox.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="Edit" Command="{Binding Context.BeginEdit, Source={StaticResource SectionViewBindingProxy} }" />
+                            </ContextMenu>
+                        </uc:FormattableRichTextBox.ContextMenu>
+                    </uc:FormattableRichTextBox>
+                    <Button Content="Save" Width="50" Grid.Row="1" Grid.Column="1" Command="{Binding EndEdit, RelativeSource={RelativeSource AncestorType=local:SectionView}}"/>
+                </Grid>
                 <ItemsControl ItemsSource="{Binding Items.Value, Converter={StaticResource NullToLoading}}">
                     <ItemsControl.ItemTemplateSelector>
                         <toolbox:TemplateSelectorEx>

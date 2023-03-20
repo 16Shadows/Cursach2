@@ -8,9 +8,10 @@
              xmlns:core="clr-namespace:System;assembly=mscorlib"
              xmlns:validation="clr-namespace:WPFToolbox.Validation;assembly=WPFToolbox"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="450" d:DesignWidth="800" Loaded="UserControl_Loaded">
     <UserControl.Resources>
         <conv:DoubleToString x:Key="DoubleToString" />
+        <conv:BoolInverter x:Key="BoolInverter" />
         <core:Double x:Key="ButtonsHeight">30</core:Double>
     </UserControl.Resources>
     <Grid>
@@ -20,6 +21,16 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal">
+            <StackPanel.Style>
+                <Style TargetType="StackPanel">
+                    <Setter Property="Visibility" Value="Visible" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsReadOnly, RelativeSource={RelativeSource AncestorType=local:FormattableRichTextBox}}" Value="True">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </StackPanel.Style>
             <ToggleButton Width="{StaticResource ButtonsHeight}" Height="{StaticResource ButtonsHeight}" Margin="5" IsChecked="{Binding IsSelectionBold, RelativeSource={RelativeSource AncestorType=local:FormattableRichTextBox}}">
                 <ToggleButton.Content>
                     <TextBlock>
@@ -52,7 +63,24 @@
             </ComboBox>
             <ComboBox IsEditable="False" VerticalContentAlignment="Center" HorizontalAlignment="Center" Width="200" Height="{StaticResource ButtonsHeight}" Margin="5" SelectedValue="{Binding CurrentSelectionFontFamily, RelativeSource={RelativeSource AncestorType=local:FormattableRichTextBox}}" ItemsSource="{Binding FontFamilies, RelativeSource={RelativeSource AncestorType=local:FormattableRichTextBox}}" />
         </StackPanel>
-        <Separator Grid.Row="1" />
-        <RichTextBox Grid.Row="2" x:Name="RichTextBox" SelectionChanged="RichTextBox_SelectionChanged" />
+        <Separator Grid.Row="1">
+            <Separator.Style>
+                <Style TargetType="Separator">
+                    <Setter Property="Visibility" Value="Visible" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsReadOnly, RelativeSource={RelativeSource AncestorType=local:FormattableRichTextBox}}" Value="True">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Separator.Style>
+        </Separator>
+        <RichTextBox Grid.Row="2" x:Name="RichTextBox" SelectionChanged="RichTextBox_SelectionChanged" IsReadOnly="{Binding IsReadOnly, RelativeSource={RelativeSource AncestorType=local:FormattableRichTextBox}}">
+            <RichTextBox.Resources>
+                <Style TargetType="Paragraph">
+                    <Setter Property="Margin" Value="0" />
+                </Style>
+            </RichTextBox.Resources>
+        </RichTextBox>
     </Grid>
 </UserControl>
