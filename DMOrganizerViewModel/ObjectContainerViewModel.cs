@@ -59,9 +59,23 @@ namespace DMOrganizerViewModel
             CoordX = new LazyProperty<int>(_ => ObjectContainer.RequestContainerViewInfo());
             CoordY = new LazyProperty<int>(_ => ObjectContainer.RequestContainerViewInfo());
             Type = new LazyProperty<int>(_ => ObjectContainer.RequestContainerViewInfo());
+
             CanHaveObject = new LazyProperty<bool>(_ => ObjectContainer.RequestItemContainerCurrentContent());
             ObjectContainer.RequestItemContainerCurrentContent();
             CreateObject = new DeferredCommand(CommandHandler_CreateObject, () => !LockingOperation);
+
+            CoordX.WeakPropertyChanged.Subscribe(CommandHandler_ContainerCoordinatesChanged);
+            CoordY.WeakPropertyChanged.Subscribe(CommandHandler_ContainerCoordinatesChanged);
+            Width.WeakPropertyChanged.Subscribe(CommandHandler_ContainerSizeChanged);
+            Height.WeakPropertyChanged.Subscribe(CommandHandler_ContainerSizeChanged);
+        }
+        public void CommandHandler_ContainerCoordinatesChanged(LazyProperty<int> e)
+        {
+            ObjectContainer.UpdateCoordinates(CoordX.Value, CoordY.Value);
+        }
+        public void CommandHandler_ContainerSizeChanged(LazyProperty<int> e)
+        {
+            ObjectContainer.UpdateSize(Width.Value, Height.Value);
         }
         public void ObjectContainer_SetActiveObject(IItemContainer<IObject> sender, ItemContainerContentChangedEventArgs<IObject> e)
         {
