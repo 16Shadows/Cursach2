@@ -17,7 +17,13 @@
     </UserControl.Resources>
     <Expander>
         <Expander.Header>
-            <TextBlock Text="{Binding Name.Value, Converter={StaticResource NullToLoading}}" FontSize="25"/>
+            <TextBlock Text="{Binding Name.Value, Converter={StaticResource NullToLoading}}" FontSize="25">
+                <TextBlock.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Rename" Command="{Binding Rename}" />
+                    </ContextMenu>
+                </TextBlock.ContextMenu>
+            </TextBlock>
         </Expander.Header>
         <Grid>
             <Grid.ColumnDefinitions>

@@ -79,6 +79,9 @@
                 <Style TargetType="Paragraph">
                     <Setter Property="Margin" Value="0" />
                 </Style>
+                <Style TargetType="FlowDocument">
+                    <Setter Property="PageWidth" Value="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=RichTextBox}}" />
+                </Style>
             </RichTextBox.Resources>
         </RichTextBox>
     </Grid>
