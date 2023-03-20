@@ -82,7 +82,7 @@ namespace DMOrganizerViewModel
             CreateDocument = new DeferredCommand(CommandHandler_CreateDocument, CanExecuteLockingOperation);
             CreateBook = new DeferredCommand(CommandHandler_CreateBook, CanExecuteLockingOperation);
 
-            OpenItem = new DeferredCommand<ItemViewModel>(CommandHandler_Open, target => target?.LockingOperation != true);
+            OpenItem = new DeferredCommand<ItemViewModel>(CommandHandler_Open, CanExecute_Open);
             CloseItem = new DeferredCommand<ItemViewModel>(CommandHandler_Close);
 
             Items = new ReadOnlyLazyProperty<ObservableCollection<ItemViewModel>?>(p =>
@@ -113,6 +113,8 @@ namespace DMOrganizerViewModel
 
             Organizer.OrganizerItemCreated.Subscribe(OrganizerItemCreated);
         }
+
+        private bool CanExecute_Open(ItemViewModel target) => target?.LockingOperation != true;
 
         private void ItemContainer_ItemContainerContentChanged(IItemContainer<IOrganizerItem> sender, ItemContainerContentChangedEventArgs<IOrganizerItem> e)
         {
