@@ -38,6 +38,8 @@ namespace DMOrganizerViewModel
 
         public DeferredCommand CreateSection { get; protected init; }
         private string? m_CreatingSection = null;
+        private bool m_SettingContent;
+        private bool m_RecursionGuard;
 
         public SectionViewModel(IContext context, IServiceProvider serviceProvider, ISection section, OrganizerViewModel org) : base(context, serviceProvider, section, section, org)
         {
@@ -51,8 +53,9 @@ namespace DMOrganizerViewModel
 
             Section.SectionContentChanged.Subscribe(Section_ContentChanged);
             Section.SectionItemCreated.Subscribe(Section_ItemCreated);
+            Content.WeakPropertyChanged.Subscribe(Content_PropertyChanged);
 
-            CreateSection = new DeferredCommand(CommandHandler_CreateSection, () => !LockingOperation);
+            CreateSection = new DeferredCommand(CommandHandler_CreateSection, CanExecuteLockingOperation);
         }
 
         private void CommandHandler_CreateSection()
@@ -80,9 +83,26 @@ namespace DMOrganizerViewModel
             Context.Invoke(() => LockingOperation = false);
         }
 
+        private void Content_PropertyChanged(LazyProperty<string> _)
+        {
+            if (m_RecursionGuard)
+                return;
+
+            Context.Invoke(() => LockingOperation = true);
+            m_SettingContent = true;
+            Section.UpdateContent(Content.Value);
+        }
+
         private void Section_ContentChanged(ISection sender, SectionContentChangedEventArgs e)
         {
-            Context.Invoke(() => Content.Value = e.Content);
+            Context.Invoke(() =>
+            {
+                m_RecursionGuard = true;
+                Content.Value = e.Content;
+                m_RecursionGuard = false;
+                if (LockingOperation && m_SettingContent)
+                    LockingOperation = false;
+            });
         }
 
         protected override ItemViewModel CreateViewModel(ISection item) => new SectionViewModel(Context, ServiceProvider, item, OrganizerReference.Target as OrganizerViewModel);

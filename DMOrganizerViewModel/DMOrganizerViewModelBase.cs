@@ -1,5 +1,4 @@
-﻿using DMOrganizerModel.Interface.Items;
-using MVVMToolbox;
+﻿using MVVMToolbox;
 using MVVMToolbox.ViewModel;
 using System;
 
@@ -24,5 +23,6 @@ namespace DMOrganizerViewModel
         protected DMOrganizerViewModelBase(IContext context, IServiceProvider serviceProvider) : base(context, serviceProvider) { }
 
         protected virtual void UpdateCommandsExecutability() {}
+        protected bool CanExecuteLockingOperation() => !LockingOperation;
     }
 }

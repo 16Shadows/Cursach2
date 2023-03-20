@@ -1,19 +1,9 @@
-﻿using System;
-using System.CodeDom;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace DMOrganizerApp.UserControls
 {
@@ -22,7 +12,8 @@ namespace DMOrganizerApp.UserControls
     /// </summary>
     public partial class FormattableRichTextBox : UserControl, INotifyPropertyChanged
     {
-        public static readonly DependencyProperty TextProperty = DependencyProperty.Register(nameof(Text), typeof(string), typeof(FormattableRichTextBox));
+        public static readonly DependencyProperty DocumentProperty = DependencyProperty.Register(nameof(Document), typeof(FlowDocument), typeof(FormattableRichTextBox), new PropertyMetadata(null, DocumentPropertyChanged));
+        public static readonly DependencyProperty IsReadOnlyProperty = DependencyProperty.Register(nameof(IsReadOnly), typeof(bool), typeof(FormattableRichTextBox), new PropertyMetadata(false));
 
         public event PropertyChangedEventHandler? PropertyChanged;
         private void InvokePropertyChanged(string name)
@@ -30,10 +21,16 @@ namespace DMOrganizerApp.UserControls
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
 
-        public string Text
+        public FlowDocument Document
         {
-            get => (string)GetValue(TextProperty);
-            set => SetValue(TextProperty, value);
+            get => (FlowDocument)GetValue(DocumentProperty);
+            set => SetValue(DocumentProperty, value);
+        }
+
+        public bool IsReadOnly
+        {
+            get => (bool)GetValue(IsReadOnlyProperty);
+            set => SetValue(IsReadOnlyProperty, value);
         }
 
         public List<double> FontSizes { get; }
@@ -85,6 +82,17 @@ namespace DMOrganizerApp.UserControls
             InvokePropertyChanged(nameof(IsSelectionBold));
             InvokePropertyChanged(nameof(IsSelectionItalicised));
             InvokePropertyChanged(nameof(IsSelectionUnderlined));
+        }
+
+        private static void DocumentPropertyChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e)
+        {
+            if (e.NewValue != null)
+                ((FormattableRichTextBox)obj).RichTextBox.Document = (FlowDocument)e.NewValue;
+        }
+
+        private void UserControl_Loaded(object sender, RoutedEventArgs e)
+        {
+            Document ??= new FlowDocument();
         }
     }
 }

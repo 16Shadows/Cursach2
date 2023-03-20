@@ -20,113 +20,120 @@
             <ColumnDefinition Width="5" />
             <ColumnDefinition Width="2*" MinWidth="200"/>
         </Grid.ColumnDefinitions>
-        <TreeView ItemsSource="{Binding Items.Value, Converter={StaticResource NullToLoading}}">
-            <TreeView.Resources>
-                <HierarchicalDataTemplate DataType="{x:Type vm:CategoryViewModel}" ItemsSource="{Binding Items.Value}">
-                    <StackPanel Orientation="Horizontal">
-                        <Image Height="{StaticResource NavTreeIconHeight}" VerticalAlignment="Center" HorizontalAlignment="Center" Stretch="Uniform">
-                            <Image.Style>
-                                <Style TargetType="Image">
-                                    <Setter Property="Source" Value="{StaticResource CollapsedCategoryIcon}" />
-                                    <Style.Triggers>
+        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+            <TreeView ItemsSource="{Binding Items.Value, Converter={StaticResource NullToLoading}}">
+                <TreeView.Resources>
+                    <HierarchicalDataTemplate DataType="{x:Type vm:CategoryViewModel}" ItemsSource="{Binding Items.Value}">
+                        <StackPanel Orientation="Horizontal">
+                            <Image Height="{StaticResource NavTreeIconHeight}" VerticalAlignment="Center" HorizontalAlignment="Center" Stretch="Uniform">
+                                <Image.Style>
+                                    <Style TargetType="Image">
+                                        <Setter Property="Source" Value="{StaticResource CollapsedCategoryIcon}" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsExpanded, RelativeSource={RelativeSource AncestorType=TreeViewItem}, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                                                <Setter Property="Source" Value="{StaticResource ExpandedCategoryIcon}" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Image.Style>
+                            </Image>
+                            <TextBlock Text="{Binding Name.Value, Converter={StaticResource NullToLoading}}" FontSize="{StaticResource NavTreeFontSize}" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                            <StackPanel.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem Header="Create">
+                                        <MenuItem Command="{Binding CreateCategory}" Header="Category">
+                                            <MenuItem.Icon>
+                                                <Image Source="{StaticResource CollapsedCategoryIcon}" Stretch="Uniform"/>
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                        <MenuItem Command="{Binding CreateDocument}" Header="Document">
+                                            <MenuItem.Icon>
+                                                <Image Source="{StaticResource DocumentIcon}" Stretch="Uniform"/>
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                        <!-- Book -->
+                                        <MenuItem Command="{Binding CreateBook}" Header="Book">
+                                            <MenuItem.Icon>
+                                                <Image Source="{StaticResource ClosedBookIcon}" Stretch="Uniform"/>
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                    </MenuItem>
+                                    <Separator />
+                                    <MenuItem Header="Rename" Command="{Binding Rename}"/>
+                                    <MenuItem Header="Delete" Command="{Binding Delete}" />
+                                </ContextMenu>
+                            </StackPanel.ContextMenu>
+                        </StackPanel>
+                    </HierarchicalDataTemplate>
+                    <DataTemplate DataType="{x:Type vm:DocumentViewModel}">
+                        <StackPanel Orientation="Horizontal">
+                            <Image Height="{StaticResource NavTreeIconHeight}" VerticalAlignment="Center" HorizontalAlignment="Center" Stretch="Uniform" Source="{StaticResource DocumentIcon}"/>
+                            <TextBlock Text="{Binding Name.Value, Converter={StaticResource NullToLoading}}" FontSize="{StaticResource NavTreeFontSize}" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                            <StackPanel.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem Header="Open" Command="{Binding Context.OpenItem, Source={StaticResource BindingProxy}}" CommandParameter="{Binding}"/>
+                                    <Separator />
+                                    <MenuItem Header="Rename" Command="{Binding Rename}"/>
+                                    <MenuItem Header="Delete" Command="{Binding Delete}" />
+                                </ContextMenu>
+                            </StackPanel.ContextMenu>
+                        </StackPanel>
+                    </DataTemplate>
+
+                    <!-- Book -->
+                    <DataTemplate DataType="{x:Type vm:BookViewModel}" >
+                        <StackPanel Orientation="Horizontal">
+                            <Image Height="{StaticResource NavTreeIconHeight}" VerticalAlignment="Center" HorizontalAlignment="Center" Stretch="Uniform">
+                                <Image.Style>
+                                    <Style TargetType="Image">
+                                        <Setter Property="Source" Value="{StaticResource ClosedBookIcon}" />
+                                        <!--<Style.Triggers>
                                         <DataTrigger Binding="{Binding IsExpanded, RelativeSource={RelativeSource AncestorType=TreeViewItem}, UpdateSourceTrigger=PropertyChanged}" Value="True">
                                             <Setter Property="Source" Value="{StaticResource ExpandedCategoryIcon}" />
                                         </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Image.Style>
-                        </Image>
-                        <TextBlock Text="{Binding Name.Value, Converter={StaticResource NullToLoading}}" FontSize="{StaticResource NavTreeFontSize}" VerticalAlignment="Center" HorizontalAlignment="Left"/>
-                        <StackPanel.ContextMenu>
-                            <ContextMenu>
-                                <MenuItem Header="Create">
-                                    <MenuItem Command="{Binding CreateCategory}" Header="Category">
-                                        <MenuItem.Icon>
-                                            <Image Source="{StaticResource CollapsedCategoryIcon}" Stretch="Uniform"/>
-                                        </MenuItem.Icon>
-                                    </MenuItem>
-                                    <MenuItem Command="{Binding CreateDocument}" Header="Document">
-                                        <MenuItem.Icon>
-                                            <Image Source="{StaticResource DocumentIcon}" Stretch="Uniform"/>
-                                        </MenuItem.Icon>
-                                    </MenuItem>
-                                    <!-- Book -->
-                                    <MenuItem Command="{Binding CreateBook}" Header="Book">
-                                        <MenuItem.Icon>
-                                            <Image Source="{StaticResource ClosedBookIcon}" Stretch="Uniform"/>
-                                        </MenuItem.Icon>
-                                    </MenuItem>
-                                </MenuItem>
-                                <Separator />
-                                <MenuItem Header="Rename" Command="{Binding Rename}"/>
-                                <MenuItem Header="Delete" Command="{Binding Delete}" />
-                            </ContextMenu>
-                        </StackPanel.ContextMenu>
-                    </StackPanel>
-                </HierarchicalDataTemplate>
-                <DataTemplate DataType="{x:Type vm:DocumentViewModel}">
-                    <StackPanel Orientation="Horizontal">
-                        <Image Height="{StaticResource NavTreeIconHeight}" VerticalAlignment="Center" HorizontalAlignment="Center" Stretch="Uniform" Source="{StaticResource DocumentIcon}"/>
-                        <TextBlock Text="{Binding Name.Value, Converter={StaticResource NullToLoading}}" FontSize="{StaticResource NavTreeFontSize}" VerticalAlignment="Center" HorizontalAlignment="Left"/>
-                        <StackPanel.ContextMenu>
-                            <ContextMenu>
-                                <MenuItem Header="Open" Command="{Binding Context.OpenItem, Source={StaticResource BindingProxy}}" CommandParameter="{Binding}"/>
-                                <Separator />
-                                <MenuItem Header="Rename" Command="{Binding Rename}"/>
-                                <MenuItem Header="Delete" Command="{Binding Delete}" />
-                            </ContextMenu>
-                        </StackPanel.ContextMenu>
-                    </StackPanel>
-                </DataTemplate>
-
-                <!-- Book -->
-                <DataTemplate DataType="{x:Type vm:BookViewModel}" >
-                    <StackPanel Orientation="Horizontal">
-                        <Image Height="{StaticResource NavTreeIconHeight}" VerticalAlignment="Center" HorizontalAlignment="Center" Stretch="Uniform">
-                            <Image.Style>
-                                <Style TargetType="Image">
-                                    <Setter Property="Source" Value="{StaticResource ClosedBookIcon}" />
-                                </Style>
-                            </Image.Style>
-                        </Image>
-                        <TextBlock Text="{Binding Name.Value, Converter={StaticResource NullToLoading}}" FontSize="{StaticResource NavTreeFontSize}" VerticalAlignment="Center" HorizontalAlignment="Left"/>
-                        <StackPanel.ContextMenu>
-                            <ContextMenu>
-                                <MenuItem Header="Open" Command="{Binding Context.OpenItem, Source={StaticResource BindingProxy}}" CommandParameter="{Binding}"/>
-                                <Separator />
-                                <MenuItem Header="Rename" Command="{Binding Rename}"/>
-                                <MenuItem Header="Delete" Command="{Binding Delete}" />
-                            </ContextMenu>
-                        </StackPanel.ContextMenu>
-                    </StackPanel>
-                </DataTemplate>
-                <DataTemplate DataType="{x:Type core:String}">
-                    <TextBlock Text="{Binding}" FontSize="{StaticResource NavTreeFontSize}" />
-                </DataTemplate>
-            </TreeView.Resources>
-            <TreeView.ContextMenu>
-                <ContextMenu>
-                    <MenuItem Header="Create">
-                        <MenuItem Command="{Binding CreateCategory}" Header="Category">
-                            <MenuItem.Icon>
-                                <Image Source="{StaticResource CollapsedCategoryIcon}" Stretch="Uniform"/>
-                            </MenuItem.Icon>
+                                    </Style.Triggers> -->
+                                    </Style>
+                                </Image.Style>
+                            </Image>
+                            <TextBlock Text="{Binding Name.Value, Converter={StaticResource NullToLoading}}" FontSize="{StaticResource NavTreeFontSize}" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                            <StackPanel.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem Header="Open" Command="{Binding Context.OpenItem, Source={StaticResource BindingProxy}}" CommandParameter="{Binding}"/>
+                                    <Separator />
+                                    <MenuItem Header="Rename" Command="{Binding Rename}"/>
+                                    <MenuItem Header="Delete" Command="{Binding Delete}" />
+                                </ContextMenu>
+                            </StackPanel.ContextMenu>
+                        </StackPanel>
+                    </DataTemplate>
+                    <DataTemplate DataType="{x:Type core:String}">
+                        <TextBlock Text="{Binding}" FontSize="{StaticResource NavTreeFontSize}" />
+                    </DataTemplate>
+                </TreeView.Resources>
+                <TreeView.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Create">
+                            <MenuItem Command="{Binding CreateCategory}" Header="Category">
+                                <MenuItem.Icon>
+                                    <Image Source="{StaticResource CollapsedCategoryIcon}" Stretch="Uniform"/>
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Command="{Binding CreateDocument}" Header="Document">
+                                <MenuItem.Icon>
+                                    <Image Source="{StaticResource DocumentIcon}" Stretch="Uniform"/>
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <!-- Book -->
+                            <MenuItem Command="{Binding CreateBook}" Header="Book">
+                                <MenuItem.Icon>
+                                    <Image Source="{StaticResource ClosedBookIcon}" Stretch="Uniform"/>
+                                </MenuItem.Icon>
+                            </MenuItem>
                         </MenuItem>
-                        <MenuItem Command="{Binding CreateDocument}" Header="Document">
-                            <MenuItem.Icon>
-                                <Image Source="{StaticResource DocumentIcon}" Stretch="Uniform"/>
-                            </MenuItem.Icon>
-                        </MenuItem>
-                        <!-- Book -->
-                        <MenuItem Command="{Binding CreateBook}" Header="Book">
-                            <MenuItem.Icon>
-                                <Image Source="{StaticResource ClosedBookIcon}" Stretch="Uniform"/>
-                            </MenuItem.Icon>
-                        </MenuItem>
-                    </MenuItem>
-                </ContextMenu>
-            </TreeView.ContextMenu>
-        </TreeView>
+                    </ContextMenu>
+                </TreeView.ContextMenu>
+            </TreeView>
+        </ScrollViewer>
         <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" Width="5"/>
         <TabControl Grid.Column="2" ItemsSource="{Binding OpenedItems}" SelectedItem="{Binding ActiveViewModel}">
             <TabControl.ItemTemplateSelector>

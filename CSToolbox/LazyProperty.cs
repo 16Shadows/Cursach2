@@ -1,6 +1,6 @@
-﻿using System;
+﻿using CSToolbox.Weak;
+using System;
 using System.ComponentModel;
-using CSToolbox.Weak;
 
 namespace CSToolbox
 {

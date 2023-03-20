@@ -1,13 +1,12 @@
-﻿using DMOrganizerModel.Implementation.Utility;
-using DMOrganizerModel.Interface;
-using DMOrganizerModel.Interface.Items;
-using System.Threading.Tasks;
-using System.Collections.Generic;
+﻿using CSToolbox.Weak;
 using DMOrganizerModel.Implementation.Organizers;
-using DMOrganizerModel.Interface.References;
 using DMOrganizerModel.Implementation.References;
-using CSToolbox.Weak;
+using DMOrganizerModel.Implementation.Utility;
+using DMOrganizerModel.Interface.Items;
+using DMOrganizerModel.Interface.References;
+using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace DMOrganizerModel.Implementation.Items
 {

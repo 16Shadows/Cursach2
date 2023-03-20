@@ -1,4 +1,5 @@
-﻿using DMOrganizerModel.Interface.Items;
+﻿using CSToolbox.Weak;
+using DMOrganizerModel.Interface.Items;
 using MVVMToolbox;
 using MVVMToolbox.Command;
 using System;
@@ -17,6 +18,7 @@ namespace DMOrganizerViewModel
 
         protected bool m_Deleting;
 
+        public WeakEvent<ItemViewModel> ItemDeleted { get; } = new();
         public DeferredCommand Delete { get; protected init; }
 
         protected ItemViewModel(IContext context, IServiceProvider serviceProvider, IItem item, OrganizerViewModel org) : base(context, serviceProvider)
@@ -25,8 +27,7 @@ namespace DMOrganizerViewModel
 
             Item.ItemDeleted.Subscribe(Item_Deleted);
 
-            Delete = new DeferredCommand(CommandHandler_Delete, () => !LockingOperation);
-
+            Delete = new DeferredCommand(CommandHandler_Delete, CanExecuteLockingOperation);
             OrganizerReference = new WeakReference(org, false);
         }
 
@@ -35,6 +36,7 @@ namespace DMOrganizerViewModel
             if (!m_Deleting)
                 return;
             m_Deleting = false;
+            ItemDeleted.Invoke(this);
         }
 
         private void CommandHandler_Delete()

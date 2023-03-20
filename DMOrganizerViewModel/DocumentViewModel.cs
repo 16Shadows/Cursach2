@@ -1,12 +1,12 @@
 ﻿using CSToolbox;
 using CSToolbox.Weak;
+using DMOrganizerModel.Implementation.Utility;
 using DMOrganizerModel.Interface.Items;
 using MVVMToolbox;
-using System;
-using System.Collections.ObjectModel;
 using MVVMToolbox.Command;
 using MVVMToolbox.Services;
-using DMOrganizerModel.Implementation.Utility;
+using System;
+using System.Collections.ObjectModel;
 
 namespace DMOrganizerViewModel
 {
@@ -65,8 +65,8 @@ namespace DMOrganizerViewModel
 
             Document.DocumentTagsChanged.Subscribe(Document_TagsChanged);
 
-            AddTag = new DeferredCommand(CommandHandler_AddTag, () => !LockingOperation);
-            DeleteTag = new DeferredCommand<string>(CommandHandler_DeleteTag, _ => !LockingOperation);
+            AddTag = new DeferredCommand(CommandHandler_AddTag, CanExecuteLockingOperation);
+            DeleteTag = new DeferredCommand<string>(CommandHandler_DeleteTag, CanExecute_DeleteTag);
         }
 
         private void CommandHandler_AddTag()
@@ -81,6 +81,8 @@ namespace DMOrganizerViewModel
             m_TargetTag = config.UserInput;
             Document.AddDocumentTag(m_TargetTag);
         }
+
+        private bool CanExecute_DeleteTag(string? _) => !LockingOperation;
 
         private void CommandHandler_DeleteTag(string? tag)
         {

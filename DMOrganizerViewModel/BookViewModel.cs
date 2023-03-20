@@ -1,9 +1,8 @@
-﻿using System;
-using DMOrganizerModel.Interface.Items;
+﻿using DMOrganizerModel.Interface.Items;
 using MVVMToolbox;
 using MVVMToolbox.Command;
-using MVVMToolbox.Services;
 using MVVMToolbox.ViewModel;
+using System;
 
 namespace DMOrganizerViewModel
 {
@@ -40,7 +39,7 @@ namespace DMOrganizerViewModel
 
             Book.BookItemCreated.Subscribe(Book_ItemCreated);
 
-            CreatePage = new DeferredCommand(CommandHandler_CreatePage, () => !LockingOperation);
+            CreatePage = new DeferredCommand(CommandHandler_CreatePage, CanExecuteLockingOperation);
         }
 
         private void CommandHandler_CreatePage()

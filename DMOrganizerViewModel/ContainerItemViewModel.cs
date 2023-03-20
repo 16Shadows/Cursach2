@@ -4,6 +4,7 @@ using CSToolbox.Weak;
 using DMOrganizerModel.Interface.Items;
 using MVVMToolbox;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Xml.Linq;
 
@@ -33,7 +34,11 @@ namespace DMOrganizerViewModel
                         return;
                     ObservableCollection<ItemViewModel> v = new ();
                     foreach (ContentType item in e.Content)
-                        v.Add(CreateViewModel(item));
+                    {
+                        ItemViewModel vm = CreateViewModel(item);
+                        vm.ItemDeleted.Subscribe(HandleItemDeleted);
+                        v.Insert(GetViewModelPlacementIndex(vm, v), vm);
+                    }
                     p(v);
                 });
                 Container.ItemContainerCurrentContent.Subscribe( handler );
@@ -43,16 +48,36 @@ namespace DMOrganizerViewModel
             Container.ItemContainerContentChanged.Subscribe(ItemContainer_ItemContainerContentChanged);
         }
 
+        private void HandleItemDeleted(ItemViewModel item)
+        {
+            ItemDeleted.Invoke(item);
+        }
+
+        protected override void Item_Deleted(IItem sender, ItemDeletedResult result)
+        {
+            foreach (ItemViewModel item in Items.Value)
+                ItemDeleted.Invoke(item);
+            base.Item_Deleted(sender, result);
+        }
+
         protected virtual void ItemContainer_ItemContainerContentChanged(IItemContainer<ContentType> sender, ItemContainerContentChangedEventArgs<ContentType> e)
         {
             if (!e.HasChanged || Items.Value == null)
                 return;
             else if (e.Type == ItemContainerContentChangedEventArgs<ContentType>.ChangeType.ItemAdded)
-                Context.Invoke(() => Items.Value.Add(CreateViewModel(e.Item)));
+            {
+                ItemViewModel vm = CreateViewModel(e.Item);
+                vm.ItemDeleted.Subscribe(HandleItemDeleted);
+                Context.Invoke(() => Items.Value.Insert(GetViewModelPlacementIndex(vm, Items.Value), vm));
+            }
             else
                 Context.Invoke(() => Items.Value.Remove(vm => vm.Item.Equals(e.Item)) );
         }
 
         protected abstract ItemViewModel CreateViewModel(ContentType item);
+        protected virtual int GetViewModelPlacementIndex(ItemViewModel item, IList<ItemViewModel> collection)
+        {
+            return Math.Max(collection.Count - 1, 0);
+        }
     }
 }

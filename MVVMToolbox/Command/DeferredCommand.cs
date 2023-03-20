@@ -1,6 +1,6 @@
-﻿using System;
+﻿using CSToolbox.Weak;
+using System;
 using System.Windows.Input;
-using CSToolbox.Weak;
 
 namespace MVVMToolbox.Command
 {

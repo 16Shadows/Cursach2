@@ -1,9 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CSToolbox.Extensions
 {
@@ -24,6 +20,17 @@ namespace CSToolbox.Extensions
                 list.RemoveAt(i);
                 return;
             }
+        }
+
+        public static int LastIndexOf<T>(this IList<T> list, Predicate<T> predicate)
+        {
+            for (int i = list.Count-1; i >= 0; i--)
+            {
+                if (!predicate(list[i]))
+                    continue;
+                return i;
+            }
+            return -1;
         }
     }
 }

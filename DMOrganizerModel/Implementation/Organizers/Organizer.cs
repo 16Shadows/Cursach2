@@ -1,15 +1,14 @@
-﻿using System;
-using System.Data.SQLite;
-using System.Collections.Generic;
-
-using DMOrganizerModel.Interface.Organizer;
+﻿using CSToolbox.Weak;
+using DMOrganizerModel.Implementation.Items;
+using DMOrganizerModel.Implementation.References;
 using DMOrganizerModel.Implementation.Utility;
 using DMOrganizerModel.Interface.Items;
-using DMOrganizerModel.Implementation.Items;
+using DMOrganizerModel.Interface.Organizer;
 using DMOrganizerModel.Interface.References;
+using System;
+using System.Collections.Generic;
+using System.Data.SQLite;
 using System.Threading.Tasks;
-using CSToolbox.Weak;
-using DMOrganizerModel.Implementation.References;
 
 namespace DMOrganizerModel.Implementation.Organizers
 {

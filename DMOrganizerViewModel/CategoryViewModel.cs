@@ -1,9 +1,11 @@
+using CSToolbox.Extensions;
 using DMOrganizerModel.Implementation.Utility;
 using DMOrganizerModel.Interface.Items;
 using MVVMToolbox;
+using MVVMToolbox.Command;
 using MVVMToolbox.Services;
 using System;
-using MVVMToolbox.Command;
+using System.Collections.Generic;
 
 namespace DMOrganizerViewModel
 {
@@ -56,9 +58,9 @@ namespace DMOrganizerViewModel
 
             Category.CategoryItemCreated.Subscribe(CategoryItemCreated);
 
-            CreateCategory = new DeferredCommand(CommandHandler_CreateCategory, () => !LockingOperation);
-            CreateDocument = new DeferredCommand(CommandHandler_CreateDocument, () => !LockingOperation);
-            CreateBook = new DeferredCommand(CommandHandler_CreateBook, () => !LockingOperation);
+            CreateCategory = new DeferredCommand(CommandHandler_CreateCategory, CanExecuteLockingOperation);
+            CreateDocument = new DeferredCommand(CommandHandler_CreateDocument, CanExecuteLockingOperation);
+            CreateBook = new DeferredCommand(CommandHandler_CreateBook, CanExecuteLockingOperation);
         }
 
         protected override ItemViewModel CreateViewModel(IOrganizerItem item)
@@ -71,6 +73,28 @@ namespace DMOrganizerViewModel
                 return new BookViewModel(Context, ServiceProvider, book, book, OrganizerReference.Target as OrganizerViewModel);
             else
                 throw new ArgumentException("Unsupported item type", nameof(item));
+        }
+
+        protected override int GetViewModelPlacementIndex(ItemViewModel item, IList<ItemViewModel> collection)
+        {
+            if (item is CategoryViewModel)
+            {
+                int index = collection.LastIndexOf(x => x is CategoryViewModel);
+                return index + 1;
+            }
+            else if (item is DocumentViewModel)
+            {
+                int index = collection.LastIndexOf(x => x is DocumentViewModel);
+                return index == -1 ? collection.LastIndexOf(x => x is CategoryViewModel) + 1 : index + 1;
+            }   
+            else if (item is BookViewModel)
+            {
+                int index = collection.LastIndexOf(x => x is BookViewModel);
+                if (index == -1)
+                    index = collection.LastIndexOf(x => x is DocumentViewModel);
+                return index == -1 ? collection.LastIndexOf(x => x is CategoryViewModel) : index + 1;
+            }
+            return Items.Value.Count - 1;
         }
 
         private void CommandHandler_CreateCategory()

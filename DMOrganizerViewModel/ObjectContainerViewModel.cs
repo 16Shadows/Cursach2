@@ -1,19 +1,12 @@
 ﻿using CSToolbox;
 using DMOrganizerModel.Interface.Items;
-using DMOrganizerModel.Interface.Organizer;
-using DMOrganizerModel.Interface.References;
 using MVVMToolbox;
 using MVVMToolbox.Command;
 using MVVMToolbox.Services;
 using MVVMToolbox.ViewModel;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
 
 namespace DMOrganizerViewModel
 {    
@@ -68,6 +61,7 @@ namespace DMOrganizerViewModel
             Type = new LazyProperty<int>(_ => ObjectContainer.RequestContainerViewInfo());
 
             ObjectContainer.RequestItemContainerCurrentContent();
+            CreateObject = new DeferredCommand(CommandHandler_CreateObject, CanExecuteLockingOperation);
 
             SetObject = new DeferredCommand(CommandHandler_SetObject, () => !LockingOperation);
 
