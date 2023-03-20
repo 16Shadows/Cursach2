@@ -1,5 +1,6 @@
 ﻿using CSToolbox.Weak;
 using DMOrganizerModel.Interface.Organizer;
+using System.IO;
 
 namespace DMOrganizerModel.Implementation.Organizers
 {
@@ -13,5 +14,11 @@ namespace DMOrganizerModel.Implementation.Organizers
         /// <param name="path">The path to file</param>
         /// <returns>The Organizer stored in the specified file</returns>
         public static IOrganizer LoadOrganizer(string path) => OrganizersCache[path];
+        public static void DeleteOrganizer(string path)
+        {
+            if (!File.Exists(path))
+                return;
+            File.Delete(path);
+        }
     }
 }
