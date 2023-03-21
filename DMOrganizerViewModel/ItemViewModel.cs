@@ -16,7 +16,13 @@ namespace DMOrganizerViewModel
         public WeakReference OrganizerReference;
         public IItem Item { get; }
 
-        protected bool m_Deleting;
+        private enum DeletionState
+        {
+            None,
+            Deleting,
+            Deleted
+        }
+        private DeletionState m_State = DeletionState.None;
 
         public WeakEvent<ItemViewModel> ItemDeleted { get; } = new();
         public DeferredCommand Delete { get; protected init; }
@@ -33,17 +39,16 @@ namespace DMOrganizerViewModel
 
         protected virtual void Item_Deleted(IItem sender, ItemDeletedResult result)
         {
-            if (!m_Deleting)
+            if (m_State == DeletionState.Deleted)
                 return;
-            m_Deleting = false;
+            m_State = DeletionState.Deleted;
             ItemDeleted.Invoke(this);
         }
 
         private void CommandHandler_Delete()
         {
-            //Need to add a confirmation message here, need to implement message box service
             Context.Invoke(() => LockingOperation = true);
-            m_Deleting = true;
+            m_State = DeletionState.Deleting;
             Item.DeleteItem();
         }
 
