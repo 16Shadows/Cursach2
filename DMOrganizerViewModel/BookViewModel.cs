@@ -1,8 +1,11 @@
-﻿using DMOrganizerModel.Interface.Items;
+﻿using CSToolbox;
+using DMOrganizerModel.Interface.Items;
 using MVVMToolbox;
 using MVVMToolbox.Command;
 using MVVMToolbox.ViewModel;
 using System;
+using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace DMOrganizerViewModel
 {
@@ -38,10 +41,19 @@ namespace DMOrganizerViewModel
             else Book = item;
 
             Book.BookItemCreated.Subscribe(Book_ItemCreated);
+            Items.WeakPropertyChanged.Subscribe(Book_ItemsChanged);
 
             CreatePage = new DeferredCommand(CommandHandler_CreatePage, CanExecuteLockingOperation);
         }
 
+        private void Book_ItemsChanged(ReadOnlyLazyProperty<ObservableCollection<ItemViewModel>?> arg1)
+        {
+            if (arg1.Value.Count > 0)
+            {
+                ActivePageViewModel = arg1.Value.First();
+            }
+            else ActivePageViewModel = null;
+        }
         private void CommandHandler_CreatePage()
         {
             Context.Invoke(() => LockingOperation = true);
