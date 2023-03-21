@@ -99,9 +99,11 @@ namespace DMOrganizerViewModel
             IReferenceSelector s = ServiceProvider.GetService(typeof(IReferenceSelector)) as IReferenceSelector;
             OrganizerViewModel org = OrganizerReference.Target as OrganizerViewModel;
 
-            IReferenceable item = s.Select(org).Item as IReferenceable;
+            IReferenceable item = null;
+            ItemViewModel selectVM = s.Select(org);
+            if (selectVM != null) { item = selectVM.Item as IReferenceable; }
             //need to give IReferenceable objects to add object
-            if (item != null) { ObjectContainer.AddObject(item); }
+            if (item != null) { ObjectContainer.AddObject(item as IReferenceable); }
             else
             {
                 Context.Invoke(() =>

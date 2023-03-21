@@ -14,7 +14,11 @@ namespace DMOrganizerApp.Services
             dlg.Owner = Application.Current.MainWindow;
             bool? res =  dlg.ShowDialog();
 
-            return dlg.SelectedItem ;
+            if (res == true)
+            {
+                return dlg.SelectedItem;
+            }
+            else return null;
             //if (res == true) return; //returns 
             //else return null; //no referenceable will be assigned and no objects created
         }

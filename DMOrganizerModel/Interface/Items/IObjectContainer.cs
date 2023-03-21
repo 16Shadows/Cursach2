@@ -132,6 +132,5 @@ namespace DMOrganizerModel.Interface.Items
         /// Creates new object in container with link.
         /// </summary>
         void AddObject(IReferenceable obj);
-        void AddObject();
     }
 }
