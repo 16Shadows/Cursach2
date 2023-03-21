@@ -7,7 +7,7 @@
              xmlns:views="clr-namespace:DMOrganizerApp.Views"
              xmlns:vm="clr-namespace:DMOrganizerViewModel;assembly=DMOrganizerViewModel"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800" Background="Bisque">
+             d:DesignHeight="450" d:DesignWidth="800">
 
 
         <ContentPresenter Content="{Binding ActivePageViewModel}">

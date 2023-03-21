@@ -6,7 +6,7 @@
              xmlns:vm="clr-namespace:DMOrganizerViewModel;assembly=DMOrganizerViewModel"
              xmlns:local="clr-namespace:DMOrganizerApp.Views"
              mc:Ignorable="d" 
-             d:DesignHeight="1753" d:DesignWidth="1240" MinHeight="1753" MinWidth="1240" Background="Beige">
+             d:DesignHeight="1753" d:DesignWidth="1240" MinHeight="1753" MinWidth="1240" Background="White">
     <!-- Paper is a4 size for 150dpi -->
    <!-- <local:ContainerView Width="600" Height="200"></local:ContainerView> -->
 
