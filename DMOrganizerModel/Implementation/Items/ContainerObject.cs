@@ -36,8 +36,16 @@ namespace DMOrganizerModel.Implementation.Items
         public string GetObjectLink()
         {
             string link = Query.GetObjectLink(Organizer.Connection, ItemID);
-            InvokeObjectCurrentContent(ItemID, link);
-            return link;
+            if (Organizer.DecodeReferenceInternal(link) == null)
+            {
+                return null;
+            }
+            else
+            {
+                InvokeObjectCurrentContent(ItemID, link);
+                return link;
+            }
+            
         }
         public IReference GetReferenceByLink(string link)
         {

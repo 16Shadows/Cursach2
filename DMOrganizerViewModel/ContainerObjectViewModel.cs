@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 
 namespace DMOrganizerViewModel
 {
@@ -38,24 +39,37 @@ namespace DMOrganizerViewModel
 
             ContainerObject.ObjectUpdateLink.Subscribe(ContainerObject_LinkUpdate);
             ContainerObject.ObjectCurrentContent.Subscribe(ContainerObject_CurrentContent);
+            
             ContainerObject.GetObjectLink();
         }
         public void ContainerObject_CurrentContent(IObject sender, ObjectCurrentContentEventArgs e)
         {
             IReference reference = ContainerObject.GetReferenceByLink(e.Link);
-            IReferenceable item = reference.Item;
 
-            if (item is IDocument)
+            if (reference.Item != null && e.Link != null)
             {
-                DocumentViewModel doc = new DocumentViewModel(Context, ServiceProvider, item as IDocument, OrganizerReference.Target as OrganizerViewModel);
-                ActivePageViewModel = doc;
+                IReferenceable item = reference.Item;
+
+                if (item is IDocument)
+                {
+                    DocumentViewModel doc = new DocumentViewModel(Context, ServiceProvider, item as IDocument, OrganizerReference.Target as OrganizerViewModel);
+                    ActivePageViewModel = doc;
+                    doc.ItemDeleted.Subscribe(onReferenceDelete);
+                }
+                else if (item is ISection)
+                {
+                    SectionViewModel sec = new SectionViewModel(Context, ServiceProvider, item as IDocument, OrganizerReference.Target as OrganizerViewModel);
+                    ActivePageViewModel = sec;
+                    sec.ItemDeleted.Subscribe(onReferenceDelete);
+                }
+                else throw new InvalidOperationException("Unsupported object type for object.");
             }
-            else if (item is ISection)
-            {
-                SectionViewModel sec = new SectionViewModel(Context, ServiceProvider, item as IDocument, OrganizerReference.Target as OrganizerViewModel);
-                ActivePageViewModel = sec;
-            }
-            else throw new InvalidOperationException("Unsupported object type for object.");
+            else ActivePageViewModel= null;
+        }
+
+        private void onReferenceDelete(ItemViewModel e)
+        {
+            ActivePageViewModel = null;
         }
 
         public void ContainerObject_LinkUpdate(IObject sender, ObjectUpdateLinkEventArgs e)
