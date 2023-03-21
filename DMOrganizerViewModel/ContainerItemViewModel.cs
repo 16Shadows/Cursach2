@@ -23,29 +23,27 @@ namespace DMOrganizerViewModel
             
             Items = new ReadOnlyLazyProperty<ObservableCollection<ItemViewModel>?>(p =>
             {
-                /*
-                    WeakAction will hold a weak reference to the temporary class on which the lambda will be invokeds
-                    So unless we hold the actual lambda (and thus its temporary class), it may get GC-ed. Probably. Need to verify.
-                */
-                WeakAction<IItemContainer<ContentType>, ItemContainerCurrentContentEventArgs<ContentType>>.CallType handler = (_, e) => Context.Invoke(() =>
-                {
-                    //Skip other possible invocations of this event until the handler is GCd
-                    if (Items.Value != null)
-                        return;
-                    ObservableCollection<ItemViewModel> v = new ();
-                    foreach (ContentType item in e.Content)
-                    {
-                        ItemViewModel vm = CreateViewModel(item);
-                        vm.ItemDeleted.Subscribe(HandleItemDeleted);
-                        v.Insert(GetViewModelPlacementIndex(vm, v), vm);
-                    }
-                    p(v);
-                });
-                Container.ItemContainerCurrentContent.Subscribe( handler );
+                ProvideItemsValue = p;
+                Container.ItemContainerCurrentContent.Subscribe( ContainerItem_CurrentContent );
                 Container.RequestItemContainerCurrentContent();
             });
 
             Container.ItemContainerContentChanged.Subscribe(ItemContainer_ItemContainerContentChanged);
+        }
+
+        private Action<ObservableCollection<ItemViewModel>> ProvideItemsValue = null;
+        private void ContainerItem_CurrentContent(IItemContainer<ContentType> _, ItemContainerCurrentContentEventArgs<ContentType> e)
+        {
+            Container.ItemContainerCurrentContent.Unsubscribe(ContainerItem_CurrentContent);
+            ObservableCollection<ItemViewModel> v = new ();
+            foreach (ContentType item in e.Content)
+            {
+                ItemViewModel vm = CreateViewModel(item);
+                vm.ItemDeleted.Subscribe(HandleItemDeleted);
+                v.Insert(GetViewModelPlacementIndex(vm, v), vm);
+            }
+            Context.Invoke(() => ProvideItemsValue(v));
+            ProvideItemsValue = null;
         }
 
         private void HandleItemDeleted(ItemViewModel item)

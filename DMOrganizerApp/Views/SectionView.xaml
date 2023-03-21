@@ -21,6 +21,7 @@
                 <TextBlock.ContextMenu>
                     <ContextMenu>
                         <MenuItem Header="Rename" Command="{Binding Rename}" />
+                        <MenuItem Header="Delete" Command="{Binding Delete}" />
                     </ContextMenu>
                 </TextBlock.ContextMenu>
             </TextBlock>
@@ -78,6 +79,7 @@
                         <uc:FormattableRichTextBox.ContextMenu>
                             <ContextMenu>
                                 <MenuItem Header="Edit" Command="{Binding Context.BeginEdit, Source={StaticResource SectionViewBindingProxy} }" />
+                                <MenuItem Header="Delete" Command="{Binding Delete}" />
                             </ContextMenu>
                         </uc:FormattableRichTextBox.ContextMenu>
                     </uc:FormattableRichTextBox>
