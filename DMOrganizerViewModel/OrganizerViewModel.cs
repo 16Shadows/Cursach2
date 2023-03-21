@@ -159,7 +159,7 @@ namespace DMOrganizerViewModel
                 int index = collection.LastIndexOf(x => x is BookViewModel);
                 if (index == -1)
                     index = collection.LastIndexOf(x => x is DocumentViewModel);
-                return index == -1 ? collection.LastIndexOf(x => x is CategoryViewModel) : index + 1;
+                return index == -1 ? collection.LastIndexOf(x => x is CategoryViewModel) + 1 : index + 1;
             }
             return Items.Value.Count - 1;
         }
