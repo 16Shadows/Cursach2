@@ -16,11 +16,9 @@
                     <DataTemplate DataType="{x:Type vm:DocumentViewModel}">
                         <local:DocumentView />
                     </DataTemplate>
-                    <!-- For debug -->
                     <DataTemplate DataType="{x:Type vm:SectionViewModel}">
                         <local:SectionView />
                     </DataTemplate>
-                    <!-- For debug -->
                 </ContentPresenter.Resources>
             </ContentPresenter>
         </Viewbox>

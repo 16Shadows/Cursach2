@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Data;
 using System.Data.SQLite;
 
 namespace DMOrganizerModel.Implementation.Utility
@@ -1223,7 +1224,7 @@ namespace DMOrganizerModel.Implementation.Utility
 
         #region Object
         // create object
-        public static int CreateObject(SyncronizedSQLiteConnection connection, string link)
+        public static int CreateObject( SyncronizedSQLiteConnection connection, string link)
         {
             int res = -1;
             connection.Write(con =>
@@ -1231,7 +1232,7 @@ namespace DMOrganizerModel.Implementation.Utility
                 using SQLiteCommand cmd = con.CreateCommand();
 
                 cmd.CommandText = @"INSERT INTO Object (Link_To_Object) 
-                                            VALUES (@Link);
+                                    VALUES (@Link);
                                     SELECT last_insert_rowid();";
 
                 cmd.Parameters.AddWithValue("@Link", link);
@@ -1267,7 +1268,7 @@ namespace DMOrganizerModel.Implementation.Utility
                 cmd.CommandText = @"INSERT INTO Set_Container_Objects (ID_Container, ID_Object) 
                                     VALUES (@ContainerID, @ObjectID);";
 
-                cmd.Parameters.AddWithValue("@ParentID", parentID);
+                cmd.Parameters.AddWithValue("@ContainerID", parentID);
                 cmd.Parameters.AddWithValue("@ObjectID", objectID);
                 result = cmd.ExecuteNonQuery();
             });
