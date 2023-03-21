@@ -37,15 +37,32 @@ namespace DMOrganizerViewModel
             else ContainerObject = item;
 
             ContainerObject.ObjectUpdateLink.Subscribe(ContainerObject_LinkUpdate);
+            ContainerObject.ObjectCurrentContent.Subscribe(ContainerObject_CurrentContent);
+            ContainerObject.GetObjectLink();
         }
+        public void ContainerObject_CurrentContent(IObject sender, ObjectCurrentContentEventArgs e)
+        {
+            IReference reference = ContainerObject.GetReferenceByLink(e.Link);
+            IReferenceable item = reference.Item;
 
+            if (item is IDocument)
+            {
+                DocumentViewModel doc = new DocumentViewModel(Context, ServiceProvider, item as IDocument, OrganizerReference.Target as OrganizerViewModel);
+                ActivePageViewModel = doc;
+            }
+            else if (item is ISection)
+            {
+                SectionViewModel sec = new SectionViewModel(Context, ServiceProvider, item as IDocument, OrganizerReference.Target as OrganizerViewModel);
+                ActivePageViewModel = sec;
+            }
+            else throw new InvalidOperationException("Unsupported object type for object.");
+        }
 
         public void ContainerObject_LinkUpdate(IObject sender, ObjectUpdateLinkEventArgs e)
         {
             if (e.Result == ObjectUpdateLinkEventArgs.ResultType.Success)
             {
                 IReference reference = ContainerObject.GetReferenceByLink(e.Link);
-                IOrganizer org = ContainerObject.Organizer;
                 IReferenceable item = reference.Item;
 
                 if (item is IDocument)

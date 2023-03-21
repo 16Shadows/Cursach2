@@ -10,12 +10,16 @@ namespace DMOrganizerModel.Implementation.Items
     internal class ContainerObject : Item, IObject
     {
         public WeakEvent<IObject, ObjectUpdateLinkEventArgs> ObjectUpdateLink { get; } = new();
+        public WeakEvent<IObject, ObjectCurrentContentEventArgs> ObjectCurrentContent { get; } = new();
 
         public void InvokeObjectUpdateLink(int ID, string link, ObjectUpdateLinkEventArgs.ResultType result)
         {
             ObjectUpdateLink.Invoke(this, new ObjectUpdateLinkEventArgs(link, result));
         }
-        
+        public void InvokeObjectCurrentContent(int ID, string link)
+        {
+            ObjectCurrentContent.Invoke(this, new ObjectCurrentContentEventArgs(link));
+        }
         public ContainerObject(int itemID, IItemContainerBase parent, Organizer organizer) : base(itemID, parent, organizer){}
 
         public void UpdateContent(IReference newLink)
@@ -32,6 +36,7 @@ namespace DMOrganizerModel.Implementation.Items
         public string GetObjectLink()
         {
             string link = Query.GetObjectLink(Organizer.Connection, ItemID);
+            InvokeObjectCurrentContent(ItemID, link);
             return link;
         }
         public IReference GetReferenceByLink(string link)

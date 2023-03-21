@@ -26,16 +26,15 @@
         <Thumb x:Name="ResizeThumb" Width="20" Height="20" VerticalAlignment="Bottom" HorizontalAlignment="Right" Cursor="SizeNWSE" DragDelta="ResizeThumb_DragDelta"
                Background="White">
         </Thumb>
-
-        <Viewbox Margin="20, 40, 20, 20">
-            <ContentPresenter Content="{Binding ActivePageViewModel}">
-                    <ContentPresenter.Resources>
-                        <DataTemplate DataType="{x:Type vm:ContainerObjectViewModel}">
-                            <views:ObjectView />
-                        </DataTemplate>
-                    </ContentPresenter.Resources>
+        <ScrollViewer Margin="20, 40, 20, 20">
+            <ContentPresenter Content="{Binding Items.Value[0]}" >
+                <ContentPresenter.Resources>
+                    <DataTemplate DataType="{x:Type vm:ContainerObjectViewModel}">
+                        <views:ObjectView />
+                    </DataTemplate>
+                </ContentPresenter.Resources>
             </ContentPresenter>
-        </Viewbox>
-
+        </ScrollViewer>
+        
     </Grid>
 </UserControl>
