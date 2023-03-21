@@ -25,6 +25,14 @@ public class ObjectUpdateLinkEventArgs : EventArgs
         Result = result;
     }
 }
+public class ObjectCurrentContentEventArgs : EventArgs
+{
+    public string Link {get;}
+    public ObjectCurrentContentEventArgs(string link)
+    {
+        Link = link;
+    }
+}
 namespace DMOrganizerModel.Interface.Items
 {
     /// <summary>
@@ -36,6 +44,7 @@ namespace DMOrganizerModel.Interface.Items
         // request link (IItemContainer)
 
         WeakEvent<IObject, ObjectUpdateLinkEventArgs> ObjectUpdateLink { get; }
+        WeakEvent<IObject, ObjectCurrentContentEventArgs> ObjectCurrentContent { get; }
 
         /// <summary>
         /// Sets content to object with new link.
@@ -43,7 +52,7 @@ namespace DMOrganizerModel.Interface.Items
         /// <param name="newLink">Link to object that will be displayed and stored.</param>
         void UpdateContent(IReference newLink); //event iitemcontainer
         void SetLink(IReference link);
-
+        string GetObjectLink();
         IReference GetReferenceByLink(string link);
     }
 }

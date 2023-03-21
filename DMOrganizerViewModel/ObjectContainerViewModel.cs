@@ -20,23 +20,6 @@ namespace DMOrganizerViewModel
 
     public class ObjectContainerViewModel : ContainerItemViewModel<IObject>
     {
-        //to change opened object views in container view
-        private ViewModelBase? m_ActivePageViewModel;
-        public ViewModelBase? ActivePageViewModel
-        {
-            get => m_ActivePageViewModel;
-            set
-            {
-                if (m_ActivePageViewModel == value)
-                    return;
-                ViewModelBase? oldvm = m_ActivePageViewModel;
-                if (oldvm != null)
-                    Context.BeginInvoke(() => oldvm.Unload());
-                m_ActivePageViewModel = value;
-                m_ActivePageViewModel?.Load();
-                InvokePropertyChanged(nameof(ActivePageViewModel));
-            }
-        }
         public LazyProperty<int> Width { get; }
         public LazyProperty<int> Height { get; }
         public LazyProperty<int> CoordX { get; }
@@ -50,13 +33,10 @@ namespace DMOrganizerViewModel
             OrganizerReference = new WeakReference(org, false);
             if (item is null) throw new ArgumentNullException(nameof(item));
             else ObjectContainer = item;
+
             //need to set properties for Width, Height, X, Y, Type and subscribe our updater-method to listen to the model
             ObjectContainer.ObjectContainerViewInfo.Subscribe(ObjectContainer_RequestContainerViewInfo);
             ObjectContainer.ItemContainerContentChanged.Subscribe(ObjectContainer_ItemCreated);
-            ObjectContainer.ItemContainerContentChanged.Subscribe(ObjectContainer_SetActiveObject);
-            //ObjectContainer.ItemContainerCurrentContent.Subscribe(ObjectContainer_SetActiveObjectCurrent);
-            Items.WeakPropertyChanged.Subscribe(ObjectContainer_SetActiveObjectCurrent);
-            var tr = Items.Value;
 
             Width = new LazyProperty<int>(_ => ObjectContainer.RequestContainerViewInfo());
             Height = new LazyProperty<int>(_ => ObjectContainer.RequestContainerViewInfo());
@@ -74,15 +54,6 @@ namespace DMOrganizerViewModel
             Height.WeakPropertyChanged.Subscribe(CommandHandler_ContainerSizeChanged);
         }
 
-        private void ObjectContainer_SetActiveObjectCurrent(ReadOnlyLazyProperty<ObservableCollection<ItemViewModel>?> arg1)
-        {
-            if (arg1.Value.Count() > 0)
-            {
-                ActivePageViewModel = Items.Value.Last();
-            }
-            else ActivePageViewModel = null;
-        }
-
         public void CommandHandler_ContainerCoordinatesChanged(LazyProperty<int> e)
         {
             ObjectContainer.UpdateCoordinates(CoordX.Value, CoordY.Value);
@@ -90,24 +61,6 @@ namespace DMOrganizerViewModel
         public void CommandHandler_ContainerSizeChanged(LazyProperty<int> e)
         {
             ObjectContainer.UpdateSize(Width.Value, Height.Value);
-        }
-        public void ObjectContainer_SetActiveObject(IItemContainer<IObject> sender, ItemContainerContentChangedEventArgs<IObject> e)
-        {
-            if (e.Type == ItemContainerContentChangedEventArgs<IObject>.ChangeType.ItemAdded
-                && e.Result == ItemContainerContentChangedEventArgs<IObject>.ResultType.Success) { ActivePageViewModel = Items.Value.Last(); }
-            
-            else if (e.Type == ItemContainerContentChangedEventArgs<IObject>.ChangeType.ItemRemoved 
-                && Items.Value.Any()) ActivePageViewModel = Items.Value.Last();
-
-            else ActivePageViewModel = null;
-        }
-        public void ObjectContainer_SetActiveObjectCurrent(IItemContainer<IObject> sender, ItemContainerCurrentContentEventArgs<IObject> e)
-        {
-            if (e.Content.Any())
-            {
-                ActivePageViewModel = Items.Value.Last();
-            }
-            else ActivePageViewModel = null;
         }
         public void CommandHandler_SetObject()
         {
