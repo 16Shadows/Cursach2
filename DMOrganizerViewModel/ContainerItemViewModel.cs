@@ -76,7 +76,7 @@ namespace DMOrganizerViewModel
         protected abstract ItemViewModel CreateViewModel(ContentType item);
         protected virtual int GetViewModelPlacementIndex(ItemViewModel item, IList<ItemViewModel> collection)
         {
-            return Math.Max(collection.Count - 1, 0);
+            return collection.Count;
         }
     }
 }
