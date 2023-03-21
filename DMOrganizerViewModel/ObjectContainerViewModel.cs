@@ -6,6 +6,7 @@ using MVVMToolbox.Command;
 using MVVMToolbox.Services;
 using MVVMToolbox.ViewModel;
 using System;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Controls;
 
@@ -52,14 +53,17 @@ namespace DMOrganizerViewModel
             //need to set properties for Width, Height, X, Y, Type and subscribe our updater-method to listen to the model
             ObjectContainer.ObjectContainerViewInfo.Subscribe(ObjectContainer_RequestContainerViewInfo);
             ObjectContainer.ItemContainerContentChanged.Subscribe(ObjectContainer_ItemCreated);
-            //ObjectContainer.ItemContainerContentChanged.Subscribe(ObjectContainer_SetActiveObject);
+            ObjectContainer.ItemContainerContentChanged.Subscribe(ObjectContainer_SetActiveObject);
             //ObjectContainer.ItemContainerCurrentContent.Subscribe(ObjectContainer_SetActiveObjectCurrent);
+            Items.WeakPropertyChanged.Subscribe(ObjectContainer_SetActiveObjectCurrent);
+            var tr = Items.Value;
 
             Width = new LazyProperty<int>(_ => ObjectContainer.RequestContainerViewInfo());
             Height = new LazyProperty<int>(_ => ObjectContainer.RequestContainerViewInfo());
             CoordX = new LazyProperty<int>(_ => ObjectContainer.RequestContainerViewInfo());
             CoordY = new LazyProperty<int>(_ => ObjectContainer.RequestContainerViewInfo());
             Type = new LazyProperty<int>(_ => ObjectContainer.RequestContainerViewInfo());
+
 
             ObjectContainer.RequestItemContainerCurrentContent();
             SetObject = new DeferredCommand(CommandHandler_SetObject, CanExecuteLockingOperation);
@@ -69,6 +73,16 @@ namespace DMOrganizerViewModel
             Width.WeakPropertyChanged.Subscribe(CommandHandler_ContainerSizeChanged);
             Height.WeakPropertyChanged.Subscribe(CommandHandler_ContainerSizeChanged);
         }
+
+        private void ObjectContainer_SetActiveObjectCurrent(ReadOnlyLazyProperty<ObservableCollection<ItemViewModel>?> arg1)
+        {
+            if (arg1.Value.Count() > 0)
+            {
+                ActivePageViewModel = Items.Value.Last();
+            }
+            else ActivePageViewModel = null;
+        }
+
         public void CommandHandler_ContainerCoordinatesChanged(LazyProperty<int> e)
         {
             ObjectContainer.UpdateCoordinates(CoordX.Value, CoordY.Value);
@@ -89,7 +103,10 @@ namespace DMOrganizerViewModel
         }
         public void ObjectContainer_SetActiveObjectCurrent(IItemContainer<IObject> sender, ItemContainerCurrentContentEventArgs<IObject> e)
         {
-            if (e.Content.Any()) ActivePageViewModel = Items.Value.Last();
+            if (e.Content.Any())
+            {
+                ActivePageViewModel = Items.Value.Last();
+            }
             else ActivePageViewModel = null;
         }
         public void CommandHandler_SetObject()
@@ -103,7 +120,10 @@ namespace DMOrganizerViewModel
             ItemViewModel selectVM = s.Select(org);
             if (selectVM != null) { item = selectVM.Item as IReferenceable; }
             //need to give IReferenceable objects to add object
-            if (item != null) { ObjectContainer.AddObject(item as IReferenceable); }
+            if (item != null) 
+            { 
+                ObjectContainer.AddObject(item as IReferenceable);
+            }
             else
             {
                 Context.Invoke(() =>
@@ -136,7 +156,7 @@ namespace DMOrganizerViewModel
         // SetObject method
         protected override ItemViewModel CreateViewModel(IObject item)
         {
-            return new ContainerObjectViewModel(Context, ServiceProvider, item, item, OrganizerReference.Target as OrganizerViewModel);
+            return new ContainerObjectViewModel(Context, ServiceProvider, item, OrganizerReference.Target as OrganizerViewModel);
         }
     }
 }

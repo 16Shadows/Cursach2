@@ -28,30 +28,6 @@ namespace DMOrganizerModel.Implementation.Items
         {
             ObjectContainerViewInfo.Invoke(this, new ObjectContainerViewInfoEventArgs(width, height, coordX, coordY, type));
         }
-
-        //public void AddObject()
-        //{
-        //    CheckDeleted();
-        //    Task.Run(() =>
-        //    {
-        //        IObject item = null;
-        //        int newObjectID;
-        //        string link = "";
-        //        lock (Lock)
-        //        {
-        //            newObjectID = Query.CreateObject(Organizer.Connection, link);
-        //        }
-        //        if (newObjectID != -1)
-        //        {
-        //            if (Query.SetObjectParent(Organizer.Connection, newObjectID, ItemID))
-        //            {
-        //                item = Organizer.GetObject(newObjectID, this); //caching object
-        //                // telling everyone that object is added
-        //                InvokeItemContainerContentChanged(item, ItemContainerContentChangedEventArgs<IObject>.ChangeType.ItemAdded, ItemContainerContentChangedEventArgs<IObject>.ResultType.Success);
-        //            }
-        //        }
-        //    });
-        //}
         public void AddObject( IReferenceable obj)
         {
             CheckDeleted();
@@ -71,6 +47,7 @@ namespace DMOrganizerModel.Implementation.Items
                         item = Organizer.GetObject(newObjectID, this); //caching object
                         // telling everyone that object is added
                         InvokeItemContainerContentChanged(item, ItemContainerContentChangedEventArgs<IObject>.ChangeType.ItemAdded, ItemContainerContentChangedEventArgs<IObject>.ResultType.Success);
+                        (item as ContainerObject).InvokeObjectUpdateLink(newObjectID, link, ObjectUpdateLinkEventArgs.ResultType.Success);
                     }
                 }
             });
@@ -120,26 +97,6 @@ namespace DMOrganizerModel.Implementation.Items
                 else InvokeObjectContainerUpdatedSize(newWidth, newHeight, ObjectContainerUpdateSizeEventArgs.ResultType.IncorrectSize);
             });
         }
-
-        //public void UpdateContent(int oldObjectID, int newObjectID)
-        //{
-        //    //oldObjectID is for multiple-object containers implementation
-        //    //old object will be deleted maybe
-        //    CheckDeleted();
-        //    Task.Run(() =>
-        //    {
-        //        bool res = Query.ContainerHasObject(Organizer.Connection, ItemID, oldObjectID);
-        //        if (res)
-        //        {
-        //            lock (Lock)
-        //            {
-        //                ContainerObject obj = Organizer.GetObject
-        //            }
-        //        }
-        //    });
-
-        //}
-
         protected override IEnumerable<IObject> GetContent()
         {
             List<IObject> result = new List<IObject>();

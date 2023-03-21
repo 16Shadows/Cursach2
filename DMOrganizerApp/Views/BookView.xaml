@@ -47,7 +47,6 @@
                         <StackPanel.ContextMenu>
                             <ContextMenu>
                                 <MenuItem Header="Delete" Command="{Binding Delete}" />
-                                <MenuItem Header="Add object" Command="{Binding CreateObject}" />
                             </ContextMenu>
                         </StackPanel.ContextMenu>
                     </StackPanel>

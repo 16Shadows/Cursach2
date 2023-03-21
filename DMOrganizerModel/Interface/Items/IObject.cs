@@ -30,12 +30,10 @@ namespace DMOrganizerModel.Interface.Items
     /// <summary>
     /// Object for containers on pages, can contain links to documents/sections/other linkeable things.
     /// </summary>
-    public interface IObject: IItem, IItemContainer<IReferenceable>
+    public interface IObject: IItem
     {
         // link to object
         // request link (IItemContainer)
-        // check if all child-objects are valid and can be displayed            !!!
-        // (if link to item is not valid or item was deleted - show error) 
 
         WeakEvent<IObject, ObjectUpdateLinkEventArgs> ObjectUpdateLink { get; }
 
@@ -45,5 +43,7 @@ namespace DMOrganizerModel.Interface.Items
         /// <param name="newLink">Link to object that will be displayed and stored.</param>
         void UpdateContent(IReference newLink); //event iitemcontainer
         void SetLink(IReference link);
+
+        IReference GetReferenceByLink(string link);
     }
 }

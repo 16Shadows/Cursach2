@@ -1,14 +1,17 @@
-﻿using CSToolbox;
-using DMOrganizerModel.Interface.Items;
+﻿using DMOrganizerModel.Interface.Items;
+using DMOrganizerModel.Interface.Organizer;
 using DMOrganizerModel.Interface.References;
 using MVVMToolbox;
 using MVVMToolbox.ViewModel;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace DMOrganizerViewModel
 {
-    public class ContainerObjectViewModel : ContainerItemViewModel<IReferenceable>
+    public class ContainerObjectViewModel : ItemViewModel
     {
         //to change opened referenceable views in object view
         private ViewModelBase? m_ActivePageViewModel;
@@ -27,61 +30,38 @@ namespace DMOrganizerViewModel
                 InvokePropertyChanged(nameof(ActivePageViewModel));
             }
         }
-
-        // ContainerViewModel already keeps all Object IReferenceable objects, we just need to show them in proper way
-        public LazyProperty<IReferenceable> ReferenceableObjectType { get; }
         protected IObject ContainerObject { get; }
-        public ContainerObjectViewModel(IContext context, IServiceProvider serviceProvider, IItemContainer<IReferenceable> container, IObject item, OrganizerViewModel org) : base(context, serviceProvider, container, item, org)
+        public ContainerObjectViewModel(IContext context, IServiceProvider serviceProvider, IObject item, OrganizerViewModel org) : base(context, serviceProvider, item, org)
         {
-            OrganizerReference = new WeakReference(org, false);
             if (item is null) throw new ArgumentNullException(nameof(item));
             else ContainerObject = item;
-            ContainerObject.ItemContainerContentChanged.Subscribe(ContainerObject_ItemCreated);
-            //ContainerObject.ItemContainerContentChanged.Subscribe(ContainerObject_SetActiveObject);
-            //ContainerObject.ItemContainerCurrentContent.Subscribe(ContainerObject_SetActiveObjectCurrent);
-            ContainerObject.RequestItemContainerCurrentContent();
-        }
-        public void ContainerObject_ItemCreated(IItemContainer<IReferenceable> sender, ItemContainerContentChangedEventArgs<IReferenceable> e)
-        {
-            if (!LockingOperation)
-                return;
-            Context.Invoke(() =>
-            {
-                LockingOperation = false;
-            });
-        }
-        public void ContainerObject_SetActiveObject(IItemContainer<IReferenceable> sender, ItemContainerContentChangedEventArgs<IReferenceable> e)
-        {
-            if (e.Type == ItemContainerContentChangedEventArgs<IReferenceable>.ChangeType.ItemAdded
-                && e.Result == ItemContainerContentChangedEventArgs<IReferenceable>.ResultType.Success) { ActivePageViewModel = Items.Value.Last(); }
 
-            else if (e.Type == ItemContainerContentChangedEventArgs<IReferenceable>.ChangeType.ItemRemoved
-                && Items.Value.Any()) ActivePageViewModel = Items.Value.Last();
+            ContainerObject.ObjectUpdateLink.Subscribe(ContainerObject_LinkUpdate);
+        }
 
-            else ActivePageViewModel = null;
-        }
-        public void ContainerObject_SetActiveObjectCurrent(IItemContainer<IReferenceable> sender, ItemContainerCurrentContentEventArgs<IReferenceable> e)
+
+        public void ContainerObject_LinkUpdate(IObject sender, ObjectUpdateLinkEventArgs e)
         {
-            if (e.Content.Any()) ActivePageViewModel = Items.Value.Last();
-            else ActivePageViewModel = null;
-        }
-        protected override ItemViewModel CreateViewModel(IReferenceable item)
-        {            
-            //type check and creation of different child-objects
-            if (item is IDocument)
+            if (e.Result == ObjectUpdateLinkEventArgs.ResultType.Success)
             {
-                DocumentViewModel doc = new DocumentViewModel(Context, ServiceProvider, item as IDocument, OrganizerReference.Target as OrganizerViewModel);
-                ActivePageViewModel = doc;
-                return doc;
+                IReference reference = ContainerObject.GetReferenceByLink(e.Link);
+                IOrganizer org = ContainerObject.Organizer;
+                IReferenceable item = reference.Item;
+
+                if (item is IDocument)
+                {
+                    DocumentViewModel doc = new DocumentViewModel(Context, ServiceProvider, item as IDocument, OrganizerReference.Target as OrganizerViewModel);
+                    ActivePageViewModel = doc;
+                }
+                else if (item is ISection)
+                {
+                    SectionViewModel sec = new SectionViewModel(Context, ServiceProvider, item as IDocument, OrganizerReference.Target as OrganizerViewModel);
+                    ActivePageViewModel = sec;
+                }
+                else throw new InvalidOperationException("Unsupported object type for object.");
             }
-            else if (item is ISection)
-            {
-                SectionViewModel sec =  new SectionViewModel(Context, ServiceProvider, item as ISection, OrganizerReference.Target as OrganizerViewModel);
-                ActivePageViewModel = sec;
-                return sec;
-            }
-            else throw new ArgumentException("Unsupported Referencable type");
-
+                
+            else return;
         }
     }
 }
