@@ -83,11 +83,13 @@ namespace DMOrganizerViewModel
                 {
                     DocumentViewModel doc = new DocumentViewModel(Context, ServiceProvider, item as IDocument, OrganizerReference.Target as OrganizerViewModel);
                     ActivePageViewModel = doc;
+                    doc.ItemDeleted.Subscribe(onReferenceDelete);
                 }
                 else if (item is ISection)
                 {
                     SectionViewModel sec = new SectionViewModel(Context, ServiceProvider, item as IDocument, OrganizerReference.Target as OrganizerViewModel);
                     ActivePageViewModel = sec;
+                    sec.ItemDeleted.Subscribe(onReferenceDelete);
                 }
                 else throw new InvalidOperationException("Unsupported object type for object.");
             }
