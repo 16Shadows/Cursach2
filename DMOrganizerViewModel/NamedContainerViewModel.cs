@@ -60,7 +60,6 @@ namespace DMOrganizerViewModel
             Name = new LazyProperty<string?>( _ => NamedItem.RequestItemNameUpdate() );
 
             Rename = new DeferredCommand(CommandHandler_Rename, CanExecuteLockingOperation);
-            Delete = new DeferredCommand(CommandHandler_Delete, CanExecuteLockingOperation);
         }
 
         protected virtual void NamedItem_ItemNameChanged(INamedItem sender, NamedItemNameChangedEventArgs e)
@@ -75,14 +74,6 @@ namespace DMOrganizerViewModel
                 NamedItemNotificationService.Show(config);
                 LockingOperation = false;
             });
-        }
-
-        private void CommandHandler_Delete()
-        {
-            //Need to add a confirmation message here, need to implement message box service
-            Context.Invoke(() => LockingOperation = true);
-            m_Deleting = true;
-            Item.DeleteItem();
         }
 
         private void CommandHandler_Rename()
