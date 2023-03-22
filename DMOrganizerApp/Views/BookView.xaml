@@ -28,7 +28,7 @@
                       SelectedItemChanged="TreeView_SelectedItemChanged">
             <TreeView.Resources>
                 <!-- Page -->
-                <HierarchicalDataTemplate DataType="{x:Type vm:BookPageViewModel}" ItemsSource="{Binding Items.Value}">
+                <DataTemplate DataType="{x:Type vm:BookPageViewModel}">
                     <StackPanel Orientation="Horizontal">
                         <Image Height="{StaticResource NavTreeIconHeight}" VerticalAlignment="Center" HorizontalAlignment="Center" Stretch="Uniform" Source="{StaticResource PageIcon}"/>
                         <TextBlock Text="{Binding Position.Value, Converter={StaticResource NullToLoading}}" FontSize="{StaticResource NavTreeFontSize}" VerticalAlignment="Center" HorizontalAlignment="Left"/>
@@ -39,29 +39,8 @@
                             </ContextMenu>
                         </StackPanel.ContextMenu>
                     </StackPanel>
-                </HierarchicalDataTemplate>
-                <HierarchicalDataTemplate DataType="{x:Type vm:ObjectContainerViewModel}" ItemsSource="{Binding Items.Value}">
-                    <StackPanel Orientation="Horizontal">
-                        <Image Height="{StaticResource NavTreeIconHeight}" VerticalAlignment="Center" HorizontalAlignment="Center" Stretch="Uniform" Source="{StaticResource Box}"/>
-                        <TextBlock Text="{Binding Item, Converter={StaticResource NullToLoading}}" FontSize="{StaticResource NavTreeFontSize}" VerticalAlignment="Center" HorizontalAlignment="Left"/>
-                        <StackPanel.ContextMenu>
-                            <ContextMenu>
-                                <MenuItem Header="Delete" Command="{Binding Delete}" />
-                            </ContextMenu>
-                        </StackPanel.ContextMenu>
-                    </StackPanel>
-                </HierarchicalDataTemplate>
-                <DataTemplate DataType="{x:Type vm:ContainerObjectViewModel}">
-                    <StackPanel Orientation="Horizontal">
-                        <Image Height="{StaticResource NavTreeIconHeight}" VerticalAlignment="Center" HorizontalAlignment="Center" Stretch="Uniform" Source="{StaticResource PlusIcon}"/>
-                        <TextBlock Text="{Binding Item, Converter={StaticResource NullToLoading}}" FontSize="{StaticResource NavTreeFontSize}" VerticalAlignment="Center" HorizontalAlignment="Left"/>
-                        <StackPanel.ContextMenu>
-                            <ContextMenu>
-                                <MenuItem Header="Delete" Command="{Binding Delete}" />
-                            </ContextMenu>
-                        </StackPanel.ContextMenu>
-                    </StackPanel>
                 </DataTemplate>
+
             </TreeView.Resources>
             <TreeView.ContextMenu>
                 <ContextMenu>
@@ -77,11 +56,6 @@
                         <DataTemplate DataType="{x:Type vm:BookPageViewModel}">
                             <local:PageView />
                         </DataTemplate>
-                        <!-- For debug -->
-                        <DataTemplate DataType="{x:Type vm:ObjectContainerViewModel}">
-                            <local:ContainerView />
-                        </DataTemplate>
-                        <!-- For debug -->
                     </ContentPresenter.Resources>
                 </ContentPresenter>
             </Viewbox>
