@@ -1,0 +1,179 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="DMOrganizerViewModel.CategoryNotificationConfiguration" Collapsed="true">
+    <Position X="0.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>CategoryViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DMOrganizerViewModel.CategoryViewModel" Collapsed="true">
+    <Position X="2.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AiAAAAAgEAACAAAAAAAAiABAAAAAQAAQAABAEAEECAA=</HashCode>
+      <FileName>CategoryViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DMOrganizerViewModel.ContainerItemViewModel&lt;ContentType&gt;" Collapsed="true">
+    <Position X="6.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AABAgAQgEAABCAAAAAAAAAAAQAAAAAAAAAAAAAAgAAA=</HashCode>
+      <FileName>ContainerItemViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DMOrganizerViewModel.DMOrganizerViewModelBase" Collapsed="true">
+    <Position X="0.75" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACAIABAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DMOrganizerViewModelBase.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DMOrganizerViewModel.DocumentNotificationConfiguration" Collapsed="true">
+    <Position X="5" Y="3" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DocumentViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DMOrganizerViewModel.DocumentViewModel" Collapsed="true">
+    <Position X="6.75" Y="3" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AiAEAAAAAAIABAEAACAAAAAAAAAAAFACAAAAAAEAAAA=</HashCode>
+      <FileName>DocumentViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DMOrganizerViewModel.ItemViewModel" Collapsed="true">
+    <Position X="11" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACAAAAAAAAABAAAAAAAAAAAEAAGAEAAAAAAAAAAgAQA=</HashCode>
+      <FileName>ItemViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DMOrganizerViewModel.NamedItemNotificationConfiguration" Collapsed="true">
+    <Position X="12.75" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>NamedContainerViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DMOrganizerViewModel.NamedContainerViewModel&lt;ContentType&gt;" Collapsed="true">
+    <Position X="11" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACIAAAABAAAAAAAAAAAAAQQAACAAAAgAAAAIAAAAgAA=</HashCode>
+      <FileName>NamedContainerViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DMOrganizerViewModel.OrganizerNotificationConfiguration" Collapsed="true">
+    <Position X="17.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>OrganizerViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DMOrganizerViewModel.OrganizerViewModel" Collapsed="true">
+    <Position X="15.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BiBQIAAgEAgDCAAAAEADKABgAAAJYAAAAAAAAAAEAAI=</HashCode>
+      <FileName>OrganizerViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DMOrganizerViewModel.SectionNotificationConfiguration" Collapsed="true">
+    <Position X="17.75" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SectionViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DMOrganizerViewModel.SectionViewModel" Collapsed="true">
+    <Position X="16" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AQAAAIAAEgIAAAAAABQABAAQBAABAAAAAAAAAoAAAAA=</HashCode>
+      <FileName>SectionViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Enum Name="DMOrganizerViewModel.CategoryInputBoxScenarios" Collapsed="true">
+    <Position X="0.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAQAAAAAAAAAAAAAACAAAAAAAAAAAAAAAgA=</HashCode>
+      <FileName>CategoryViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="DMOrganizerViewModel.CategoryNotificationScenarios" Collapsed="true">
+    <Position X="2.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAgAIAAAAAAAAAAAIAAAAAAIAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>CategoryViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="DMOrganizerViewModel.DocumentInputBoxScenarios" Collapsed="true">
+    <Position X="5" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DocumentViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="DMOrganizerViewModel.DocumentNotificationScenarios" Collapsed="true">
+    <Position X="6.75" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DocumentViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="DMOrganizerViewModel.ItemMessageBoxScenarios" Collapsed="true">
+    <Position X="12.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ItemViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="DMOrganizerViewModel.NamedItemMessageBoxScenarios" Collapsed="true">
+    <Position X="12.75" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>NamedContainerViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="DMOrganizerViewModel.NamedItemInputBoxScenarios" Collapsed="true">
+    <Position X="11" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAA=</HashCode>
+      <FileName>NamedContainerViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="DMOrganizerViewModel.NamedItemNotificationScenarios" Collapsed="true">
+    <Position X="11" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAIAAAAAAAAAAAEAAAAAAAAAEAAAAAAAAAAAAAA=</HashCode>
+      <FileName>NamedContainerViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="DMOrganizerViewModel.OrganizerInputBoxScenarios" Collapsed="true">
+    <Position X="15.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAQAAAAAAAAAAAAAACAAAAAAAAAAAAAAAgA=</HashCode>
+      <FileName>OrganizerViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="DMOrganizerViewModel.OrganizerNotificationScenarios" Collapsed="true">
+    <Position X="17.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAgAIAAAAAAAAAAAIAAAAAAIAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>OrganizerViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="DMOrganizerViewModel.SectionInputBoxScenarios" Collapsed="true">
+    <Position X="16" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SectionViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="DMOrganizerViewModel.SectionNotificationScenarios" Collapsed="true">
+    <Position X="17.75" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SectionViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9.6" />
+</ClassDiagram>

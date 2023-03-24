@@ -1,0 +1,104 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="DMOrganizerModel.Implementation.Items.Category" Collapsed="true">
+    <Position X="0.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IgAAAAAAAAACAAAAAAABAAAAAAACgAAAACCAQAEEBAA=</HashCode>
+      <FileName>Implementation\Items\Category.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DMOrganizerModel.Implementation.Items.ContainerItem&lt;ContentType&gt;" Collapsed="true">
+    <Position X="0.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAggDAAAAEABAAAAACCAAAAAAAAE=</HashCode>
+      <FileName>Implementation\Items\ContainerItem.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DMOrganizerModel.Implementation.Items.ContainerObject" Collapsed="true">
+    <Position X="0.5" Y="3" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>JAAAAAgAAABAAICAAAAAAAAAAAAAAIAAAASAAAACAAA=</HashCode>
+      <FileName>Implementation\Items\ContainerObject.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DMOrganizerModel.Implementation.Items.Document" Collapsed="true">
+    <Position X="3.5" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACQAAAAAAAAAAAAAAAAAQAAkAAICAAAAAAKAAAAAAAA=</HashCode>
+      <FileName>Implementation\Items\Document.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DMOrganizerModel.Implementation.Items.Item" Collapsed="true">
+    <Position X="5.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAAQAAIAABAAAAAAgQAAQAgAAAAIEAAAAECgAQAAAAA=</HashCode>
+      <FileName>Implementation\Items\Item.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DMOrganizerModel.Implementation.Items.NamedContainerItem&lt;ContentType&gt;" Collapsed="true">
+    <Position X="7.5" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ABAAAAAEAAAgAAAAAAAAAAAAAAAAAAAAAAAEQgAABAA=</HashCode>
+      <FileName>Implementation\Items\NamedContainerItem.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DMOrganizerModel.Implementation.Items.Section" Collapsed="true">
+    <Position X="5.25" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAABAAAAAAIQgJAAAAABAAACAIACAAAAACCAQAAABAA=</HashCode>
+      <FileName>Implementation\Items\Section.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DMOrganizerModel.Implementation.Organizers.Organizer" Collapsed="true">
+    <Position X="9.5" Y="1" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AgBQAAAEEAiCIEMICgkDQEAAEABQgAAACAgQAkAEAAE=</HashCode>
+      <FileName>Implementation\Organizers\Organizer.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DMOrganizerModel.Implementation.Organizers.OrganizersStorageModel" Collapsed="true">
+    <Position X="9.5" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAI=</HashCode>
+      <FileName>Implementation\Organizers\OrganizersStorageModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DMOrganizerModel.Implementation.References.Reference" Collapsed="true">
+    <Position X="9" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAABAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAgA=</HashCode>
+      <FileName>Implementation\References\Reference.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Interface Name="DMOrganizerModel.Implementation.Items.IItemContainerBase" Collapsed="true">
+    <Position X="3" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAE=</HashCode>
+      <FileName>Implementation\Items\IItemContainerBase.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="DMOrganizerModel.Implementation.Items.INamedItemBase" Collapsed="true">
+    <Position X="3" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAABAA=</HashCode>
+      <FileName>Implementation\Items\INamedItemBase.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="DMOrganizerModel.Implementation.Items.IReferenceInfrastructure" Collapsed="true">
+    <Position X="2.75" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Implementation\Items\IReferenceInfrastructure.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Font Name="Segoe UI" Size="9.6" />
+</ClassDiagram>
