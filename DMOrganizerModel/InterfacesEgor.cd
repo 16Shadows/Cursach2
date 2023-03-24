@@ -1,0 +1,140 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="DMOrganizerModel.Interface.Items.ItemContainerCurrentContentEventArgs&lt;ContentType&gt;">
+    <Position X="2.75" Y="5.5" Width="4" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Interface\Items\IItemContainer.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DMOrganizerModel.Interface.Items.ItemContainerContentChangedEventArgs&lt;ContentType&gt;">
+    <Position X="2.75" Y="2.75" Width="4.25" />
+    <NestedTypes>
+      <Enum Name="DMOrganizerModel.Interface.Items.ItemContainerContentChangedEventArgs&lt;ContentType&gt;.ResultType" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Interface\Items\IItemContainer.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+      <Enum Name="DMOrganizerModel.Interface.Items.ItemContainerContentChangedEventArgs&lt;ContentType&gt;.ChangeType" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Interface\Items\IItemContainer.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAIAAAAAQEAAAAAAAAAQAAAAAAAAA=</HashCode>
+      <FileName>Interface\Items\IItemContainer.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DMOrganizerModel.Interface.Items.NamedItemNameChangedEventArgs">
+    <Position X="7.5" Y="2.75" Width="3" />
+    <NestedTypes>
+      <Enum Name="DMOrganizerModel.Interface.Items.NamedItemNameChangedEventArgs.ResultType" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Interface\Items\INamedItem.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAIAAAAAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Interface\Items\INamedItem.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DMOrganizerModel.Interface.Items.DocumentCurrentTagsEventArgs">
+    <Position X="13.5" Y="3.25" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAA=</HashCode>
+      <FileName>Interface\Items\IDocument.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DMOrganizerModel.Interface.Items.DocumentTagsChangedEventArgs">
+    <Position X="13.5" Y="5.25" Width="2.75" />
+    <NestedTypes>
+      <Enum Name="DMOrganizerModel.Interface.Items.DocumentTagsChangedEventArgs.ResultType" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Interface\Items\IDocument.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+      <Enum Name="DMOrganizerModel.Interface.Items.DocumentTagsChangedEventArgs.ChangeType" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Interface\Items\IDocument.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAgAAAAIAAAAAQAAAAAAAAAAQAAAAAAAAA=</HashCode>
+      <FileName>Interface\Items\IDocument.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DMOrganizerModel.Interface.Items.SectionContentChangedEventArgs">
+    <Position X="17" Y="3.5" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAgAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Interface\Items\ISection.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DMOrganizerModel.Interface.Items.SectionItemCreatedEventArgs">
+    <Position X="17" Y="5.75" Width="2.75" />
+    <NestedTypes>
+      <Enum Name="DMOrganizerModel.Interface.Items.SectionItemCreatedEventArgs.ResultType" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Interface\Items\ISection.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Interface\Items\ISection.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Interface Name="DMOrganizerModel.Interface.Items.IItem">
+    <Position X="0.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAQAAAAAAAAAIEAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Interface\Items\IItem.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="DMOrganizerModel.Interface.Items.IItemContainer&lt;ContentType&gt;">
+    <Position X="2.75" Y="0.5" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAggAAAAAAABAAAAACAAAAAAAAAA=</HashCode>
+      <FileName>Interface\Items\IItemContainer.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="DMOrganizerModel.Interface.Items.INamedItem">
+    <Position X="7.5" Y="0.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAEAgAAAAA=</HashCode>
+      <FileName>Interface\Items\INamedItem.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="DMOrganizerModel.Interface.Items.IOrganizerItem" Collapsed="true">
+    <Position X="11.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Interface\Items\IOrganizerItem.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="DMOrganizerModel.Interface.Items.IDocument">
+    <Position X="13.5" Y="0.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>ACQAAAAAAAAAAAAAAAAAAAAgAAIAAAAAAAIAAAAAAAA=</HashCode>
+      <FileName>Interface\Items\IDocument.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="DMOrganizerModel.Interface.Items.ISection">
+    <Position X="17" Y="0.5" Width="3.25" />
+    <TypeIdentifier>
+      <HashCode>AAABAAAAAAIAAJAAAAAAAAACAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Interface\Items\ISection.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Enum Name="DMOrganizerModel.Interface.Items.ItemDeletedResult">
+    <Position X="0.5" Y="2.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAEAAAAAAAgAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Interface\Items\IItem.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9.6" />
+</ClassDiagram>
