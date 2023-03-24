@@ -33,45 +33,6 @@ namespace DMOrganizerModel.Implementation.Utility
             });
             return success;
         }
-        
-        public static bool OrganizerHasDocument(SyncronizedSQLiteConnection connection, int documentID)
-        {
-            bool success = false;
-            connection.Read(con =>
-            {
-                using SQLiteCommand cmd = con.CreateCommand();
-                cmd.CommandText = $"SELECT SectionID FROM Document WHERE SectionID={documentID} AND CategoryID IS NULL";
-                success = cmd.ExecuteNonQuery() > 0;
-            });
-            return success;
-        }
-
-        public static bool OrganizerHasCategory(SyncronizedSQLiteConnection connection, int categoryID)
-        {
-            bool success = false;
-            connection.Read(con =>
-            {
-                using SQLiteCommand cmd = con.CreateCommand();
-                cmd.CommandText = $"SELECT ID FROM Category WHERE ID={categoryID} AND Parent IS NULL";
-                success = cmd.ExecuteNonQuery() > 0;
-            });
-            return success;
-        }
-        public static bool OrganizerHasBook(SyncronizedSQLiteConnection connection, int bookID)
-        {
-            bool success = false;
-            connection.Read(con =>
-            {
-                using SQLiteCommand cmd = con.CreateCommand();
-                cmd.CommandText = @"SELECT ID 
-                                    FROM Book 
-                                    WHERE ID is @BookID 
-                                    AND ID_Parent_Category IS NULL;";
-                cmd.Parameters.AddWithValue("@BookID", bookID);
-                success = cmd.ExecuteNonQuery() > 0;
-            });
-            return success;
-        }
 
         public static List<int> GetDocumentsInOrganizer(SyncronizedSQLiteConnection connection)
         {
@@ -298,18 +259,6 @@ namespace DMOrganizerModel.Implementation.Utility
             return success;
         }
 
-        public static bool SectionHasSection(SyncronizedSQLiteConnection connection, int sectionID, int parentID)
-        {
-            bool success = false;
-            connection.Read(con =>
-            {
-                using SQLiteCommand cmd = con.CreateCommand();
-                cmd.CommandText = $"SELECT ID FROM Section WHERE Parent={parentID} AND ID={sectionID}";
-                success = cmd.ExecuteNonQuery() > 0;
-            });
-            return success;
-        }
-
         public static bool SetSectionName(SyncronizedSQLiteConnection connection, int sectionID, string name)
         {
             bool success = false;
@@ -415,10 +364,6 @@ namespace DMOrganizerModel.Implementation.Utility
                                     AND Book.ID_Parent_Category=@CategoryID;";
                 cmd.Parameters.AddWithValue("@Name", name);
                 cmd.Parameters.AddWithValue("@CategoryID", categoryID);
-                //cmd.CommandText = $"(SELECT ID FROM Category WHERE Title=$title AND Parent={categoryID})" +
-                //                  " UNION ALL " +
-                //                  $"(SELECT Section.ID FROM (Document INNER JOIN Section ON Document.SectionID=Section.ID) WHERE Section.Title=$title AND Document.CategoryID={categoryID})";
-                //cmd.Parameters.AddWithValue("$title", name);
                 success = cmd.ExecuteScalar() != null;
             });
             return success;
@@ -512,51 +457,6 @@ namespace DMOrganizerModel.Implementation.Utility
                     res.Add(reader.GetInt32(0));
             });
             return res;
-        }
-
-        public static bool CategoryHasDocument(SyncronizedSQLiteConnection connection, int documentID, int categoryID)
-        {
-            bool success = false;
-            connection.Read(con =>
-            {
-                using SQLiteCommand cmd = con.CreateCommand();
-                cmd.CommandText = $"SELECT SectionID FROM Document WHERE SectionID={documentID} AND CategoryID={categoryID}";
-                success = cmd.ExecuteNonQuery() > 0;
-            });
-            return success;
-        }
-
-        public static bool CategoryHasCategory(SyncronizedSQLiteConnection connection, int categoryID, int parentID)
-        {
-            bool success = false;
-            connection.Read(con =>
-            {
-                using SQLiteCommand cmd = con.CreateCommand();
-                cmd.CommandText = $"SELECT ID FROM Category WHERE ID={categoryID} AND Parent={parentID}";
-                success = cmd.ExecuteNonQuery() > 0;
-            });
-            return success;
-        }
-
-        //checks if category has Book 
-        public static bool CategoryHasBook(SyncronizedSQLiteConnection connection, int categoryID, int bookID)
-        {
-            int result = -1;
-            connection.Read(con =>
-            {
-                using SQLiteCommand cmd = con.CreateCommand();
-                cmd.CommandText = @"SELECT Book.ID
-                                    FROM Category
-                                    WHERE Book.ID_Parent_Category is @CategoryParentID 
-                                    AND Page.ID is @BookID;";
-                cmd.Parameters.AddWithValue("@CategoryParentID", categoryID);
-                cmd.Parameters.AddWithValue("@BookID", bookID);
-                using SQLiteDataReader reader = cmd.ExecuteReader();
-                if (reader.Read())
-                    result = reader.GetInt32(0);
-            }
-            );
-            return result > 0;
         }
 
         public static bool SetCategoryParent(SyncronizedSQLiteConnection connection, int categoryID, int? parentID)
@@ -805,25 +705,6 @@ namespace DMOrganizerModel.Implementation.Utility
         #endregion
 
         #region Page
-        //create page
-        public static int CreatePage(SyncronizedSQLiteConnection connection, int parentID, int position)
-        {
-            int res = -1;
-            connection.Write(con =>
-            {
-                using SQLiteCommand cmd = con.CreateCommand();
-
-                cmd.CommandText = @"INSERT INTO Page (Position, ID_Parent_Book) 
-                                            VALUES (@PagePosition, @BookParentID);
-                                    SELECT last_insert_rowid();";
-                cmd.Parameters.AddWithValue("@PagePosition", position);
-                cmd.Parameters.AddWithValue("@BookParentID", parentID);
-                using SQLiteDataReader reader = cmd.ExecuteReader();
-                if (reader.Read())
-                    res = reader.GetInt32(0);
-            });
-            return res;
-        }
         //get page position by id
         public static int GetPagePosition(SyncronizedSQLiteConnection connection, int pageID)
         {
@@ -881,27 +762,6 @@ namespace DMOrganizerModel.Implementation.Utility
                     res.Add(reader.GetInt32(0));
             });
             return res;
-        }
-        
-        //page has container, has item
-        public static bool PageHasContainer(SyncronizedSQLiteConnection connection, int pageID, int containerID)
-        {
-            int result = -1;
-            connection.Read(con =>
-            {
-                using SQLiteCommand cmd = con.CreateCommand();
-                cmd.CommandText = @"SELECT Container.ID
-                                    FROM Container, Set_Page_Containers
-                                    WHERE Set_Page_Containers.ID_Page = @PageID
-                                    AND
-                                    Set_Page_Containers.ID_Container = @ContainerID;";
-                cmd.Parameters.AddWithValue("@ContainerID", containerID);
-                cmd.Parameters.AddWithValue("@PageID", pageID);
-                using SQLiteDataReader reader = cmd.ExecuteReader();
-                if (reader.Read())
-                    result = reader.GetInt32(0);
-            });
-            return result > 0;
         }
 
         //get pages maximum position to add new page at the end, if no pages returns 0
@@ -1150,25 +1010,7 @@ namespace DMOrganizerModel.Implementation.Utility
             );
             return result > 0;
         }
-        //has item
-        public static bool ContainerHasObject(SyncronizedSQLiteConnection connection, int containerID, int objectID)
-        {
-            int result = -1;
-            connection.Read(con =>
-            {
-                using SQLiteCommand cmd = con.CreateCommand();
-                cmd.CommandText = @"SELECT ID_Object
-                                    FROM Set_Container_Objects
-                                    WHERE Set_Container_Objects.ID_Container = @ContainerID
-									AND Set_Container_Objects.ID_Object = @ObjectID;";
-                cmd.Parameters.AddWithValue("@ContainerID", containerID);
-                cmd.Parameters.AddWithValue("@ObjectID", objectID);
-                using SQLiteDataReader reader = cmd.ExecuteReader();
-                if (reader.Read())
-                    result = reader.GetInt32(0);
-            });
-            return result > 0;
-        }
+
         //set parent of this container
         public static bool SetContainerParent(SyncronizedSQLiteConnection connection, int parentID, int containerID)
         {
@@ -1185,40 +1027,6 @@ namespace DMOrganizerModel.Implementation.Utility
                 result = cmd.ExecuteNonQuery();
             });
             return result > 0;
-        }
-        public static List<int> GetContainerCoordinates(SyncronizedSQLiteConnection connection, int containerID)
-        {
-            List<int> res = new List<int>(2);
-            connection.Read(con =>
-            {
-                using SQLiteCommand cmd = con.CreateCommand();
-                cmd.CommandText = @"SELECT Container.CoordinateX, Container.CoordinateY
-                                    FROM  Container
-                                    WHERE Container.ID is @ContainerID;";
-                cmd.Parameters.AddWithValue("@ContainerID", containerID);
-                using SQLiteDataReader reader = cmd.ExecuteReader();
-                reader.Read();
-                res[0] = reader.GetInt32(0);
-                res[1] = reader.GetInt32(1);
-            });
-            return res;
-        }
-        public static List<int> GetContainerSize(SyncronizedSQLiteConnection connection, int containerID)
-        {
-            List<int> res = new List<int>(2);
-            connection.Read(con =>
-            {
-                using SQLiteCommand cmd = con.CreateCommand();
-                cmd.CommandText = @"SELECT Container.Width, Container.Height
-                                    FROM  Container
-                                    WHERE Container.ID is @ContainerID;";
-                cmd.Parameters.AddWithValue("@ContainerID", containerID);
-                using SQLiteDataReader reader = cmd.ExecuteReader();
-                reader.Read();
-                res[0] = reader.GetInt32(0);
-                res[1] = reader.GetInt32(1);
-            });
-            return res;
         }
         #endregion
 
@@ -1241,21 +1049,6 @@ namespace DMOrganizerModel.Implementation.Utility
                     res = reader.GetInt32(0);
             });
             return res;
-        }
-        // delete object
-        public static bool DeleteContainerObject(SyncronizedSQLiteConnection connection, int objectID)
-        {
-            int result = -1;
-            connection.Write(con =>
-            {
-                using SQLiteCommand cmd = con.CreateCommand();
-
-                cmd.CommandText = @"DELETE FROM Object
-                                    WHERE ID is @ObjectID;";
-                cmd.Parameters.AddWithValue("@ObjectID", objectID);
-                result = cmd.ExecuteNonQuery();
-            });
-            return result > 0;
         }
         //set object parent
         public static bool SetObjectParent(SyncronizedSQLiteConnection connection, int objectID, int parentID)
@@ -1327,25 +1120,6 @@ namespace DMOrganizerModel.Implementation.Utility
                     res = reader.GetString(0);
             });
             return res;
-        }
-        //has item
-        public static bool ObjectHasLink(SyncronizedSQLiteConnection connection, int objectID, string link)
-        {
-            int result = -1;
-            connection.Read(con =>
-            {
-                using SQLiteCommand cmd = con.CreateCommand();
-                cmd.CommandText = @"SELECT object.ID
-                                    FROM object
-                                    WHERE object.Link_to_Object IS @Link
-                                    AND object.ID is @ObjectID;";
-                cmd.Parameters.AddWithValue("@Link", link);
-                cmd.Parameters.AddWithValue("@ObjectID", objectID);
-                using SQLiteDataReader reader = cmd.ExecuteReader();
-                if (reader.Read())
-                    result = reader.GetInt32(0);
-            });
-            return result > 0;
         }
         #endregion
     }
